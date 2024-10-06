@@ -241,6 +241,8 @@ let mistakeCounters = {};
 let conjugationsToPractice = [];
 let totalScore = 0;
 let currentKey = null;
+let totalConjugationsNeeded = 0;
+let conjugationsCompleted = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
     const tensesDiv = document.getElementById("tenses");
@@ -258,9 +260,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("submit-answer").addEventListener("click", submitAnswer);
     document.getElementById("restart").addEventListener("click", () => location.reload());
 
+    // Add event listener for the "Enter" key on the answer input field
     document.getElementById("answer").addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            event.preventDefault(); // Prevent default action (e.g., form submission)
+            event.preventDefault(); // Prevent default action (if any)
             submitAnswer();
         }
     });
@@ -275,6 +278,8 @@ function startQuiz() {
     requiredCorrect = parseInt(document.getElementById("required-correct").value) || 3;
 
     // Initialize counters
+    totalConjugationsNeeded = 0;
+    conjugationsCompleted = 0;
     for (let verb in verbs) {
         for (let tense of selectedTenses) {
             if (verbs[verb][tense]) {
@@ -283,6 +288,9 @@ function startQuiz() {
                     conjugationCounters[key] = 0;
                     mistakeCounters[key] = 0;
                     conjugationsToPractice.push(key);
+
+                    // Update total conjugations needed
+                    totalConjugationsNeeded += requiredCorrect;
                 }
             }
         }
@@ -290,6 +298,7 @@ function startQuiz() {
 
     document.getElementById("setup").style.display = "none";
     document.getElementById("quiz").style.display = "block";
+    updateProgressBar();
     nextQuestion();
 }
 
@@ -305,6 +314,8 @@ function nextQuestion() {
     document.getElementById("question").innerHTML = `Conjugue o verbo <strong>${verb}</strong> no tempo <strong>${tense}</strong> para <strong>${person}</strong>:`;
     document.getElementById("answer").value = "";
     document.getElementById("feedback").innerHTML = "";
+
+    // Automatically focus on the answer input field
     document.getElementById("answer").focus();
 }
 
@@ -313,7 +324,9 @@ function submitAnswer() {
     const [verb, tense, personIdx] = currentKey.split("-");
     const correctAnswer = verbs[verb][tense][personIdx];
 
-    if (userAnswer === correctAnswer.toLowerCase()) {
+    let prevCount = conjugationCounters[currentKey];
+
+    if (userAnswer.normalize('NFC') === correctAnswer.toLowerCase().normalize('NFC')) {
         document.getElementById("feedback").innerHTML = "Correto!";
         document.getElementById("feedback").className = "correct";
         conjugationCounters[currentKey]++;
@@ -335,7 +348,22 @@ function submitAnswer() {
         mistakeCounters[currentKey]++;
     }
 
+    // Update progress based on the change in conjugation counters
+    let countChange = conjugationCounters[currentKey] - prevCount;
+    conjugationsCompleted += countChange;
+    conjugationsCompleted = Math.max(0, Math.min(totalConjugationsNeeded, conjugationsCompleted)); // Clamp between 0 and totalConjugationsNeeded
+
+    updateProgressBar();
+
     setTimeout(nextQuestion, 1000);
+}
+
+function updateProgressBar() {
+    let progressPercentage = (conjugationsCompleted / totalConjugationsNeeded) * 100;
+    progressPercentage = Math.max(0, Math.min(100, progressPercentage)); // Clamp between 0 and 100
+
+    document.getElementById("progress-bar").style.width = progressPercentage + "%";
+    document.getElementById("progress-percentage").innerText = `Progresso: ${progressPercentage.toFixed(2)}%`;
 }
 
 function endQuiz() {

@@ -45,3 +45,23 @@ button {
 #top-mistakes li {
     margin-bottom: 5px;
 }
+
+/* Progress Bar Styles */
+#progress-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 25px;
+    margin-top: 20px;
+}
+
+#progress-bar {
+    width: 0%;
+    height: 20px;
+    background-color: #76c7c0;
+    border-radius: 25px;
+}
+
+#progress-percentage {
+    text-align: center;
+    margin-top: 5px;
+}
