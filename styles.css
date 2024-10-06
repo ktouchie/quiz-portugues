@@ -65,3 +65,15 @@ button {
     text-align: center;
     margin-top: 5px;
 }
+
+#score-display {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #76c7c0;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    z-index: 1000;
+}

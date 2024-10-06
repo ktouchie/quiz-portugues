@@ -243,6 +243,7 @@ let totalScore = 0;
 let currentKey = null;
 let totalConjugationsNeeded = 0;
 let conjugationsCompleted = 0;
+let scoreDisplay;
 
 document.addEventListener("DOMContentLoaded", () => {
     const tensesDiv = document.getElementById("tenses");
@@ -267,6 +268,10 @@ document.addEventListener("DOMContentLoaded", () => {
             submitAnswer();
         }
     });
+
+    // Initialize the score display
+    scoreDisplay = document.getElementById("score-display");
+    updateScoreDisplay();
 });
 
 function startQuiz() {
@@ -355,6 +360,9 @@ function submitAnswer() {
 
     updateProgressBar();
 
+    // Update the score display whenever the score changes
+    updateScoreDisplay();
+
     setTimeout(nextQuestion, 1000);
 }
 
@@ -364,6 +372,10 @@ function updateProgressBar() {
 
     document.getElementById("progress-bar").style.width = progressPercentage + "%";
     document.getElementById("progress-percentage").innerText = `Progresso: ${progressPercentage.toFixed(2)}%`;
+}
+
+function updateScoreDisplay() {
+    scoreDisplay.innerText = `Pontuação: ${totalScore}`;
 }
 
 function endQuiz() {
