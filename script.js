@@ -1,5 +1,6 @@
 const verbs = {
     "ser": {
+        "regular": false,
         "presente": ["sou", "és", "é", "somos", "são"],
         "pretérito": ["fui", "foste", "foi", "fomos", "foram"],
         "imperfeito": ["era", "eras", "era", "éramos", "eram"],
@@ -10,6 +11,7 @@ const verbs = {
         "imperativo": ["seja", "sê", "seja", "sejamos", "sejam"],
     },
     "estar": {
+        "regular": false,
         "presente": ["estou", "estás", "está", "estamos", "estão"],
         "pretérito": ["estive", "estiveste", "esteve", "estivemos", "estiveram"],
         "imperfeito": ["estava", "estavas", "estava", "estávamos", "estavam"],
@@ -20,6 +22,7 @@ const verbs = {
         "imperativo": ["esteja", "está", "esteja", "estejamos", "estejam"],
     },
     "falar": {
+        "regular": true,
         "presente": ["falo", "falas", "fala", "falamos", "falam"],
         "pretérito": ["falei", "falaste", "falou", "falamos", "falaram"],
         "imperfeito": ["falava", "falavas", "falava", "falávamos", "falavam"],
@@ -30,6 +33,7 @@ const verbs = {
         "imperativo": ["fale", "fala", "fale", "falemos", "falem"],
     },
     "comer": {
+        "regular": true,
         "presente": ["como", "comes", "come", "comemos", "comem"],
         "pretérito": ["comi", "comeste", "comeu", "comemos", "comeram"],
         "imperfeito": ["comia", "comias", "comia", "comíamos", "comiam"],
@@ -40,6 +44,7 @@ const verbs = {
         "imperativo": ["coma", "come", "coma", "comamos", "comam"],
     },
     "partir": {
+        "regular": true,
         "presente": ["parto", "partes", "parte", "partimos", "partem"],
         "pretérito": ["parti", "partiste", "partiu", "partimos", "partiram"],
         "imperfeito": ["partia", "partias", "partia", "partíamos", "partiam"],
@@ -50,6 +55,7 @@ const verbs = {
         "imperativo": ["parta", "parte", "parta", "partamos", "partam"],
     },
     "dizer": {
+        "regular": false,
         "presente": ["digo", "dizes", "diz", "dizemos", "dizem"],
         "pretérito": ["disse", "disseste", "disse", "dissemos", "disseram"],
         "imperfeito": ["dizia", "dizias", "dizia", "dizíamos", "diziam"],
@@ -60,6 +66,7 @@ const verbs = {
         "imperativo": ["diga", "diz", "diga", "digamos", "digam"],
     },
     "fazer": {
+        "regular": false,
         "presente": ["faço", "fazes", "faz", "fazemos", "fazem"],
         "pretérito": ["fiz", "fizeste", "fez", "fizemos", "fizeram"],
         "imperfeito": ["fazia", "fazias", "fazia", "fazíamos", "faziam"],
@@ -70,6 +77,7 @@ const verbs = {
         "imperativo": ["faça", "faz", "faça", "façamos", "façam"],
     },
     "trazer": {
+        "regular": false,
         "presente": ["trago", "trazes", "traz", "trazemos", "trazem"],
         "pretérito": ["trouxe", "trouxeste", "trouxe", "trouxemos", "trouxeram"],
         "imperfeito": ["trazia", "trazias", "trazia", "trazíamos", "traziam"],
@@ -80,6 +88,7 @@ const verbs = {
         "imperativo": ["traga", "traz", "traga", "tragamos", "tragam"],
     },
     "perder": {
+        "regular": false,
         "presente": ["perco", "perdes", "perde", "perdemos", "perdem"],
         "pretérito": ["perdi", "perdeste", "perdeu", "perdemos", "perderam"],
         "imperfeito": ["perdia", "perdias", "perdia", "perdíamos", "perdiam"],
@@ -90,6 +99,7 @@ const verbs = {
         "imperativo": ["perca", "perde", "perca", "percamos", "percam"],
     },
     "poder": {
+        "regular": false,
         "presente": ["posso", "podes", "pode", "podemos", "podem"],
         "pretérito": ["pude", "pudeste", "pôde", "pudemos", "puderam"],
         "imperfeito": ["podia", "podias", "podia", "podíamos", "podiam"],
@@ -100,6 +110,7 @@ const verbs = {
         "imperativo": ["possa", "pode", "possa", "possamos", "possam"],
     },
     "saber": {
+        "regular": false,
         "presente": ["sei", "sabes", "sabe", "sabemos", "sabem"],
         "pretérito": ["soube", "soubeste", "soube", "soubemos", "souberam"],
         "imperfeito": ["sabia", "sabias", "sabia", "sabíamos", "sabiam"],
@@ -110,6 +121,7 @@ const verbs = {
         "imperativo": ["saiba", "sabe", "saiba", "saibamos", "saibam"],
     },
     "dormir": {
+        "regular": false,
         "presente": ["durmo", "dormes", "dorme", "dormimos", "dormem"],
         "pretérito": ["dormi", "dormiste", "dormiu", "dormimos", "dormiram"],
         "imperfeito": ["dormia", "dormias", "dormia", "dormíamos", "dormiam"],
@@ -120,6 +132,7 @@ const verbs = {
         "imperativo": ["durma", "dorme", "durma", "durmamos", "durmam"],
     },
     "ouvir": {
+        "regular": false,
         "presente": ["ouço", "ouves", "ouve", "ouvimos", "ouvem"],
         "pretérito": ["ouvi", "ouviste", "ouviu", "ouvimos", "ouviram"],
         "imperfeito": ["ouvia", "ouvias", "ouvia", "ouvíamos", "ouviam"],
@@ -130,6 +143,7 @@ const verbs = {
         "imperativo": ["ouça", "ouve", "ouça", "ouçamos", "ouçam"],
     },
     "pedir": {
+        "regular": false,
         "presente": ["peço", "pedes", "pede", "pedimos", "pedem"],
         "pretérito": ["pedi", "pediste", "pediu", "pedimos", "pediram"],
         "imperfeito": ["pedia", "pedias", "pedia", "pedíamos", "pediam"],
@@ -140,6 +154,7 @@ const verbs = {
         "imperativo": ["peça", "pede", "peça", "peçamos", "peçam"],
     },
     "querer": {
+        "regular": false,
         "presente": ["quero", "queres", "quer", "queremos", "querem"],
         "pretérito": ["quis", "quiseste", "quis", "quisemos", "quiseram"],
         "imperfeito": ["queria", "querias", "queria", "queríamos", "queriam"],
@@ -150,6 +165,7 @@ const verbs = {
         "imperativo": ["queira", "quer", "queira", "queiramos", "queiram"],
     },
     "dar": {
+        "regular": false,
         "presente": ["dou", "dás", "dá", "damos", "dão"],
         "pretérito": ["dei", "deste", "deu", "demos", "deram"],
         "imperfeito": ["dava", "davas", "dava", "dávamos", "davam"],
@@ -160,6 +176,7 @@ const verbs = {
         "imperativo": ["dê", "dá", "dê", "demos", "deem"],
     },
     "ler": {
+        "regular": false,
         "presente": ["leio", "lês", "lê", "lemos", "leem"],
         "pretérito": ["li", "leste", "leu", "lemos", "leram"],
         "imperfeito": ["lia", "lias", "lia", "líamos", "liam"],
@@ -170,6 +187,7 @@ const verbs = {
         "imperativo": ["leia", "lê", "leia", "leiamos", "leiam"],
     },
     "ver": {
+        "regular": false,
         "presente": ["vejo", "vês", "vê", "vemos", "veem"],
         "pretérito": ["vi", "viste", "viu", "vimos", "viram"],
         "imperfeito": ["via", "vias", "via", "víamos", "viam"],
@@ -180,6 +198,7 @@ const verbs = {
         "imperativo": ["veja", "vê", "veja", "vejamos", "vejam"],
     },
     "ter": {
+        "regular": false,
         "presente": ["tenho", "tens", "tem", "temos", "têm"],
         "pretérito": ["tive", "tiveste", "teve", "tivemos", "tiveram"],
         "imperfeito": ["tinha", "tinhas", "tinha", "tínhamos", "tinham"],
@@ -190,6 +209,7 @@ const verbs = {
         "imperativo": ["tenha", "tem", "tenha", "tenhamos", "tenham"],
     },
     "vir": {
+        "regular": false,
         "presente": ["venho", "vens", "vem", "vimos", "vêm"],
         "pretérito": ["vim", "vieste", "veio", "viemos", "vieram"],
         "imperfeito": ["vinha", "vinhas", "vinha", "vínhamos", "vinham"],
@@ -200,6 +220,7 @@ const verbs = {
         "imperativo": ["venha", "vem", "venha", "venhamos", "venham"],
     },
     "ir": {
+        "regular": false,
         "presente": ["vou", "vais", "vai", "vamos", "vão"],
         "pretérito": ["fui", "foste", "foi", "fomos", "foram"],
         "imperfeito": ["ia", "ias", "ia", "íamos", "iam"],
@@ -210,6 +231,7 @@ const verbs = {
         "imperativo": ["vá", "vai", "vá", "vamos", "vão"],
     },
     "sair": {
+        "regular": false,
         "presente": ["saio", "sais", "sai", "saímos", "saem"],
         "pretérito": ["saí", "saíste", "saiu", "saímos", "saíram"],
         "imperfeito": ["saía", "saías", "saía", "saíamos", "saíam"],
@@ -220,6 +242,7 @@ const verbs = {
         "imperativo": ["saia", "sai", "saia", "saiamos", "saiam"],
     },
     "pôr": {
+        "regular": false,
         "presente": ["ponho", "pões", "põe", "pomos", "põem"],
         "pretérito": ["pus", "puseste", "pôs", "pusemos", "puseram"],
         "imperfeito": ["punha", "punhas", "punha", "púnhamos", "punham"],
@@ -265,24 +288,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("submit-answer").addEventListener("click", submitAnswer);
     document.getElementById("restart").addEventListener("click", () => location.reload());
 
-    // Add event listener for the "Enter" key
+    // Event listener for the "Enter" key
     document.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            event.preventDefault(); // Prevent default action (if any)
+            event.preventDefault();
             if (isFeedbackDisplayed) {
-                // Proceed to next question
                 nextQuestion();
-            } else if (document.getElementById("quiz").style.display === "block") {
+            } else if (document.getElementById("quiz").style.display === "block" && document.getElementById("answer").style.display !== "none") {
                 submitAnswer();
             }
         }
     });
 
+    // Event listener for the "Next" button
+    document.getElementById("next-question").addEventListener("click", nextQuestion);
+
     // Initialize score and timer displays
     scoreDisplay = document.getElementById("score-display");
     timerDisplay = document.getElementById("timer-display");
 
-    // Update displays initially
+    // Update displays
     updateScoreDisplay();
     updateTimerDisplay();
 });

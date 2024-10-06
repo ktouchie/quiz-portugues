@@ -1,10 +1,11 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f2f2f2;
     color: #333;
     padding: 20px;
-    margin: 0 auto; /* Center content */
-    max-width: 800px; /* Set a maximum width */
+    margin: 0 auto;
+    max-width: 800px;
 }
 
 h1, h2, h3 {
@@ -15,6 +16,50 @@ h1, h2, h3 {
     background-color: #fff;
     padding: 20px;
     border-radius: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    #score-timer-container {
+        top: 10px;
+        right: 10px;
+    }
+
+    #score-display, #timer-display {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+
+    #question {
+        font-size: 1.1em;
+    }
+
+    #answer-container input, #answer-container button {
+        width: 100%;
+        font-size: 1em;
+        padding: 10px;
+    }
+
+    #feedback-progress-container {
+        min-height: 120px;
+    }
+
+    button {
+        font-size: 1em;
+        padding: 10px;
+    }
+
+    #next-question {
+        display: inline-block; /* Show Next button on mobile devices */
+    }
 }
 
 #tenses label {
@@ -32,7 +77,8 @@ h1, h2, h3 {
 }
 
 #feedback-progress-container {
-    min-height: 100px; /* Reserve space to prevent shifting */
+    min-height: 100px;
+    position: relative; /* For positioning the Next button */
 }
 
 #feedback {
@@ -99,6 +145,15 @@ body {
     margin-left: auto;
     margin-right: auto;
     max-width: 800px;
+}
+
+/* Next Button Styles */
+#next-question {
+    display: none; /* Hidden by default */
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* Color Coding */
