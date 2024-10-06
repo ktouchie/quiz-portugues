@@ -243,7 +243,11 @@ let totalScore = 0;
 let currentKey = null;
 let totalConjugationsNeeded = 0;
 let conjugationsCompleted = 0;
-let scoreDisplay;
+let timerInterval = null;
+let elapsedTime = 0; // in seconds
+
+// DOM elements
+let scoreDisplay, timerDisplay;
 
 document.addEventListener("DOMContentLoaded", () => {
     const tensesDiv = document.getElementById("tenses");
@@ -269,9 +273,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Initialize the score display
+    // Initialize score and timer displays
     scoreDisplay = document.getElementById("score-display");
+    timerDisplay = document.getElementById("timer-display");
+
+    // Update displays initially
     updateScoreDisplay();
+    updateTimerDisplay();
 });
 
 function startQuiz() {
@@ -305,6 +313,7 @@ function startQuiz() {
     document.getElementById("quiz").style.display = "block";
     updateProgressBar();
     nextQuestion();
+    startTimer();
 }
 
 function nextQuestion() {
@@ -322,6 +331,8 @@ function nextQuestion() {
 
     // Automatically focus on the answer input field
     document.getElementById("answer").focus();
+
+    startTimer();
 }
 
 function submitAnswer() {
@@ -353,6 +364,9 @@ function submitAnswer() {
         mistakeCounters[currentKey]++;
     }
 
+    // Update the score display
+    updateScoreDisplay();
+
     // Update progress based on the change in conjugation counters
     let countChange = conjugationCounters[currentKey] - prevCount;
     conjugationsCompleted += countChange;
@@ -363,7 +377,7 @@ function submitAnswer() {
     // Update the score display whenever the score changes
     updateScoreDisplay();
 
-    setTimeout(nextQuestion, 1000);
+    stopTimer();
 }
 
 function updateProgressBar() {
@@ -374,11 +388,8 @@ function updateProgressBar() {
     document.getElementById("progress-percentage").innerText = `Progresso: ${progressPercentage.toFixed(2)}%`;
 }
 
-function updateScoreDisplay() {
-    scoreDisplay.innerText = `Pontuação: ${totalScore}`;
-}
-
 function endQuiz() {
+    stopTimer();
     document.getElementById("quiz").style.display = "none";
     document.getElementById("result").style.display = "block";
     document.getElementById("total-score").innerText = `Sua pontuação total é: ${totalScore}`;
@@ -401,4 +412,35 @@ function endQuiz() {
     } else {
         topMistakesList.innerHTML = "<li>Parabéns! Você não cometeu nenhum erro.</li>";
     }
+}
+
+function updateScoreDisplay() {
+    scoreDisplay.innerText = `Pontuação: ${totalScore}`;
+}
+
+function startTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    timerInterval = setInterval(() => {
+        elapsedTime++;
+        updateTimerDisplay();
+    }, 1000);
+}
+
+function stopTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function updateTimerDisplay() {
+    let minutes = Math.floor(elapsedTime / 60);
+    let seconds = elapsedTime % 60;
+    timerDisplay.innerText = `Tempo: ${padZero(minutes)}:${padZero(seconds)}`;
+}
+
+function padZero(num) {
+    return num.toString().padStart(2, '0');
 }
