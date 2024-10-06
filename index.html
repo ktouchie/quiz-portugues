@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Portuguese Verb Conjugation Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>Portuguese Verb Conjugation Quiz</h1>
+<div id="setup">
+    <h2>Select Tenses to Practice</h2>
+    <div id="tenses"></div>
+    <h2>Number of Correct Answers Required</h2>
+    <input type="number" id="required-correct" min="1" value="3">
+    <button id="start-quiz">Start Quiz</button>
+</div>
+<div id="quiz" style="display: none;">
+    <p id="question"></p>
+    <input type="text" id="answer" autocomplete="off">
+    <button id="submit-answer">Submit</button>
+    <p id="feedback"></p>
+</div>
+<div id="result" style="display: none;">
+    <h2>Congratulations! You've completed the quiz.</h2>
+    <p id="total-score"></p>
+    <h3>Top Mistakes</h3>
+    <ol id="top-mistakes"></ol>
+    <button id="restart">Restart Quiz</button>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
