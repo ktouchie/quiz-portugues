@@ -3,6 +3,8 @@ body {
     background-color: #f2f2f2;
     color: #333;
     padding: 20px;
+    margin: 0 auto; /* Center content */
+    max-width: 800px; /* Set a maximum width */
 }
 
 h1, h2, h3 {
@@ -74,14 +76,88 @@ button {
     margin-top: 5px;
 }
 
-#score-display {
+/* Score and Timer Display */
+#score-timer-container {
     position: fixed;
     top: 20px;
     right: 20px;
+    text-align: right;
+    z-index: 1000;
+}
+
+#score-display, #timer-display {
     background-color: #76c7c0;
     color: #fff;
     padding: 10px 15px;
     border-radius: 5px;
     font-weight: bold;
-    z-index: 1000;
+    margin-bottom: 10px;
+}
+
+/* Adjusted margins for centering */
+body {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 800px;
+}
+
+/* Color Coding */
+.regular-verb {
+    color: #00aeff; /* Blue color for regular verbs */
+}
+
+.irregular-verb {
+    color: #4529ff; /* Red color for irregular verbs */
+}
+
+.tense-color-0 {
+    color: #249a2e; /* Green shades for tenses */
+}
+
+.tense-color-1 {
+    color: #009e8c;
+}
+
+.tense-color-2 {
+    color: #c6b403;
+}
+
+.tense-color-3 {
+    color: #f9a825;
+}
+
+.tense-color-4 {
+    color: #ef6c00;
+}
+
+.tense-color-5 {
+    color: #d84315;
+}
+
+.tense-color-6 {
+    color: #4e342e;
+}
+
+.tense-color-7 {
+    color: #37474f;
+}
+
+.person-color-0 {
+    color: #e91e63; /* Pink shades for persons */
+}
+
+.person-color-1 {
+    color: #9c27b0;
+}
+
+.person-color-2 {
+    color: #673ab7;
+}
+
+.person-color-3 {
+    color: #3f51b5;
+}
+
+.person-color-4 {
+    color: #2196f3;
 }

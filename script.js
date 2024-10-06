@@ -333,7 +333,13 @@ function nextQuestion() {
     currentKey = conjugationsToPractice[randomIndex];
     const [verb, tense, personIdx] = currentKey.split("-");
     const person = persons[personIdx];
-    document.getElementById("question").innerHTML = `Conjugue o verbo <strong>${verb}</strong> no tempo <strong>${tense}</strong> para <strong>${person}</strong>:`;
+
+    // Color coding classes
+    const verbClass = verbs[verb].regular ? 'regular-verb' : 'irregular-verb';
+    const tenseClass = `tense-color-${tenses.indexOf(tense)}`;
+    const personClass = `person-color-${personIdx}`;
+
+    document.getElementById("question").innerHTML = `Conjugue o verbo <strong class="${verbClass}">${verb}</strong> no tempo <strong class="${tenseClass}">${tense}</strong> para <strong class="${personClass}">${person}</strong>:`;
     document.getElementById("answer").value = "";
     document.getElementById("feedback").innerHTML = "";
     document.getElementById("answer-container").style.display = "block"; // Show answer box and button
