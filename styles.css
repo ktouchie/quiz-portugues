@@ -25,6 +25,14 @@ h1, h2, h3 {
     margin-bottom: 10px;
 }
 
+#answer-container {
+    margin-bottom: 10px;
+}
+
+#feedback-progress-container {
+    min-height: 100px; /* Reserve space to prevent shifting */
+}
+
 #feedback {
     margin-top: 10px;
     font-weight: bold;

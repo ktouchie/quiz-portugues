@@ -22,14 +22,18 @@
 </div>
 <div id="quiz" style="display: none;">
     <p id="question"></p>
-    <input type="text" id="answer" autocomplete="off">
-    <button id="submit-answer">Enviar</button>
-    <p id="feedback"></p>
-    <!-- Progress Bar -->
-    <div id="progress-container">
-        <div id="progress-bar"></div>
+    <div id="answer-container">
+        <input type="text" id="answer" autocomplete="off">
+        <button id="submit-answer">Enviar</button>
     </div>
-    <p id="progress-percentage"></p>
+    <!-- Feedback and Progress Bar Container -->
+    <div id="feedback-progress-container">
+        <p id="feedback"></p>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p id="progress-percentage"></p>
+    </div>
 </div>
 <div id="result" style="display: none;">
     <h2>Parabéns! Conjugou corretamente todos os verbos.</h2>

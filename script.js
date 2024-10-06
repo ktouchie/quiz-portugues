@@ -265,11 +265,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("submit-answer").addEventListener("click", submitAnswer);
     document.getElementById("restart").addEventListener("click", () => location.reload());
 
-    // Add event listener for the "Enter" key on the answer input field
-    document.getElementById("answer").addEventListener("keydown", function(event) {
+    // Add event listener for the "Enter" key
+    document.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
             event.preventDefault(); // Prevent default action (if any)
-            submitAnswer();
+            if (isFeedbackDisplayed) {
+                // Proceed to next question
+                nextQuestion();
+            } else if (document.getElementById("quiz").style.display === "block") {
+                submitAnswer();
+            }
         }
     });
 
@@ -281,6 +286,8 @@ document.addEventListener("DOMContentLoaded", () => {
     updateScoreDisplay();
     updateTimerDisplay();
 });
+
+let isFeedbackDisplayed = false;
 
 function startQuiz() {
     selectedTenses = Array.from(document.querySelectorAll("#tenses input:checked")).map(input => input.value);
@@ -321,6 +328,7 @@ function nextQuestion() {
         endQuiz();
         return;
     }
+    isFeedbackDisplayed = false;
     const randomIndex = Math.floor(Math.random() * conjugationsToPractice.length);
     currentKey = conjugationsToPractice[randomIndex];
     const [verb, tense, personIdx] = currentKey.split("-");
@@ -328,6 +336,8 @@ function nextQuestion() {
     document.getElementById("question").innerHTML = `Conjugue o verbo <strong>${verb}</strong> no tempo <strong>${tense}</strong> para <strong>${person}</strong>:`;
     document.getElementById("answer").value = "";
     document.getElementById("feedback").innerHTML = "";
+    document.getElementById("answer-container").style.display = "block"; // Show answer box and button
+    document.getElementById("feedback").style.display = "none"; // Hide feedback message
 
     // Automatically focus on the answer input field
     document.getElementById("answer").focus();
@@ -374,8 +384,10 @@ function submitAnswer() {
 
     updateProgressBar();
 
-    // Update the score display whenever the score changes
-    updateScoreDisplay();
+    // Hide answer box and button, show feedback
+    document.getElementById("answer-container").style.display = "none";
+    document.getElementById("feedback").style.display = "block";
+    isFeedbackDisplayed = true;
 
     stopTimer();
 }
