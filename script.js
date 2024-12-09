@@ -9,6 +9,7 @@ const verbs = {
         "perfeito_composto": ["tenho sido", "tens sido", "tem sido", "temos sido", "têm sido"],
         "futuro": ["serei", "serás", "será", "seremos", "serão"],
         "imperativo": ["seja", "sê", "seja", "sejamos", "sejam"],
+        "conjuntivo": ["seja", "sejas", "seja", "sejamos", "sejam"],
     },
     "estar": {
         "regular": false,
@@ -20,6 +21,7 @@ const verbs = {
         "perfeito_composto": ["tenho estado", "tens estado", "tem estado", "temos estado", "têm estado"],
         "futuro": ["estarei", "estarás", "estará", "estaremos", "estarão"],
         "imperativo": ["esteja", "está", "esteja", "estejamos", "estejam"],
+        "conjuntivo": ["esteja", "estejas", "esteja", "estejamos", "estejam"],
     },
     "falar": {
         "regular": true,
@@ -31,6 +33,7 @@ const verbs = {
         "perfeito_composto": ["tenho falado", "tens falado", "tem falado", "temos falado", "têm falado"],
         "futuro": ["falarei", "falarás", "falará", "falaremos", "falarão"],
         "imperativo": ["fale", "fala", "fale", "falemos", "falem"],
+        "conjuntivo": ["fale", "fales", "fale", "falemos", "falem"],
     },
     "comer": {
         "regular": true,
@@ -42,6 +45,7 @@ const verbs = {
         "perfeito_composto": ["tenho comido", "tens comido", "tem comido", "temos comido", "têm comido"],
         "futuro": ["comerei", "comerás", "comerá", "comeremos", "comerão"],
         "imperativo": ["coma", "come", "coma", "comamos", "comam"],
+        "conjuntivo": ["coma", "comas", "coma", "comamos", "comam"],
     },
     "partir": {
         "regular": true,
@@ -53,6 +57,7 @@ const verbs = {
         "perfeito_composto": ["tenho partido", "tens partido", "tem partido", "temos partido", "têm partido"],
         "futuro": ["partirei", "partirás", "partirá", "partiremos", "partirão"],
         "imperativo": ["parta", "parte", "parta", "partamos", "partam"],
+        "conjuntivo": ["parta", "partas", "parta", "partamos", "partam"],
     },
     "dizer": {
         "regular": false,
@@ -64,6 +69,7 @@ const verbs = {
         "perfeito_composto": ["tenho dito", "tens dito", "tem dito", "temos dito", "têm dito"],
         "futuro": ["direi", "dirás", "dirá", "diremos", "dirão"],
         "imperativo": ["diga", "diz", "diga", "digamos", "digam"],
+        "conjuntivo": ["diga", "digas", "diga", "digamos", "digam"],
     },
     "fazer": {
         "regular": false,
@@ -75,6 +81,7 @@ const verbs = {
         "perfeito_composto": ["tenho feito", "tens feito", "tem feito", "temos feito", "têm feito"],
         "futuro": ["farei", "farás", "fará", "faremos", "farão"],
         "imperativo": ["faça", "faz", "faça", "façamos", "façam"],
+        "conjuntivo": ["faça", "faças", "faça", "façamos", "façam"],
     },
     "trazer": {
         "regular": false,
@@ -86,6 +93,7 @@ const verbs = {
         "perfeito_composto": ["tenho trazido", "tens trazido", "tem trazido", "temos trazido", "têm trazido"],
         "futuro": ["trarei", "trarás", "trará", "traremos", "trarão"],
         "imperativo": ["traga", "traz", "traga", "tragamos", "tragam"],
+        "conjuntivo": ["traga", "tragas", "traga", "tragamos", "tragam"],
     },
     "perder": {
         "regular": false,
@@ -97,6 +105,7 @@ const verbs = {
         "perfeito_composto": ["tenho perdido", "tens perdido", "tem perdido", "temos perdido", "têm perdido"],
         "futuro": ["perderei", "perderás", "perderá", "perderemos", "perderão"],
         "imperativo": ["perca", "perde", "perca", "percamos", "percam"],
+        "conjuntivo": ["perca", "percas", "perca", "percamos", "percam"],
     },
     "poder": {
         "regular": false,
@@ -108,6 +117,7 @@ const verbs = {
         "perfeito_composto": ["tenho podido", "tens podido", "tem podido", "temos podido", "têm podido"],
         "futuro": ["poderei", "poderás", "poderá", "poderemos", "poderão"],
         "imperativo": ["possa", "pode", "possa", "possamos", "possam"],
+        "conjuntivo": ["possa", "possas", "possa", "possamos", "possam"],
     },
     "saber": {
         "regular": false,
@@ -119,6 +129,7 @@ const verbs = {
         "perfeito_composto": ["tenho sabido", "tens sabido", "tem sabido", "temos sabido", "têm sabido"],
         "futuro": ["saberei", "saberás", "saberá", "saberemos", "saberão"],
         "imperativo": ["saiba", "sabe", "saiba", "saibamos", "saibam"],
+        "conjuntivo": ["saiba", "saibas", "saiba", "saibamos", "saibam"],
     },
     "dormir": {
         "regular": false,
@@ -130,6 +141,7 @@ const verbs = {
         "perfeito_composto": ["tenho dormido", "tens dormido", "tem dormido", "temos dormido", "têm dormido"],
         "futuro": ["dormirei", "dormirás", "dormirá", "dormiremos", "dormirão"],
         "imperativo": ["durma", "dorme", "durma", "durmamos", "durmam"],
+        "conjuntivo": ["durma", "durmas", "durma", "durmamos", "durmam"],
     },
     "ouvir": {
         "regular": false,
@@ -141,6 +153,7 @@ const verbs = {
         "perfeito_composto": ["tenho ouvido", "tens ouvido", "tem ouvido", "temos ouvido", "têm ouvido"],
         "futuro": ["ouvirei", "ouvirás", "ouvirá", "ouviremos", "ouvirão"],
         "imperativo": ["ouça", "ouve", "ouça", "ouçamos", "ouçam"],
+        "conjuntivo": ["ouça", "ouças", "ouça", "ouçamos", "ouçam"],
     },
     "pedir": {
         "regular": false,
@@ -152,6 +165,7 @@ const verbs = {
         "perfeito_composto": ["tenho pedido", "tens pedido", "tem pedido", "temos pedido", "têm pedido"],
         "futuro": ["pedirei", "pedirás", "pedirá", "pediremos", "pedirão"],
         "imperativo": ["peça", "pede", "peça", "peçamos", "peçam"],
+        "conjuntivo": ["peça", "peças", "peça", "peçamos", "peçam"],
     },
     "querer": {
         "regular": false,
@@ -163,6 +177,7 @@ const verbs = {
         "perfeito_composto": ["tenho querido", "tens querido", "tem querido", "temos querido", "têm querido"],
         "futuro": ["quererei", "quererás", "quererá", "quereremos", "quererão"],
         "imperativo": ["queira", "quer", "queira", "queiramos", "queiram"],
+        "conjuntivo": ["queira", "queiras", "queira", "queiramos", "queiram"],
     },
     "dar": {
         "regular": false,
@@ -174,6 +189,7 @@ const verbs = {
         "perfeito_composto": ["tenho dado", "tens dado", "tem dado", "temos dado", "têm dado"],
         "futuro": ["darei", "darás", "dará", "daremos", "darão"],
         "imperativo": ["dê", "dá", "dê", "demos", "deem"],
+        "conjuntivo": ["dê", "dês", "dê", "demos", "deem"],
     },
     "ler": {
         "regular": false,
@@ -185,6 +201,7 @@ const verbs = {
         "perfeito_composto": ["tenho lido", "tens lido", "tem lido", "temos lido", "têm lido"],
         "futuro": ["lerei", "lerás", "lerá", "leremos", "lerão"],
         "imperativo": ["leia", "lê", "leia", "leiamos", "leiam"],
+        "conjuntivo": ["leia", "leias", "leia", "leiamos", "leiam"],
     },
     "ver": {
         "regular": false,
@@ -196,6 +213,7 @@ const verbs = {
         "perfeito_composto": ["tenho visto", "tens visto", "tem visto", "temos visto", "têm visto"],
         "futuro": ["verei", "verás", "verá", "veremos", "verão"],
         "imperativo": ["veja", "vê", "veja", "vejamos", "vejam"],
+        "conjuntivo": ["veja", "vejas", "veja", "vejamos", "vejam"],
     },
     "ter": {
         "regular": false,
@@ -207,6 +225,7 @@ const verbs = {
         "perfeito_composto": ["tenho tido", "tens tido", "tem tido", "temos tido", "têm tido"],
         "futuro": ["terei", "terás", "terá", "teremos", "terão"],
         "imperativo": ["tenha", "tem", "tenha", "tenhamos", "tenham"],
+        "conjuntivo": ["tenha", "tenhas", "tenha", "tenhamos", "tenham"],
     },
     "vir": {
         "regular": false,
@@ -218,6 +237,7 @@ const verbs = {
         "perfeito_composto": ["tenho vindo", "tens vindo", "tem vindo", "temos vindo", "têm vindo"],
         "futuro": ["virei", "virás", "virá", "viremos", "virão"],
         "imperativo": ["venha", "vem", "venha", "venhamos", "venham"],
+        "conjuntivo": ["venha", "venhas", "venha", "venhamos", "venham"],
     },
     "ir": {
         "regular": false,
@@ -229,6 +249,7 @@ const verbs = {
         "perfeito_composto": ["tenho ido", "tens ido", "tem ido", "temos ido", "têm ido"],
         "futuro": ["irei", "irás", "irá", "iremos", "irão"],
         "imperativo": ["vá", "vai", "vá", "vamos", "vão"],
+        "conjuntivo": ["vá", "vás", "vá", "vamos", "vão"],
     },
     "sair": {
         "regular": false,
@@ -240,6 +261,7 @@ const verbs = {
         "perfeito_composto": ["tenho saído", "tens saído", "tem saído", "temos saído", "têm saído"],
         "futuro": ["sairei", "sairás", "sairá", "sairemos", "sairão"],
         "imperativo": ["saia", "sai", "saia", "saiamos", "saiam"],
+        "conjuntivo": ["saia", "saias", "saia", "saiamos", "saiam"],
     },
     "pôr": {
         "regular": false,
@@ -251,7 +273,44 @@ const verbs = {
         "perfeito_composto": ["tenho posto", "tens posto", "tem posto", "temos posto", "têm posto"],
         "futuro": ["porei", "porás", "porá", "poremos", "porão"],
         "imperativo": ["ponha", "põe", "ponha", "ponhamos", "ponham"],
+        "conjuntivo": ["ponha", "ponhas", "ponha", "ponhamos", "ponham"],
     },
+    "conseguir": {
+        "regular": false,
+        "presente": ["consigo", "consegues", "consegue", "conseguimos", "conseguem"],
+        "pretérito": ["consegui", "conseguiste", "conseguiu", "conseguimos", "conseguiram"],
+        "imperfeito": ["conseguia", "conseguias", "conseguia", "conseguíamos", "conseguiam"],
+        "condicional": ["conseguiria", "conseguirias", "conseguiria", "conseguiríamos", "conseguiriam"],
+        "pretérito mais-que-perfeito": ["tinha conseguido", "tinhas conseguido", "tinha conseguido", "tínhamos conseguido", "tinham conseguido"],
+        "perfeito_composto": ["tenho conseguido", "tens conseguido", "tem conseguido", "temos conseguido", "têm conseguido"],
+        "futuro": ["conseguirei", "conseguirás", "conseguirá", "conseguiremos", "conseguirão"],
+        "imperativo": ["consiga", "consegue", "consiga", "consigamos", "consigam"],
+        "conjuntivo": ["consiga", "consigas", "consiga", "consigamos", "consigam"],
+    },
+    "descer": {
+        "regular": false,
+        "presente": ["desço", "desces", "desce", "descemos", "descem"],
+        "pretérito": ["desci", "desceste", "desceu", "descemos", "desceram"],
+        "imperfeito": ["descia", "descias", "descia", "descíamos", "desciam"],
+        "condicional": ["desceria", "descerias", "desceria", "desceríamos", "desceriam"],
+        "pretérito mais-que-perfeito": ["tinha descido", "tinhas descido", "tinha descido", "tínhamos descido", "tinham descido"],
+        "perfeito_composto": ["tenho descido", "tens descido", "tem descido", "temos descido", "têm descido"],
+        "futuro": ["descerei", "descerás", "descerá", "desceremos", "descerão"],
+        "imperativo": ["desce", "desce", "desça", "descamos", "descam"],
+        "conjuntivo": ["desça", "desças", "desça", "descamos", "descam"],
+    },
+    "preferir": {
+        "regular": false,
+        "presente": ["prefiro", "preferes", "prefere", "preferimos", "preferem"],
+        "pretérito": ["preferi", "preferiste", "preferiu", "preferimos", "preferiram"],
+        "imperfeito": ["preferia", "preferias", "preferia", "preferíamos", "preferiam"],
+        "condicional": ["preferiria", "preferirias", "preferiria", "preferiríamos", "prefeririam"],
+        "pretérito mais-que-perfeito": ["tinha preferido", "tinhas preferido", "tinha preferido", "tínhamos preferido", "tinham preferido"],
+        "perfeito_composto": ["tenho preferido", "tens preferido", "tem preferido", "temos preferido", "têm preferido"],
+        "futuro": ["preferirei", "preferirás", "preferirá", "preferiremos", "preferirão"],
+        "imperativo": ["prefere", "prefere", "prefira", "prefiramos", "prefiram"],
+        "conjuntivo": ["prefira", "prefiras", "prefira", "prefiramos", "prefiram"],
+    }
 };
 
 const persons = ["eu", "tu", "ele/ela/você", "nós", "eles/elas/vocês"];
