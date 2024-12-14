@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz dos Verbos Portugueses</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- Score and Timer Display -->
+<div id="score-timer-container">
+    <div id="score-display">Pontuação: 0</div>
+    <div id="timer-display">Tempo: 00:00</div>
+</div>
+
+<h1>Quiz dos Verbos Portugueses</h1>
+<div id="setup">
+    <h2>Selecione os tempos para praticar</h2>
+    <div id="tenses"></div>
+    <button id="start-quiz">Start Quiz</button>
+</div>
+<div id="quiz" style="display: none;">
+    <p id="question"></p>
+    <div id="answer-container">
+        <input type="text" id="answer" autocomplete="off">
+        <button id="submit-answer">Enviar</button>
+    </div>
+    <!-- Feedback and Progress Bar Container -->
+    <div id="feedback-progress-container">
+        <p id="feedback"></p>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p id="progress-percentage"></p>
+        <button id="next-question" style="display: none;">Próxima</button>
+    </div>
+</div>
+<div id="result" style="display: none;">
+    <h2>Parabéns! Conjugou corretamente todos os verbos.</h2>
+    <p id="total-score"></p>
+    <h3>Erros mais comuns</h3>
+    <ol id="top-mistakes"></ol>
+    <button id="restart">Restart Quiz</button>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

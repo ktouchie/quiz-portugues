@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz de Vocabulário</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>Quiz de Vocabulário</h1>
+<div id="quiz">
+  <p id="vocab-question"></p>
+  <div id="answer-container">
+    <input type="text" id="vocab-answer" autocomplete="off">
+    <button id="submit-vocab-answer">Enviar</button>
+  </div>
+  <p id="vocab-feedback"></p>
+</div>
+<div id="result" style="display: none;">
+  <h2>Parabéns! Terminou o Quiz.</h2>
+  <p id="vocab-score"></p>
+  <button id="restart-vocab">Tentar Novamente</button>
+</div>
+<script src="vocabulary_quiz.js"></script>
+</body>
+</html>
