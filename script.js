@@ -10,6 +10,7 @@ const verbs = {
         "futuro": ["serei", "serás", "será", "seremos", "serão"],
         "imperativo": ["seja", "sê", "seja", "sejamos", "sejam"],
         "conjuntivo": ["seja", "sejas", "seja", "sejamos", "sejam"],
+        "infinitivo pessoal": ["ser", "seres", "ser", "sermos", "serem"],
     },
     "estar": {
         "regular": false,
@@ -22,6 +23,7 @@ const verbs = {
         "futuro": ["estarei", "estarás", "estará", "estaremos", "estarão"],
         "imperativo": ["esteja", "está", "esteja", "estejamos", "estejam"],
         "conjuntivo": ["esteja", "estejas", "esteja", "estejamos", "estejam"],
+        "infinitivo pessoal": ["estar", "estares", "estar", "estarmos", "estarem"],
     },
     "falar": {
         "regular": true,
@@ -34,6 +36,7 @@ const verbs = {
         "futuro": ["falarei", "falarás", "falará", "falaremos", "falarão"],
         "imperativo": ["fale", "fala", "fale", "falemos", "falem"],
         "conjuntivo": ["fale", "fales", "fale", "falemos", "falem"],
+        "infinitivo pessoal": ["falar", "falares", "falar", "falarmos", "falarem"],
     },
     "comer": {
         "regular": true,
@@ -46,6 +49,7 @@ const verbs = {
         "futuro": ["comerei", "comerás", "comerá", "comeremos", "comerão"],
         "imperativo": ["coma", "come", "coma", "comamos", "comam"],
         "conjuntivo": ["coma", "comas", "coma", "comamos", "comam"],
+        "infinitivo pessoal": ["comer", "comeres", "comer", "comermos", "comerem"],
     },
     "partir": {
         "regular": true,
@@ -58,6 +62,7 @@ const verbs = {
         "futuro": ["partirei", "partirás", "partirá", "partiremos", "partirão"],
         "imperativo": ["parta", "parte", "parta", "partamos", "partam"],
         "conjuntivo": ["parta", "partas", "parta", "partamos", "partam"],
+        "infinitivo pessoal": ["partir", "partires", "partir", "partirmos", "partirem"],
     },
     "dizer": {
         "regular": false,
@@ -70,6 +75,7 @@ const verbs = {
         "futuro": ["direi", "dirás", "dirá", "diremos", "dirão"],
         "imperativo": ["diga", "diz", "diga", "digamos", "digam"],
         "conjuntivo": ["diga", "digas", "diga", "digamos", "digam"],
+        "infinitivo pessoal": ["dizer", "dizeres", "dizer", "dizermos", "dizerem"],
     },
     "fazer": {
         "regular": false,
@@ -82,6 +88,7 @@ const verbs = {
         "futuro": ["farei", "farás", "fará", "faremos", "farão"],
         "imperativo": ["faça", "faz", "faça", "façamos", "façam"],
         "conjuntivo": ["faça", "faças", "faça", "façamos", "façam"],
+        "infinitivo pessoal": ["fazer", "fazeres", "fazer", "fazermos", "fazerem"],
     },
     "trazer": {
         "regular": false,
@@ -94,6 +101,7 @@ const verbs = {
         "futuro": ["trarei", "trarás", "trará", "traremos", "trarão"],
         "imperativo": ["traga", "traz", "traga", "tragamos", "tragam"],
         "conjuntivo": ["traga", "tragas", "traga", "tragamos", "tragam"],
+        "infinitivo pessoal": ["trazer", "trazeres", "trazer", "trazermos", "trazerem"],
     },
     "perder": {
         "regular": false,
@@ -106,6 +114,7 @@ const verbs = {
         "futuro": ["perderei", "perderás", "perderá", "perderemos", "perderão"],
         "imperativo": ["perca", "perde", "perca", "percamos", "percam"],
         "conjuntivo": ["perca", "percas", "perca", "percamos", "percam"],
+        "infinitivo pessoal": ["perder", "perderes", "perder", "perdermos", "perderem"],
     },
     "poder": {
         "regular": false,
@@ -118,6 +127,7 @@ const verbs = {
         "futuro": ["poderei", "poderás", "poderá", "poderemos", "poderão"],
         "imperativo": ["possa", "pode", "possa", "possamos", "possam"],
         "conjuntivo": ["possa", "possas", "possa", "possamos", "possam"],
+        "infinitivo pessoal": ["poder", "poderes", "poder", "podermos", "poderem"],
     },
     "saber": {
         "regular": false,
@@ -130,6 +140,7 @@ const verbs = {
         "futuro": ["saberei", "saberás", "saberá", "saberemos", "saberão"],
         "imperativo": ["saiba", "sabe", "saiba", "saibamos", "saibam"],
         "conjuntivo": ["saiba", "saibas", "saiba", "saibamos", "saibam"],
+        "infinitivo pessoal": ["saber", "saberes", "saber", "sabermos", "saberem"],
     },
     "dormir": {
         "regular": false,
@@ -142,6 +153,7 @@ const verbs = {
         "futuro": ["dormirei", "dormirás", "dormirá", "dormiremos", "dormirão"],
         "imperativo": ["durma", "dorme", "durma", "durmamos", "durmam"],
         "conjuntivo": ["durma", "durmas", "durma", "durmamos", "durmam"],
+        "infinitivo pessoal": ["dormir", "dormires", "dormir", "dormirmos", "dormirem"],
     },
     "ouvir": {
         "regular": false,
@@ -154,6 +166,7 @@ const verbs = {
         "futuro": ["ouvirei", "ouvirás", "ouvirá", "ouviremos", "ouvirão"],
         "imperativo": ["ouça", "ouve", "ouça", "ouçamos", "ouçam"],
         "conjuntivo": ["ouça", "ouças", "ouça", "ouçamos", "ouçam"],
+        "infinitivo pessoal": ["ouvir", "ouvires", "ouvir", "ouvirmos", "ouvirem"],
     },
     "pedir": {
         "regular": false,
@@ -166,6 +179,7 @@ const verbs = {
         "futuro": ["pedirei", "pedirás", "pedirá", "pediremos", "pedirão"],
         "imperativo": ["peça", "pede", "peça", "peçamos", "peçam"],
         "conjuntivo": ["peça", "peças", "peça", "peçamos", "peçam"],
+        "infinitivo pessoal": ["pedir", "pedires", "pedir", "pedirmos", "pedirem"],
     },
     "querer": {
         "regular": false,
@@ -178,6 +192,7 @@ const verbs = {
         "futuro": ["quererei", "quererás", "quererá", "quereremos", "quererão"],
         "imperativo": ["queira", "quer", "queira", "queiramos", "queiram"],
         "conjuntivo": ["queira", "queiras", "queira", "queiramos", "queiram"],
+        "infinitivo pessoal": ["querer", "queres", "querer", "querermos", "quererem"],
     },
     "dar": {
         "regular": false,
@@ -190,6 +205,7 @@ const verbs = {
         "futuro": ["darei", "darás", "dará", "daremos", "darão"],
         "imperativo": ["dê", "dá", "dê", "demos", "deem"],
         "conjuntivo": ["dê", "dês", "dê", "demos", "deem"],
+        "infinitivo pessoal": ["dar", "dares", "dar", "darmos", "darem"],
     },
     "ler": {
         "regular": false,
@@ -202,6 +218,7 @@ const verbs = {
         "futuro": ["lerei", "lerás", "lerá", "leremos", "lerão"],
         "imperativo": ["leia", "lê", "leia", "leiamos", "leiam"],
         "conjuntivo": ["leia", "leias", "leia", "leiamos", "leiam"],
+        "infinitivo pessoal": ["ler", "leres", "ler", "lermos", "lerem"],
     },
     "ver": {
         "regular": false,
@@ -214,6 +231,7 @@ const verbs = {
         "futuro": ["verei", "verás", "verá", "veremos", "verão"],
         "imperativo": ["veja", "vê", "veja", "vejamos", "vejam"],
         "conjuntivo": ["veja", "vejas", "veja", "vejamos", "vejam"],
+        "infinitivo pessoal": ["ver", "veres", "ver", "vermos", "verem"],
     },
     "ter": {
         "regular": false,
@@ -226,6 +244,7 @@ const verbs = {
         "futuro": ["terei", "terás", "terá", "teremos", "terão"],
         "imperativo": ["tenha", "tem", "tenha", "tenhamos", "tenham"],
         "conjuntivo": ["tenha", "tenhas", "tenha", "tenhamos", "tenham"],
+        "infinitivo pessoal": ["ter", "teres", "ter", "termos", "terem"],
     },
     "vir": {
         "regular": false,
@@ -238,6 +257,7 @@ const verbs = {
         "futuro": ["virei", "virás", "virá", "viremos", "virão"],
         "imperativo": ["venha", "vem", "venha", "venhamos", "venham"],
         "conjuntivo": ["venha", "venhas", "venha", "venhamos", "venham"],
+        "infinitivo pessoal": ["vir", "vires", "vir", "virmos", "virem"],
     },
     "ir": {
         "regular": false,
@@ -250,6 +270,7 @@ const verbs = {
         "futuro": ["irei", "irás", "irá", "iremos", "irão"],
         "imperativo": ["vá", "vai", "vá", "vamos", "vão"],
         "conjuntivo": ["vá", "vás", "vá", "vamos", "vão"],
+        "infinitivo pessoal": ["ir", "ires", "ir", "irmos", "irem"],
     },
     "sair": {
         "regular": false,
@@ -262,6 +283,7 @@ const verbs = {
         "futuro": ["sairei", "sairás", "sairá", "sairemos", "sairão"],
         "imperativo": ["saia", "sai", "saia", "saiamos", "saiam"],
         "conjuntivo": ["saia", "saias", "saia", "saiamos", "saiam"],
+        "infinitivo pessoal": ["sair", "saires", "sair", "sairmos", "saírem"],
     },
     "pôr": {
         "regular": false,
@@ -274,6 +296,7 @@ const verbs = {
         "futuro": ["porei", "porás", "porá", "poremos", "porão"],
         "imperativo": ["ponha", "põe", "ponha", "ponhamos", "ponham"],
         "conjuntivo": ["ponha", "ponhas", "ponha", "ponhamos", "ponham"],
+        "infinitivo pessoal": ["pôr", "pores", "pôr", "pormos", "porem"],
     },
     "conseguir": {
         "regular": false,
@@ -286,6 +309,7 @@ const verbs = {
         "futuro": ["conseguirei", "conseguirás", "conseguirá", "conseguiremos", "conseguirão"],
         "imperativo": ["consiga", "consegue", "consiga", "consigamos", "consigam"],
         "conjuntivo": ["consiga", "consigas", "consiga", "consigamos", "consigam"],
+        "infinitivo pessoal": ["conseguir", "conseguires", "conseguir", "conseguirmos", "conseguirem"],
     },
     "descer": {
         "regular": false,
@@ -298,6 +322,7 @@ const verbs = {
         "futuro": ["descerei", "descerás", "descerá", "desceremos", "descerão"],
         "imperativo": ["desce", "desce", "desça", "descamos", "descam"],
         "conjuntivo": ["desça", "desças", "desça", "descamos", "descam"],
+        "infinitivo pessoal": ["descer", "desceres", "descer", "descermos", "descerem"],
     },
     "preferir": {
         "regular": false,
@@ -310,11 +335,12 @@ const verbs = {
         "futuro": ["preferirei", "preferirás", "preferirá", "preferiremos", "preferirão"],
         "imperativo": ["prefere", "prefere", "prefira", "prefiramos", "prefiram"],
         "conjuntivo": ["prefira", "prefiras", "prefira", "prefiramos", "prefiram"],
+        "infinitivo pessoal": ["preferir", "preferires", "preferir", "preferirmos", "preferirem"],
     }
 };
 
 const persons = ["eu", "tu", "ele/ela/você", "nós", "eles/elas/vocês"];
-const tenses = ["presente", "pretérito", "imperfeito", "condicional", "pretérito mais-que-perfeito", "perfeito composto", "futuro", "imperativo"];
+const tenses = ["presente", "pretérito", "imperfeito", "condicional", "pretérito mais-que-perfeito", "perfeito composto", "futuro", "imperativo", "conjuntivo"];
 
 let selectedTenses = [];
 let requiredCorrect = 3;
