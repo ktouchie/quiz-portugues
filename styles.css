@@ -18,48 +18,58 @@ h1, h2, h3 {
     border-radius: 5px;
 }
 
-/* Responsive Design */
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
+body {
+    padding: 10px;
+}
 
-    h1 {
-        font-size: 1.5em;
-    }
+h1 {
+    font-size: 1.5em;
+}
 
-    #score-timer-container {
-        top: 10px;
-        right: 10px;
-    }
+#score-timer-container {
+    top: 10px;
+    right: 10px;
+}
 
-    #score-display, #timer-display {
-        padding: 8px 10px;
-        font-size: 0.9em;
-    }
+#score-display, #timer-display {
+    padding: 8px 10px;
+    font-size: 0.9em;
+}
 
-    #question {
-        font-size: 1.1em;
-    }
+#question {
+    font-size: 1.1em;
+}
 
-    #answer-container input, #answer-container button {
-        width: 100%;
-        font-size: 1em;
-        padding: 10px;
-    }
+#answer-container input, #answer-container button {
+    width: auto; /* Adjust width to content */
+    max-width: 100%; /* Ensure it doesn’t overflow */
+    font-size: 1em;
+    padding: 8px; /* Reduce padding slightly for smaller button */
+    margin: 10px 0; /* Add some space around */
+}
 
-    #feedback-progress-container {
-        min-height: 120px;
-    }
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #76c7c0; /* Match the progress bar color */
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-    button {
-        font-size: 1em;
-        padding: 10px;
-    }
+button:hover {
+    background-color: #5aa9a5; /* Slightly darker shade for hover effect */
+}
 
-    #next-question {
-        display: inline-block; /* Show Next button on mobile devices */
-    }
+#next-question {
+    display: inline-block; /* Show the button as inline */
+    margin-top: 10px; /* Space between the button and progress bar */
+    position: relative; /* Prevent overlapping */
+    transform: none; /* Remove centering */
+    left: 0; /* Reset any offset */
+    bottom: auto; /* Let it align naturally */
 }
 
 #tenses label {
@@ -77,8 +87,10 @@ h1, h2, h3 {
 }
 
 #feedback-progress-container {
-    min-height: 100px;
-    position: relative; /* For positioning the Next button */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 150px; /* Increase minimum height */
 }
 
 #feedback {
@@ -107,7 +119,7 @@ button {
     width: 100%;
     background-color: #e0e0e0;
     border-radius: 25px;
-    margin-top: 20px;
+    margin-top: 20px; /* Add more space between progress bar and other elements */
 }
 
 #progress-bar {
@@ -118,8 +130,10 @@ button {
 }
 
 #progress-percentage {
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
     text-align: center;
-    margin-top: 5px;
 }
 
 /* Score and Timer Display */
@@ -149,11 +163,12 @@ body {
 
 /* Next Button Styles */
 #next-question {
-    display: none; /* Hidden by default */
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    display: inline-block;
+    margin-top: 20px; /* Ensure proper spacing above */
+    position: relative; /* Remove absolute positioning */
+    left: auto;
+    transform: none;
+    z-index: 1; /* Ensure it doesn't overlap other elements */
 }
 
 /* Color Coding */
