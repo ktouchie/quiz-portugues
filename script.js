@@ -3,7 +3,7 @@ const tenses = ["presente", "pretérito", "imperfeito", "condicional", "pretéri
 
 let verbs = {};
 let selectedTenses = [];
-let requiredCorrect = 3;
+let requiredCorrect = 1;
 let conjugationCounters = {};
 let mistakeCounters = {};
 let conjugationsToPractice = [];
@@ -58,6 +58,19 @@ function initializeQuiz() {
     // Update displays
     updateScoreDisplay();
     updateTimerDisplay();
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            if (!isFeedbackDisplayed) {
+                // If feedback isn't displayed, trigger the "Enviar" button
+                document.getElementById("submit-answer").click();
+            } else {
+                // If feedback is displayed, trigger the "Próxima" button
+                document.getElementById("next-question").click();
+            }
+        }
+    });
+
 }
 
 function startQuiz() {
@@ -66,7 +79,6 @@ function startQuiz() {
         alert("Please select at least one tense.");
         return;
     }
-    requiredCorrect = parseInt(document.getElementById("required-correct").value) || 3;
 
     // Initialize counters
     totalConjugationsNeeded = 0;
@@ -115,6 +127,7 @@ function nextQuestion() {
     document.getElementById("feedback").innerHTML = "";
     document.getElementById("answer-container").style.display = "block"; // Show answer box and button
     document.getElementById("feedback").style.display = "none"; // Hide feedback message
+    document.getElementById("next-question").style.display = "none";
 
     // Automatically focus on the answer input field
     document.getElementById("answer").focus();
@@ -164,6 +177,7 @@ function submitAnswer() {
     // Hide answer box and button, show feedback
     document.getElementById("answer-container").style.display = "none";
     document.getElementById("feedback").style.display = "block";
+    document.getElementById("next-question").style.display = "block";
     isFeedbackDisplayed = true;
 
     stopTimer();
