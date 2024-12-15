@@ -77,6 +77,25 @@ button:hover {
     margin-bottom: 5px;
 }
 
+#categories {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping to the next line */
+    gap: 10px 20px; /* Space between rows and columns */
+    justify-content: space-between; /* Spread items evenly */
+}
+
+#categories label {
+    flex: 1 1 calc(33% - 20px); /* Adjust for 3 columns */
+    text-align: left; /* Align text to the left */
+    margin-bottom: 10px; /* Add spacing between rows */
+}
+
+@media (max-width: 768px) {
+    #categories label {
+        flex: 1 1 calc(50% - 20px); /* Switch to 2 columns on smaller screens */
+    }
+}
+
 #question {
     font-size: 1.2em;
     margin-bottom: 10px;

@@ -2,23 +2,55 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Quiz de Vocabulário</title>
+  <title>Quiz do Vocabulário Portuguese</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>Quiz de Vocabulário</h1>
-<div id="quiz">
-  <p id="vocab-question"></p>
-  <div id="answer-container">
-    <input type="text" id="vocab-answer" autocomplete="off">
-    <button id="submit-vocab-answer">Enviar</button>
+<!-- Score and Timer Display -->
+<div id="score-timer-container">
+  <div id="score-display">Pontuação: 0</div>
+  <div id="timer-display">Tempo: 00:00</div>
+</div>
+
+<h1>Quiz dos Vocabulário Portuguese</h1>
+<div id="setup">
+  <h2>Escolha a direção da tradução</h2>
+  <div>
+    <label>
+      <input type="radio" name="translation-direction" value="true" checked>
+      Inglês → Português
+    </label>
+    <label>
+      <input type="radio" name="translation-direction" value="false">
+      Português → Inglês
+    </label>
   </div>
-  <p id="vocab-feedback"></p>
+  <h2>Selecione as categorias para praticar</h2>
+  <div id="categories"></div>
+  <button id="start-quiz">Start Quiz</button>
+</div>
+<div id="quiz" style="display: none;">
+  <p id="question"></p>
+  <div id="answer-container">
+    <input type="text" id="answer" autocomplete="off">
+    <button id="submit-answer">Enviar</button>
+  </div>
+  <!-- Feedback and Progress Bar Container -->
+  <div id="feedback-progress-container">
+    <p id="feedback"></p>
+    <div id="progress-container">
+      <div id="progress-bar"></div>
+    </div>
+    <p id="progress-percentage"></p>
+    <button id="next-question" style="display: none;">Próxima</button>
+  </div>
 </div>
 <div id="result" style="display: none;">
-  <h2>Parabéns! Terminou o Quiz.</h2>
-  <p id="vocab-score"></p>
-  <button id="restart-vocab">Tentar Novamente</button>
+  <h2>Parabéns! Traduzou corretamente todos as palavras.</h2>
+  <p id="total-score"></p>
+  <h3>Erros mais comuns</h3>
+  <ol id="top-mistakes"></ol>
+  <button id="restart">Restart Quiz</button>
 </div>
 <script src="vocabulary_quiz.js"></script>
 </body>
