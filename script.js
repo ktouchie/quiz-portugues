@@ -87,13 +87,15 @@ function startQuiz() {
         for (let tense of selectedTenses) {
             if (verbs[verb][tense]) {
                 for (let personIdx = 0; personIdx < persons.length; personIdx++) {
-                    let key = `${verb}-${tense}-${personIdx}`;
-                    conjugationCounters[key] = 0;
-                    mistakeCounters[key] = 0;
-                    conjugationsToPractice.push(key);
+                    if (verbs[verb][tense][personIdx].length > 0) {
+                        let key = `${verb}-${tense}-${personIdx}`;
+                        conjugationCounters[key] = 0;
+                        mistakeCounters[key] = 0;
+                        conjugationsToPractice.push(key);
 
-                    // Update total conjugations needed
-                    totalConjugationsNeeded += requiredCorrect;
+                        // Update total conjugations needed
+                        totalConjugationsNeeded += requiredCorrect;
+                    }
                 }
             }
         }
