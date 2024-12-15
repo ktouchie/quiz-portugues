@@ -1,5 +1,5 @@
 const persons = ["eu", "tu", "ele/ela/você", "nós", "eles/elas/vocês"];
-const tenses = ["presente", "pretérito", "imperfeito", "condicional", "pretérito mais-que-perfeito", "perfeito composto", "futuro", "imperativo", "conjuntivo"];
+const tenses = ["presente", "pretérito", "imperfeito", "condicional", "pretérito mais-que-perfeito", "perfeito composto", "futuro", "imperativo", "conjuntivo", "infinitivo pessoal"];
 
 let verbs = {};
 let selectedTenses = [];
