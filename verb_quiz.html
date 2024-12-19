@@ -42,5 +42,18 @@
     <button id="restart">Restart Quiz</button>
 </div>
 <script src="script.js"></script>
+<div id="footer">
+    Version: <span id="version"></span>
+</div>
+<script>
+    fetch('/version.txt')
+        .then(response => response.text())
+        .then(version => {
+            document.getElementById('version').textContent = version.trim();
+        })
+        .catch(err => {
+            console.error('Error fetching version:', err);
+        });
+</script>
 </body>
 </html>

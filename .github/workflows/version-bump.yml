@@ -1,0 +1,62 @@
+name: Version Bump and Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Read Current Version
+        id: read-version
+        run: |
+          if [[ -f version.txt ]]; then
+            version=$(cat version.txt)
+            echo "current_version=$version" >> $GITHUB_ENV
+          else
+            echo "current_version=0.0.0" >> $GITHUB_ENV
+          fi
+
+      - name: Detect Manual Version Change
+        id: detect-manual-change
+        run: |
+          git diff HEAD~1 HEAD -- version.txt > version_diff.txt
+          if [[ -s version_diff.txt ]]; then
+            echo "manual_bump=true" >> $GITHUB_ENV
+          else
+            echo "manual_bump=false" >> $GITHUB_ENV
+          fi
+
+      - name: Bump Version (if not manual)
+        if: env.manual_bump == 'false'
+        id: bump-version
+        run: |
+          IFS='.' read -r major minor patch <<< "${{ env.current_version }}"
+          patch=$((patch + 1))
+          new_version="${major}.${minor}.${patch}"
+          echo "new_version=$new_version" >> $GITHUB_ENV
+          echo "$new_version" > version.txt
+
+      - name: Commit New Version
+        if: env.manual_bump == 'false'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add version.txt
+          git commit -m "Bump version to ${{ env.new_version }}"
+          git push origin master
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: bump-version
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

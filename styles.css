@@ -8,6 +8,17 @@ body {
     max-width: 800px;
 }
 
+#footer {
+    position: fixed; /* Keeps it in place even when scrolling */
+    bottom: 10px;    /* Distance from the bottom of the viewport */
+    right: 10px;     /* Distance from the right of the viewport */
+    color: #76c7c0;    /* Text color */
+    padding: 5px 10px; /* Padding for better readability */
+    border-radius: 5px; /* Optional: rounded corners */
+    font-size: 14px; /* Adjust size as needed */
+    z-index: 1000;   /* Ensures it stays above other elements */
+}
+
 h1, h2, h3 {
     color: #2c3e50;
 }
