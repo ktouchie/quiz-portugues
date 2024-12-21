@@ -45,6 +45,15 @@ function initializeQuiz() {
         tensesDiv.appendChild(label);
     });
 
+    // Add logic for "particípios passados"
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = "participios_passados";
+    const label = document.createElement("label");
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode("particípios passados"));
+    tensesDiv.appendChild(label);
+
     // Attach event listeners to buttons
     document.getElementById("start-quiz").addEventListener("click", startQuiz);
     document.getElementById("submit-answer").addEventListener("click", submitAnswer);
@@ -85,7 +94,19 @@ function startQuiz() {
     conjugationsCompleted = 0;
     for (let verb in verbs) {
         for (let tense of selectedTenses) {
-            if (verbs[verb][tense]) {
+            if (tense === "participios_passados" && verbs[verb].participios_passados) {
+                const auxiliaries = ["ter", "ser", "estar"];
+                auxiliaries.forEach((aux) => {
+                    let key = `${verb}-participios_passados-${aux}`
+                    conjugationCounters[key] = 0;
+                    mistakeCounters[key] = 0;
+                    conjugationsToPractice.push(key);
+
+                    // Update total conjugations needed
+                    totalConjugationsNeeded += requiredCorrect;
+                })
+            }
+            else if (verbs[verb][tense]) {
                 for (let personIdx = 0; personIdx < persons.length; personIdx++) {
                     if (verbs[verb][tense][personIdx].length > 0) {
                         let key = `${verb}-${tense}-${personIdx}`;
@@ -114,17 +135,31 @@ function nextQuestion() {
         return;
     }
     isFeedbackDisplayed = false;
+
     const randomIndex = Math.floor(Math.random() * conjugationsToPractice.length);
     currentKey = conjugationsToPractice[randomIndex];
-    const [verb, tense, personIdx] = currentKey.split("-");
-    const person = persons[personIdx];
+    if (currentKey.includes("participios_passados")) {
+        const [verb, _tense, aux] = currentKey.split("-");
+        document.getElementById("question").innerHTML = `
+            Qual é o particípio correto para o verbo 
+            <strong class="irregular-verb">${verb}</strong> usado com o verbo auxiliar 
+            <strong class="${aux}">${aux}</strong>?
+        `;
+    } else {
+        const [verb, tense, personIdx] = currentKey.split("-");
+        const person = persons[personIdx];
 
-    // Color coding classes
-    const verbClass = verbs[verb].regular ? 'regular-verb' : 'irregular-verb';
-    const tenseClass = `tense-color-${tenses.indexOf(tense)}`;
-    const personClass = `person-color-${personIdx}`;
+        // Color coding classes
+        const verbClass = verbs[verb].regular ? 'regular-verb' : 'irregular-verb';
+        const tenseClass = `tense-color-${tenses.indexOf(tense)}`;
+        const personClass = `person-color-${personIdx}`;
 
-    document.getElementById("question").innerHTML = `Conjugue o verbo <strong class="${verbClass}">${verb}</strong> no tempo <strong class="${tenseClass}">${tense}</strong> para <strong class="${personClass}">${person}</strong>:`;
+        document.getElementById("question").innerHTML = `
+            Conjugue o verbo <strong class="${verbClass}">${verb}</strong> no tempo 
+            <strong class="${tenseClass}">${tense}</strong> para 
+            <strong class="${personClass}">${person}</strong>:`;
+    }
+
     document.getElementById("answer").value = "";
     document.getElementById("feedback").innerHTML = "";
     document.getElementById("answer-container").style.display = "block"; // Show answer box and button
@@ -207,11 +242,16 @@ function endQuiz() {
 
     if (topMistakes.length > 0) {
         topMistakes.forEach(([key, mistakes], index) => {
-            const [verb, tense, personIdx] = key.split("-");
-            const person = persons[personIdx];
-            const correctAnswer = verbs[verb][tense][personIdx];
+            const [verb, tense, personidx_or_aux] = key.split("-");
+            const person_or_aux = persons[personidx_or_aux] || personidx_or_aux;
+            const correctAnswer = verbs[verb][tense][personidx_or_aux];
             const li = document.createElement("li");
-            li.innerHTML = `${index + 1}. Verbo: <strong>${verb}</strong>, Tempo: <strong>${tense}</strong>, Pessoa: <strong>${person}</strong>, Resposta correta: '<strong>${correctAnswer}</strong>', Erros: ${mistakes}`;
+            if (tense === "participios_passados") {
+                li.innerHTML = `${index + 1}. Verbo: <strong>${verb}</strong>, Tempo: <strong>particípios passados</strong>, Verbo auxiliar: <strong>${person_or_aux}</strong>, Resposta correta: '<strong>${correctAnswer}</strong>', Erros: ${mistakes}`;
+            } else {
+                li.innerHTML = `${index + 1}. Verbo: <strong>${verb}</strong>, Tempo: <strong>${tense}</strong>, Pessoa: <strong>${person_or_aux}</strong>, Resposta correta: '<strong>${correctAnswer}</strong>', Erros: ${mistakes}`;
+
+            }
             topMistakesList.appendChild(li);
         });
     } else {

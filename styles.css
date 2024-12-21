@@ -229,11 +229,11 @@ body {
     color: #4529ff; /* Red color for irregular verbs */
 }
 
-.tense-color-0 {
+.tense-color-0, .ter {
     color: #249a2e; /* Green shades for tenses */
 }
 
-.tense-color-1 {
+.tense-color-1, .ser {
     color: #009e8c;
 }
 
@@ -245,7 +245,7 @@ body {
     color: #f9a825;
 }
 
-.tense-color-4 {
+.tense-color-4, .estar {
     color: #ef6c00;
 }
 
