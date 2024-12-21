@@ -25,13 +25,27 @@
     </div>
 </div>
 <script>
-    fetch('/version.txt')
-        .then(response => response.text())
+    fetch('/version.txt') // Ensure the correct relative path
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
         .then(version => {
-            document.getElementById('version').textContent = version.trim();
+            const versionElement = document.getElementById('version');
+            if (versionElement) {
+                versionElement.textContent = `Version: ${version.trim()}`;
+            } else {
+                console.error('Version element not found in the DOM.');
+            }
         })
         .catch(err => {
             console.error('Error fetching version:', err);
+            const versionElement = document.getElementById('version');
+            if (versionElement) {
+                versionElement.textContent = 'Version: Error';
+            }
         });
 </script>
 </body>
