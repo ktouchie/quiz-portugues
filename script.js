@@ -30,6 +30,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error(error);
         alert("Erro ao carregar os dados dos verbos.");
     }
+
+    // Load version
+    fetch('version.txt')
+        .then(response => response.text())
+        .then(version => {
+            console.log(version);
+            const versionElement = document.getElementById('version');
+            if (versionElement) {
+                versionElement.textContent = version.trim();
+            } else {
+                console.warn('Version element not found');
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching version:', err);
+        });
 });
 
 function initializeQuiz() {
