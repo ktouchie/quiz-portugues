@@ -2,43 +2,34 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Português</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
 </head>
 <body>
-<div id="main-container">
-    <h1>Bem-vindo ao Quiz de Português!</h1>
-    <div id="button-container">
-        <!-- Button to access the verb quiz -->
-        <button onclick="location.href='verb_quiz.html'">Praticar Conjugação de Verbos</button>
-        <!-- Button to access the vocabulary quiz -->
-        <button onclick="location.href='vocabulary_quiz.html'">Praticar Vocabulário</button>
-    </div>
-</div>
-<div id="footer">
-    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
-        Compre-me um pastel de nata
-    </a>
-    <div id="version-container">
-        Version: <span id="version"></span>
-    </div>
-</div>
-<script>
-    fetch('version.txt')
-        .then(response => response.text())
-        .then(version => {
-            console.log(version);
-            const versionElement = document.getElementById('version');
-            if (versionElement) {
-                versionElement.textContent = version.trim();
-            } else {
-                console.warn('Version element not found');
-            }
-        })
-        .catch(err => {
-            console.error('Error fetching version:', err);
-        });
-</script>
+<main class="app-shell">
+    <header class="app-hero">
+        <h1>Quiz de Português</h1>
+        <p>Pratique conjugação de verbos e vocabulário com desafios dinâmicos e acompanhe o seu progresso em tempo real.</p>
+    </header>
+
+    <section class="card action-card">
+        <h2>Escolha um desafio</h2>
+        <p class="section-intro">Explore atividades pensadas para acelerar a sua fluência. Cada modo de estudo guarda o seu desempenho para que possa voltar e melhorar.</p>
+        <div class="button-grid">
+            <a class="btn" href="verb_quiz.html">Praticar Conjugação de Verbos</a>
+            <a class="btn" href="vocabulary_quiz.html">Praticar Vocabulário</a>
+        </div>
+    </section>
+
+    <footer class="app-footer">
+        <a class="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
+            Compre-me um pastel de nata
+        </a>
+        <span class="version-chip">Versão <span data-version-target>-</span></span>
+    </footer>
+</main>
+<script src="version.js" defer></script>
 </body>
 </html>
