@@ -1,0 +1,514 @@
+{
+  "aceitar": {
+    "participios_passados": {
+      "ter": "aceitado",
+      "ser": "aceite",
+      "estar": "aceite"
+    }
+  },
+  "assentar": {
+    "participios_passados": {
+      "ter": "assentado",
+      "ser": "assente",
+      "estar": "assente"
+    }
+  },
+  "cegar": {
+    "participios_passados": {
+      "ter": "cegado",
+      "ser": "cegado",
+      "estar": "cego"
+    }
+  },
+  "comer": {
+    "regular": true,
+    "presente": ["como", "comes", "come", "comemos", "comem"],
+    "pretérito": ["comi", "comeste", "comeu", "comemos", "comeram"],
+    "imperfeito": ["comia", "comias", "comia", "comíamos", "comiam"],
+    "condicional": ["comeria", "comerias", "comeria", "comeríamos", "comeriam"],
+    "pretérito mais-que-perfeito": ["tinha comido", "tinhas comido", "tinha comido", "tínhamos comido", "tinham comido"],
+    "perfeito_composto": ["tenho comido", "tens comido", "tem comido", "temos comido", "têm comido"],
+    "futuro": ["comerei", "comerás", "comerá", "comeremos", "comerão"],
+    "imperativo": ["", "come", "coma", "comamos", "comam"],
+    "conjuntivo": ["coma", "comas", "coma", "comamos", "comam"],
+    "infinitivo pessoal": ["comer", "comeres", "comer", "comermos", "comerem"]
+  },
+  "completar": {
+    "participios_passados": {
+      "ter": "completado",
+      "ser": "completo",
+      "estar": "completo"
+    }
+  },
+  "conseguir": {
+    "regular": false,
+    "presente": ["consigo", "consegues", "consegue", "conseguimos", "conseguem"],
+    "pretérito": ["consegui", "conseguiste", "conseguiu", "conseguimos", "conseguiram"],
+    "imperfeito": ["conseguia", "conseguias", "conseguia", "conseguíamos", "conseguiam"],
+    "condicional": ["conseguiria", "conseguirias", "conseguiria", "conseguiríamos", "conseguiriam"],
+    "pretérito mais-que-perfeito": ["tinha conseguido", "tinhas conseguido", "tinha conseguido", "tínhamos conseguido", "tinham conseguido"],
+    "perfeito_composto": ["tenho conseguido", "tens conseguido", "tem conseguido", "temos conseguido", "têm conseguido"],
+    "futuro": ["conseguirei", "conseguirás", "conseguirá", "conseguiremos", "conseguirão"],
+    "imperativo": ["", "consegue", "consiga", "consigamos", "consigam"],
+    "conjuntivo": ["consiga", "consigas", "consiga", "consigamos", "consigam"],
+    "infinitivo pessoal": ["conseguir", "conseguires", "conseguir", "conseguirmos", "conseguirem"]
+  },
+  "cultivar": {
+    "participios_passados": {
+      "ter": "cultivado",
+      "ser": "culto",
+      "estar": "culto"
+    }
+  },
+  "dar": {
+    "regular": false,
+    "presente": ["dou", "dás", "dá", "damos", "dão"],
+    "pretérito": ["dei", "deste", "deu", "demos", "deram"],
+    "imperfeito": ["dava", "davas", "dava", "dávamos", "davam"],
+    "condicional": ["daria", "darias", "daria", "daríamos", "dariam"],
+    "pretérito mais-que-perfeito": ["tinha dado", "tinhas dado", "tinha dado", "tínhamos dado", "tinham dado"],
+    "perfeito_composto": ["tenho dado", "tens dado", "tem dado", "temos dado", "têm dado"],
+    "futuro": ["darei", "darás", "dará", "daremos", "darão"],
+    "imperativo": ["", "dá", "dê", "demos", "deem"],
+    "conjuntivo": ["dê", "dês", "dê", "demos", "deem"],
+    "infinitivo pessoal": ["dar", "dares", "dar", "darmos", "darem"]
+  },
+  "descalçar": {
+    "participios_passados": {
+      "ter": "descalçado",
+      "ser": "descalço",
+      "estar": "descalço"
+    }
+  },
+  "descer": {
+    "regular": false,
+    "presente": ["desço", "desces", "desce", "descemos", "descem"],
+    "pretérito": ["desci", "desceste", "desceu", "descemos", "desceram"],
+    "imperfeito": ["descia", "descias", "descia", "descíamos", "desciam"],
+    "condicional": ["desceria", "descerias", "desceria", "desceríamos", "desceriam"],
+    "pretérito mais-que-perfeito": ["tinha descido", "tinhas descido", "tinha descido", "tínhamos descido", "tinham descido"],
+    "perfeito_composto": ["tenho descido", "tens descido", "tem descido", "temos descido", "têm descido"],
+    "futuro": ["descerei", "descerás", "descerá", "desceremos", "descerão"],
+    "imperativo": ["", "desce", "desça", "desçamos", "desçam"],
+    "conjuntivo": ["desça", "desças", "desça", "desçamos", "desçam"],
+    "infinitivo pessoal": ["descer", "desceres", "descer", "descermos", "descerem"]
+  },
+  "dizer": {
+    "regular": false,
+    "presente": ["digo", "dizes", "diz", "dizemos", "dizem"],
+    "pretérito": ["disse", "disseste", "disse", "dissemos", "disseram"],
+    "imperfeito": ["dizia", "dizias", "dizia", "dizíamos", "diziam"],
+    "condicional": ["diria", "dirias", "diria", "diríamos", "diriam"],
+    "pretérito mais-que-perfeito": ["tinha dito", "tinhas dito", "tinha dito", "tínhamos dito", "tinham dito"],
+    "perfeito_composto": ["tenho dito", "tens dito", "tem dito", "temos dito", "têm dito"],
+    "futuro": ["direi", "dirás", "dirá", "diremos", "dirão"],
+    "imperativo": ["", "diz", "diga", "digamos", "digam"],
+    "conjuntivo": ["diga", "digas", "diga", "digamos", "digam"],
+    "infinitivo pessoal": ["dizer", "dizeres", "dizer", "dizermos", "dizerem"]
+  },
+  "dormir": {
+    "regular": false,
+    "presente": ["durmo", "dormes", "dorme", "dormimos", "dormem"],
+    "pretérito": ["dormi", "dormiste", "dormiu", "dormimos", "dormiram"],
+    "imperfeito": ["dormia", "dormias", "dormia", "dormíamos", "dormiam"],
+    "condicional": ["dormiria", "dormirias", "dormiria", "dormiríamos", "dormiriam"],
+    "pretérito mais-que-perfeito": ["tinha dormido", "tinhas dormido", "tinha dormido", "tínhamos dormido", "tinham dormido"],
+    "perfeito_composto": ["tenho dormido", "tens dormido", "tem dormido", "temos dormido", "têm dormido"],
+    "futuro": ["dormirei", "dormirás", "dormirá", "dormiremos", "dormirão"],
+    "imperativo": ["", "dorme", "durma", "durmamos", "durmam"],
+    "conjuntivo": ["durma", "durmas", "durma", "durmamos", "durmam"],
+    "infinitivo pessoal": ["dormir", "dormires", "dormir", "dormirmos", "dormirem"]
+  },
+  "entregar": {
+    "participios_passados": {
+      "ter": "entregado",
+      "ser": "entregue",
+      "estar": "entregue"
+    }
+  },
+  "enxugar": {
+    "participios_passados": {
+      "ter": "enxugado",
+      "ser": "enxugado",
+      "estar": "enxuto"
+    }
+  },
+  "estar": {
+    "regular": false,
+    "presente": ["estou", "estás", "está", "estamos", "estão"],
+    "pretérito": ["estive", "estiveste", "esteve", "estivemos", "estiveram"],
+    "imperfeito": ["estava", "estavas", "estava", "estávamos", "estavam"],
+    "condicional": ["estaria", "estarias", "estaria", "estaríamos", "estariam"],
+    "pretérito mais-que-perfeito": ["tinha sido", "tinhas sido", "tinha sido", "tínhamos sido", "tinham sido"],
+    "perfeito_composto": ["tenho estado", "tens estado", "tem estado", "temos estado", "têm estado"],
+    "futuro": ["estarei", "estarás", "estará", "estaremos", "estarão"],
+    "imperativo": ["", "está", "esteja", "estejamos", "estejam"],
+    "conjuntivo": ["esteja", "estejas", "esteja", "estejamos", "estejam"],
+    "infinitivo pessoal": ["estar", "estares", "estar", "estarmos", "estarem"]
+  },
+  "expulsar": {
+    "participios_passados": {
+      "ter": "expulsado",
+      "ser": "expulso",
+      "estar": "expulso"
+    }
+  },
+  "falar": {
+    "regular": true,
+    "presente": ["falo", "falas", "fala", "falamos", "falam"],
+    "pretérito": ["falei", "falaste", "falou", "falamos", "falaram"],
+    "imperfeito": ["falava", "falavas", "falava", "falávamos", "falavam"],
+    "condicional": ["falaria", "falarias", "falaria", "falaríamos", "falariam"],
+    "pretérito mais-que-perfeito": ["tinha falado", "tinhas falado", "tinha falado", "tínhamos falado", "tinham falado"],
+    "perfeito_composto": ["tenho falado", "tens falado", "tem falado", "temos falado", "têm falado"],
+    "futuro": ["falarei", "falarás", "falará", "falaremos", "falarão"],
+    "imperativo": ["", "fala", "fale", "falemos", "falem"],
+    "conjuntivo": ["fale", "fales", "fale", "falemos", "falem"],
+    "infinitivo pessoal": ["falar", "falares", "falar", "falarmos", "falarem"]
+  },
+  "fartar": {
+    "participios_passados": {
+      "ter": "fartado",
+      "ser": "farto",
+      "estar": "farto"
+    }
+  },
+  "fazer": {
+    "regular": false,
+    "presente": ["faço", "fazes", "faz", "fazemos", "fazem"],
+    "pretérito": ["fiz", "fizeste", "fez", "fizemos", "fizeram"],
+    "imperfeito": ["fazia", "fazias", "fazia", "fazíamos", "faziam"],
+    "condicional": ["faria", "farias", "faria", "faríamos", "fariam"],
+    "pretérito mais-que-perfeito": ["tinha feito", "tinhas feito", "tinha feito", "tínhamos feito", "tinham feito"],
+    "perfeito_composto": ["tenho feito", "tens feito", "tem feito", "temos feito", "têm feito"],
+    "futuro": ["farei", "farás", "fará", "faremos", "farão"],
+    "imperativo": ["", "faz", "faça", "façamos", "façam"],
+    "conjuntivo": ["faça", "faças", "faça", "façamos", "façam"],
+    "infinitivo pessoal": ["fazer", "fazeres", "fazer", "fazermos", "fazerem"]
+  },
+  "ganhar": {
+    "participios_passados": {
+      "ter": "ganho",
+      "ser": "ganho",
+      "estar": "ganho"
+    }
+  },
+  "gastar": {
+    "participios_passados": {
+      "ter": "gasto",
+      "ser": "gasto",
+      "estar": "gasto"
+    }
+  },
+  "inquietar": {
+    "participios_passados": {
+      "ter": "inquietado",
+      "ser": "inquieto",
+      "estar": "inquieto"
+    }
+  },
+  "ir": {
+    "regular": false,
+    "presente": ["vou", "vais", "vai", "vamos", "vão"],
+    "pretérito": ["fui", "foste", "foi", "fomos", "foram"],
+    "imperfeito": ["ia", "ias", "ia", "íamos", "iam"],
+    "condicional": ["iria", "irias", "iria", "iríamos", "iriam"],
+    "pretérito mais-que-perfeito": ["tinha ido", "tinhas ido", "tinha ido", "tínhamos ido", "tinham ido"],
+    "perfeito_composto": ["tenho ido", "tens ido", "tem ido", "temos ido", "têm ido"],
+    "futuro": ["irei", "irás", "irá", "iremos", "irão"],
+    "imperativo": ["", "vai", "vá", "vamos", "vão"],
+    "conjuntivo": ["vá", "vás", "vá", "vamos", "vão"],
+    "infinitivo pessoal": ["ir", "ires", "ir", "irmos", "irem"]
+  },
+  "juntar": {
+    "participios_passados": {
+      "ter": "juntado",
+      "ser": "juntado",
+      "estar": "junto"
+    }
+  },
+  "ler": {
+    "regular": false,
+    "presente": ["leio", "lês", "lê", "lemos", "leem"],
+    "pretérito": ["li", "leste", "leu", "lemos", "leram"],
+    "imperfeito": ["lia", "lias", "lia", "líamos", "liam"],
+    "condicional": ["leria", "lerias", "leria", "leríamos", "leriam"],
+    "pretérito mais-que-perfeito": ["tinha lido", "tinhas lido", "tinha lido", "tínhamos lido", "tinham lido"],
+    "perfeito_composto": ["tenho lido", "tens lido", "tem lido", "temos lido", "têm lido"],
+    "futuro": ["lerei", "lerás", "lerá", "leremos", "lerão"],
+    "imperativo": ["", "lê", "leia", "leiamos", "leiam"],
+    "conjuntivo": ["leia", "leias", "leia", "leiamos", "leiam"],
+    "infinitivo pessoal": ["ler", "leres", "ler", "lermos", "lerem"]
+  },
+  "libertar": {
+    "participios_passados": {
+      "ter": "libertado",
+      "ser": "liberto",
+      "estar": "liberto"
+    }
+  },
+  "limpar": {
+    "participios_passados": {
+      "ter": "limpo",
+      "ser": "limpo",
+      "estar": "limpo"
+    }
+  },
+  "manifestar": {
+    "participios_passados": {
+      "ter": "manifestado",
+      "ser": "manifesto",
+      "estar": "manifesto"
+    }
+  },
+  "matar": {
+    "participios_passados": {
+      "ter": "matado",
+      "ser": "morto",
+      "estar": "morto"
+    }
+  },
+  "ocultar": {
+    "participios_passados": {
+      "ter": "ocultado",
+      "ser": "ocultado",
+      "estar": "oculto"
+    }
+  },
+  "ouvir": {
+    "regular": false,
+    "presente": ["ouço", "ouves", "ouve", "ouvimos", "ouvem"],
+    "pretérito": ["ouvi", "ouviste", "ouviu", "ouvimos", "ouviram"],
+    "imperfeito": ["ouvia", "ouvias", "ouvia", "ouvíamos", "ouviam"],
+    "condicional": ["ouviria", "ouvirias", "ouviria", "ouviríamos", "ouviriam"],
+    "pretérito mais-que-perfeito": ["tinha ouvido", "tinhas ouvido", "tinha ouvido", "tínhamos ouvido", "tinham ouvido"],
+    "perfeito_composto": ["tenho ouvido", "tens ouvido", "tem ouvido", "temos ouvido", "têm ouvido"],
+    "futuro": ["ouvirei", "ouvirás", "ouvirá", "ouviremos", "ouvirão"],
+    "imperativo": ["", "ouve", "ouça", "ouçamos", "ouçam"],
+    "conjuntivo": ["ouça", "ouças", "ouça", "ouçamos", "ouçam"],
+    "infinitivo pessoal": ["ouvir", "ouvires", "ouvir", "ouvirmos", "ouvirem"]
+  },
+  "pagar": {
+    "participios_passados": {
+      "ter": "pago",
+      "ser": "pago",
+      "estar": "pago"
+    }
+  },
+  "partir": {
+    "regular": true,
+    "presente": ["parto", "partes", "parte", "partimos", "partem"],
+    "pretérito": ["parti", "partiste", "partiu", "partimos", "partiram"],
+    "imperfeito": ["partia", "partias", "partia", "partíamos", "partiam"],
+    "condicional": ["partiria", "partirias", "partiria", "partiríamos", "partiriam"],
+    "pretérito mais-que-perfeito": ["tinha partido", "tinhas partido", "tinha partido", "tínhamos partido", "tinham partido"],
+    "perfeito_composto": ["tenho partido", "tens partido", "tem partido", "temos partido", "têm partido"],
+    "futuro": ["partirei", "partirás", "partirá", "partiremos", "partirão"],
+    "imperativo": ["", "parte", "parta", "partamos", "partam"],
+    "conjuntivo": ["parta", "partas", "parta", "partamos", "partam"],
+    "infinitivo pessoal": ["partir", "partires", "partir", "partirmos", "partirem"]
+  },
+  "pedir": {
+    "regular": false,
+    "presente": ["peço", "pedes", "pede", "pedimos", "pedem"],
+    "pretérito": ["pedi", "pediste", "pediu", "pedimos", "pediram"],
+    "imperfeito": ["pedia", "pedias", "pedia", "pedíamos", "pediam"],
+    "condicional": ["pediria", "pedirias", "pediria", "pediríamos", "pediriam"],
+    "pretérito mais-que-perfeito": ["tinha pedido", "tinhas pedido", "tinha pedido", "tínhamos pedido", "tinham pedido"],
+    "perfeito_composto": ["tenho pedido", "tens pedido", "tem pedido", "temos pedido", "têm pedido"],
+    "futuro": ["pedirei", "pedirás", "pedirá", "pediremos", "pedirão"],
+    "imperativo": ["", "pede", "peça", "peçamos", "peçam"],
+    "conjuntivo": ["peça", "peças", "peça", "peçamos", "peçam"],
+    "infinitivo pessoal": ["pedir", "pedires", "pedir", "pedirmos", "pedirem"]
+  },
+  "perder": {
+    "regular": false,
+    "presente": ["perco", "perdes", "perde", "perdemos", "perdem"],
+    "pretérito": ["perdi", "perdeste", "perdeu", "perdemos", "perderam"],
+    "imperfeito": ["perdia", "perdias", "perdia", "perdíamos", "perdiam"],
+    "condicional": ["perderia", "perderias", "perderia", "perderíamos", "perderiam"],
+    "pretérito mais-que-perfeito": ["tinha perdido", "tinhas perdido", "tinha perdido", "tínhamos perdido", "tinham perdido"],
+    "perfeito_composto": ["tenho perdido", "tens perdido", "tem perdido", "temos perdido", "têm perdido"],
+    "futuro": ["perderei", "perderás", "perderá", "perderemos", "perderão"],
+    "imperativo": ["", "perde", "perca", "percamos", "percam"],
+    "conjuntivo": ["perca", "percas", "perca", "percamos", "percam"],
+    "infinitivo pessoal": ["perder", "perderes", "perder", "perdermos", "perderem"]
+  },
+  "poder": {
+    "regular": false,
+    "presente": ["posso", "podes", "pode", "podemos", "podem"],
+    "pretérito": ["pude", "pudeste", "pôde", "pudemos", "puderam"],
+    "imperfeito": ["podia", "podias", "podia", "podíamos", "podiam"],
+    "condicional": ["poderia", "poderias", "poderia", "poderíamos", "poderiam"],
+    "pretérito mais-que-perfeito": ["tinha podido", "tinhas podido", "tinha podido", "tínhamos podido", "tinham podido"],
+    "perfeito_composto": ["tenho podido", "tens podido", "tem podido", "temos podido", "têm podido"],
+    "futuro": ["poderei", "poderás", "poderá", "poderemos", "poderão"],
+    "imperativo": ["", "pode", "possa", "possamos", "possam"],
+    "conjuntivo": ["possa", "possas", "possa", "possamos", "possam"],
+    "infinitivo pessoal": ["poder", "poderes", "poder", "podermos", "poderem"]
+  },
+  "pôr": {
+    "regular": false,
+    "presente": ["ponho", "pões", "põe", "pomos", "põem"],
+    "pretérito": ["pus", "puseste", "pôs", "pusemos", "puseram"],
+    "imperfeito": ["punha", "punhas", "punha", "púnhamos", "punham"],
+    "condicional": ["poria", "porias", "poria", "poríamos", "poriam"],
+    "pretérito mais-que-perfeito": ["tinha posto", "tinhas posto", "tinha posto", "tínhamos posto", "tinham posto"],
+    "perfeito_composto": ["tenho posto", "tens posto", "tem posto", "temos posto", "têm posto"],
+    "futuro": ["porei", "porás", "porá", "poremos", "porão"],
+    "imperativo": ["", "põe", "ponha", "ponhamos", "ponham"],
+    "conjuntivo": ["ponha", "ponhas", "ponha", "ponhamos", "ponham"],
+    "infinitivo pessoal": ["pôr", "pores", "pôr", "pormos", "porem"]
+  },
+  "preferir": {
+    "regular": false,
+    "presente": ["prefiro", "preferes", "prefere", "preferimos", "preferem"],
+    "pretérito": ["preferi", "preferiste", "preferiu", "preferimos", "preferiram"],
+    "imperfeito": ["preferia", "preferias", "preferia", "preferíamos", "preferiam"],
+    "condicional": ["preferiria", "preferirias", "preferiria", "preferiríamos", "prefeririam"],
+    "pretérito mais-que-perfeito": ["tinha preferido", "tinhas preferido", "tinha preferido", "tínhamos preferido", "tinham preferido"],
+    "perfeito_composto": ["tenho preferido", "tens preferido", "tem preferido", "temos preferido", "têm preferido"],
+    "futuro": ["preferirei", "preferirás", "preferirá", "preferiremos", "preferirão"],
+    "imperativo": ["", "prefere", "prefira", "prefiramos", "prefiram"],
+    "conjuntivo": ["prefira", "prefiras", "prefira", "prefiramos", "prefiram"],
+    "infinitivo pessoal": ["preferir", "preferires", "preferir", "preferirmos", "preferirem"]
+  },
+  "querer": {
+    "regular": false,
+    "presente": ["quero", "queres", "quer", "queremos", "querem"],
+    "pretérito": ["quis", "quiseste", "quis", "quisemos", "quiseram"],
+    "imperfeito": ["queria", "querias", "queria", "queríamos", "queriam"],
+    "condicional": ["quereria", "quererias", "quereria", "quereríamos", "quereriam"],
+    "pretérito mais-que-perfeito": ["tinha querido", "tinhas querido", "tinha querido", "tínhamos querido", "tinham querido"],
+    "perfeito_composto": ["tenho querido", "tens querido", "tem querido", "temos querido", "têm querido"],
+    "futuro": ["quererei", "quererás", "quererá", "quereremos", "quererão"],
+    "conjuntivo": ["queira", "queiras", "queira", "queiramos", "queiram"],
+    "infinitivo pessoal": ["querer", "queres", "querer", "querermos", "quererem"]
+  },
+  "romper": {
+    "participios_passados": {
+      "ter": "rompido",
+      "ser": "roto",
+      "estar": "roto"
+    }
+  },
+  "saber": {
+    "regular": false,
+    "presente": ["sei", "sabes", "sabe", "sabemos", "sabem"],
+    "pretérito": ["soube", "soubeste", "soube", "soubemos", "souberam"],
+    "imperfeito": ["sabia", "sabias", "sabia", "sabíamos", "sabiam"],
+    "condicional": ["saberia", "saberias", "saberia", "saberíamos", "saberiam"],
+    "pretérito mais-que-perfeito": ["tinha sabido", "tinhas sabido", "tinha sabido", "tínhamos sabido", "tinham sabido"],
+    "perfeito_composto": ["tenho sabido", "tens sabido", "tem sabido", "temos sabido", "têm sabido"],
+    "futuro": ["saberei", "saberás", "saberá", "saberemos", "saberão"],
+    "imperativo": ["", "sabe", "saiba", "saibamos", "saibam"],
+    "conjuntivo": ["saiba", "saibas", "saiba", "saibamos", "saibam"],
+    "infinitivo pessoal": ["saber", "saberes", "saber", "sabermos", "saberem"]
+  },
+  "sair": {
+    "regular": false,
+    "presente": ["saio", "sais", "sai", "saímos", "saem"],
+    "pretérito": ["saí", "saíste", "saiu", "saímos", "saíram"],
+    "imperfeito": ["saía", "saías", "saía", "saíamos", "saíam"],
+    "condicional": ["sairia", "sairias", "sairia", "sairíamos", "sairiam"],
+    "pretérito mais-que-perfeito": ["tinha saído", "tinhas saído", "tinha saído", "tínhamos saído", "tinham saído"],
+    "perfeito_composto": ["tenho saído", "tens saído", "tem saído", "temos saído", "têm saído"],
+    "futuro": ["sairei", "sairás", "sairá", "sairemos", "sairão"],
+    "imperativo": ["", "sai", "saia", "saiamos", "saiam"],
+    "conjuntivo": ["saia", "saias", "saia", "saiamos", "saiam"],
+    "infinitivo pessoal": ["sair", "saires", "sair", "sairmos", "saírem"]
+  },
+  "salvar": {
+    "participios_passados": {
+      "ter": "salvado",
+      "ser": "salvo",
+      "estar": "salvo"
+    }
+  },
+  "secar": {
+    "participios_passados": {
+      "ter": "secado",
+      "ser": "seco",
+      "estar": "seco"
+    }
+  },
+  "segurar": {
+    "participios_passados": {
+      "ter": "segurado",
+      "ser": "seguro",
+      "estar": "seguro"
+    }
+  },
+  "ser": {
+    "regular": false,
+    "presente": ["sou", "és", "é", "somos", "são"],
+    "pretérito": ["fui", "foste", "foi", "fomos", "foram"],
+    "imperfeito": ["era", "eras", "era", "éramos", "eram"],
+    "condicional": ["seria", "serias", "seria", "seríamos", "seriam"],
+    "pretérito mais-que-perfeito": ["tinha sido", "tinhas sido", "tinha sido", "tínhamos sido", "tinham sido"],
+    "perfeito_composto": ["tenho sido", "tens sido", "tem sido", "temos sido", "têm sido"],
+    "futuro": ["serei", "serás", "será", "seremos", "serão"],
+    "imperativo": ["", "sê", "seja", "sejamos", "sejam"],
+    "conjuntivo": ["seja", "sejas", "seja", "sejamos", "sejam"],
+    "infinitivo pessoal": ["ser", "seres", "ser", "sermos", "serem"]
+  },
+  "soltar": {
+    "participios_passados": {
+      "ter": "soltado",
+      "ser": "solto",
+      "estar": "solto"
+    }
+  },
+  "ter": {
+    "regular": false,
+    "presente": ["tenho", "tens", "tem", "temos", "têm"],
+    "pretérito": ["tive", "tiveste", "teve", "tivemos", "tiveram"],
+    "imperfeito": ["tinha", "tinhas", "tinha", "tínhamos", "tinham"],
+    "condicional": ["teria", "terias", "teria", "teríamos", "teriam"],
+    "pretérito mais-que-perfeito": ["tinha tido", "tinhas tido", "tinha tido", "tínhamos tido", "tinham tido"],
+    "perfeito_composto": ["tenho tido", "tens tido", "tem tido", "temos tido", "têm tido"],
+    "futuro": ["terei", "terás", "terá", "teremos", "terão"],
+    "imperativo": ["", "tem", "tenha", "tenhamos", "tenham"],
+    "conjuntivo": ["tenha", "tenhas", "tenha", "tenhamos", "tenham"],
+    "infinitivo pessoal": ["ter", "teres", "ter", "termos", "terem"]
+  },
+  "trazer": {
+    "regular": false,
+    "presente": ["trago", "trazes", "traz", "trazemos", "trazem"],
+    "pretérito": ["trouxe", "trouxeste", "trouxe", "trouxemos", "trouxeram"],
+    "imperfeito": ["trazia", "trazias", "trazia", "trazíamos", "traziam"],
+    "condicional": ["traria", "trarias", "traria", "traríamos", "trariam"],
+    "pretérito mais-que-perfeito": ["tinha trazido", "tinhas trazido", "tinha trazido", "tínhamos trazido", "tinham trazido"],
+    "perfeito_composto": ["tenho trazido", "tens trazido", "tem trazido", "temos trazido", "têm trazido"],
+    "futuro": ["trarei", "trarás", "trará", "traremos", "trarão"],
+    "imperativo": ["", "traz", "traga", "tragamos", "tragam"],
+    "conjuntivo": ["traga", "tragas", "traga", "tragamos", "tragam"],
+    "infinitivo pessoal": ["trazer", "trazeres", "trazer", "trazermos", "trazerem"]
+  },
+  "ver": {
+    "regular": false,
+    "presente": ["vejo", "vês", "vê", "vemos", "veem"],
+    "pretérito": ["vi", "viste", "viu", "vimos", "viram"],
+    "imperfeito": ["via", "vias", "via", "víamos", "viam"],
+    "condicional": ["veria", "verias", "veria", "veríamos", "veriam"],
+    "pretérito mais-que-perfeito": ["tinha visto", "tinhas visto", "tinha visto", "tínhamos visto", "tinham visto"],
+    "perfeito_composto": ["tenho visto", "tens visto", "tem visto", "temos visto", "têm visto"],
+    "futuro": ["verei", "verás", "verá", "veremos", "verão"],
+    "imperativo": ["", "vê", "veja", "vejamos", "vejam"],
+    "conjuntivo": ["veja", "vejas", "veja", "vejamos", "vejam"],
+    "infinitivo pessoal": ["ver", "veres", "ver", "vermos", "verem"]
+  },
+  "vir": {
+    "regular": false,
+    "presente": ["venho", "vens", "vem", "vimos", "vêm"],
+    "pretérito": ["vim", "vieste", "veio", "viemos", "vieram"],
+    "imperfeito": ["vinha", "vinhas", "vinha", "vínhamos", "vinham"],
+    "condicional": ["viria", "virias", "viria", "viríamos", "viriam"],
+    "pretérito mais-que-perfeito": ["tinha vindo", "tinhas vindo", "tinha vindo", "tínhamos vindo", "tinham vindo"],
+    "perfeito_composto": ["tenho vindo", "tens vindo", "tem vindo", "temos vindo", "têm vindo"],
+    "futuro": ["virei", "virás", "virá", "viremos", "virão"],
+    "imperativo": ["", "vem", "venha", "venhamos", "venham"],
+    "conjuntivo": ["venha", "venhas", "venha", "venhamos", "venham"],
+    "infinitivo pessoal": ["vir", "vires", "vir", "virmos", "virem"]
+  }
+}
