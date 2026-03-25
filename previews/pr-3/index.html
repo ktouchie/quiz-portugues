@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Português</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
+</head>
+<body>
+<div id="main-container">
+    <h1>Bem-vindo ao Quiz de Português!</h1>
+    <div id="button-container">
+        <!-- Button to access the verb quiz -->
+        <button onclick="location.href='verb_quiz.html'">Praticar Conjugação de Verbos</button>
+        <!-- Button to access the vocabulary quiz -->
+        <button onclick="location.href='vocabulary_quiz.html'">Praticar Vocabulário</button>
+    </div>
+</div>
+<div id="footer">
+    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
+        Compre-me um pastel de nata
+    </a>
+    <div id="version-container">
+        Version: <span id="version"></span>
+    </div>
+</div>
+<script>
+    fetch('version.txt')
+        .then(response => response.text())
+        .then(version => {
+            console.log(version);
+            const versionElement = document.getElementById('version');
+            if (versionElement) {
+                versionElement.textContent = version.trim();
+            } else {
+                console.warn('Version element not found');
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching version:', err);
+        });
+</script>
+</body>
+</html>
