@@ -58,14 +58,47 @@ jobs:
     needs: bump-version
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout Code
+      - name: Checkout main branch
         uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Checkout gh-pages storage
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: .pages-storage
+
+      - name: Copy main site files into storage
+        run: |
+          rsync -av \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='.pages-storage/' \
+            --exclude='node_modules/' \
+            ./ .pages-storage/
+
+      - name: Commit and push storage to gh-pages
+        run: |
+          cd .pages-storage
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "Deploy main site"
+          git push origin gh-pages
+
+      - name: Remove .git before upload
+        run: rm -rf .pages-storage/.git
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .pages-storage
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          keep_files: true
-          exclude_assets: '.github'
+        id: deployment
+        uses: actions/deploy-pages@v4
