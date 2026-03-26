@@ -1,48 +1,59 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quiz dos Verbos Portugueses</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        // Apply saved theme before first paint to avoid flash
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
-<!-- Score and Timer Display -->
+<button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
+
 <div id="score-timer-container">
     <div id="score-display">Pontuação: 0</div>
     <div id="timer-display">Tempo: 00:00</div>
 </div>
 
 <h1>Quiz dos Verbos Portugueses</h1>
+
 <div id="setup">
     <h2>Selecione os tempos para praticar</h2>
     <div id="tenses"></div>
-    <button id="start-quiz">Start Quiz</button>
+    <button id="start-quiz">Iniciar Quiz</button>
 </div>
-<div id="quiz" style="display: none;">
+
+<div id="quiz" class="hidden">
     <p id="question"></p>
     <div id="answer-container">
         <input type="text" id="answer" autocomplete="off">
         <button id="submit-answer">Enviar</button>
     </div>
-    <!-- Feedback and Progress Bar Container -->
     <div id="feedback-progress-container">
-        <p id="feedback"></p>
+        <p id="feedback" class="hidden"></p>
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
         <p id="progress-percentage"></p>
-        <button id="next-question" style="display: none;">Próxima</button>
+        <button id="next-question" class="hidden">Próxima</button>
     </div>
 </div>
-<div id="result" style="display: none;">
+
+<div id="result" class="hidden">
     <h2>Parabéns! Conjugou corretamente todos os verbos.</h2>
     <p id="total-score"></p>
     <h3>Erros mais comuns</h3>
     <ol id="top-mistakes"></ol>
-    <button id="restart">Restart Quiz</button>
+    <button id="restart">Reiniciar Quiz</button>
 </div>
-<script src="script.js"></script>
+
 <div id="footer">
     <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
         Compre-me um pastel de nata
@@ -51,5 +62,7 @@
         Version: <span id="version"></span>
     </div>
 </div>
+
+<script type="module" src="script.js"></script>
 </body>
 </html>
