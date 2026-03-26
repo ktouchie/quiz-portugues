@@ -1,0 +1,393 @@
+/* ── Theme variables ──────────────────────────────────────── */
+:root {
+    --bg:         #f4f6fb;
+    --surface:    #ffffff;
+    --surface-2:  #eef0f7;
+    --border:     #d0d5e8;
+    --accent:     #4a7cf7;
+    --accent-dim: #3a63cc;
+    --correct:    #1e9e6b;
+    --incorrect:  #e03e52;
+    --text:       #1a1e2e;
+    --text-muted: #5a6382;
+    --shadow:     0 4px 24px rgba(0, 0, 0, 0.10);
+    --shadow-sm:  0 2px 8px  rgba(0, 0, 0, 0.07);
+}
+
+[data-theme="dark"] {
+    --bg:         #0f1117;
+    --surface:    #1a1d27;
+    --surface-2:  #242736;
+    --border:     #2e3248;
+    --accent:     #5e9bff;
+    --accent-dim: #4a7cf7;
+    --correct:    #3ddc97;
+    --incorrect:  #ff5c6c;
+    --text:       #e2e8f0;
+    --text-muted: #7b8ab8;
+    --shadow:     0 4px 24px rgba(0, 0, 0, 0.45);
+    --shadow-sm:  0 2px 8px  rgba(0, 0, 0, 0.30);
+}
+
+/* ── Reset & base ─────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+    max-width: 680px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 12px;
+}
+
+h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 16px 0 8px;
+}
+
+/* ── Cards ────────────────────────────────────────────────── */
+#setup, #quiz, #result {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+button {
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 99px;
+    background-color: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s, box-shadow 0.15s;
+    box-shadow: var(--shadow-sm);
+}
+
+button:hover {
+    background-color: var(--accent-dim);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* ── Answer input ─────────────────────────────────────────── */
+#answer-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+#answer {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 9px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--surface-2);
+    color: var(--text);
+    outline: none;
+    flex: 1;
+    min-width: 160px;
+    transition: border-color 0.2s;
+}
+
+#answer:focus {
+    border-color: var(--accent);
+}
+
+/* ── Question text ────────────────────────────────────────── */
+#question {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+/* ── Feedback ─────────────────────────────────────────────── */
+#feedback {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+.correct   { color: var(--correct); }
+.incorrect { color: var(--incorrect); }
+
+/* ── Progress bar ─────────────────────────────────────────── */
+#feedback-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 100px;
+}
+
+#progress-container {
+    width: 100%;
+    background-color: var(--surface-2);
+    border-radius: 99px;
+    height: 8px;
+    overflow: hidden;
+}
+
+#progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-dim));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+#progress-percentage {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ── Next button ──────────────────────────────────────────── */
+#next-question {
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+/* ── Score & Timer (fixed top-right) ─────────────────────── */
+#score-timer-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 1000;
+    text-align: right;
+}
+
+#score-display, #timer-display {
+    background-color: var(--accent);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+}
+
+/* ── Theme toggle (fixed top-left) ───────────────────────── */
+#theme-toggle {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    border-radius: 99px;
+    background-color: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    z-index: 1000;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s;
+}
+
+#theme-toggle:hover {
+    background-color: var(--border);
+    transform: translateY(-1px);
+}
+
+/* ── Tense / category checkboxes ─────────────────────────── */
+#tenses label, #categories label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+#categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+}
+
+#categories label {
+    flex: 1 1 calc(33% - 20px);
+}
+
+/* ── Translation direction radios ────────────────────────── */
+#setup div label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 16px;
+    margin-bottom: 12px;
+}
+
+/* ── Top mistakes list ────────────────────────────────────── */
+#top-mistakes {
+    padding-left: 20px;
+}
+
+#top-mistakes li {
+    margin-bottom: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+#top-mistakes li strong {
+    color: var(--text);
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background-color: var(--bg);
+    border-top: 1px solid var(--border);
+    z-index: 999;
+}
+
+#support-link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+#support-link:hover {
+    text-decoration: underline;
+}
+
+#version-container {
+    white-space: nowrap;
+}
+
+/* ── Index page ───────────────────────────────────────────── */
+#main-container {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    box-shadow: var(--shadow);
+}
+
+#button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+#button-container button {
+    font-size: 1rem;
+    padding: 14px 24px;
+    border-radius: 12px;
+    text-align: left;
+}
+
+/* ── Utility ──────────────────────────────────────────────── */
+.hidden {
+    display: none !important;
+}
+
+/* ── Colour coding: verb regularity ──────────────────────── */
+.regular-verb   { color: #4fc3f7; }
+.irregular-verb { color: #ce93d8; }
+
+/* ── Colour coding: tenses ───────────────────────────────── */
+.tense-color-0 { color: #66bb6a; }
+.tense-color-1 { color: #26c6da; }
+.tense-color-2 { color: #ffd54f; }
+.tense-color-3 { color: #ffb74d; }
+.tense-color-4 { color: #ff8a65; }
+.tense-color-5 { color: #ef5350; }
+.tense-color-6 { color: #ab47bc; }
+.tense-color-7 { color: #7986cb; }
+
+/* ── Colour coding: persons ──────────────────────────────── */
+.person-color-0 { color: #f48fb1; }
+.person-color-1 { color: #ce93d8; }
+.person-color-2 { color: #90caf9; }
+.person-color-3 { color: #80cbc4; }
+.person-color-4 { color: #a5d6a7; }
+
+/* ── Colour coding: participio auxiliaries ───────────────── */
+.ter   { color: #66bb6a; }
+.ser   { color: #26c6da; }
+.estar { color: #ff8a65; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+    body {
+        padding-top: 16px;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+        margin-top: 48px;
+    }
+
+    #setup, #quiz, #result {
+        padding: 16px;
+    }
+
+    #score-timer-container {
+        flex-direction: row;
+        top: auto;
+        right: auto;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    #categories label {
+        flex: 1 1 calc(50% - 20px);
+    }
+
+    #answer-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #answer-container button {
+        width: 100%;
+    }
+}

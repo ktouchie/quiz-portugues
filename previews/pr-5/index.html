@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quiz Português</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        // Apply saved theme before first paint to avoid flash
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+<button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
+
+<div id="main-container">
+    <h1>Bem-vindo ao Quiz de Português!</h1>
+    <div id="button-container">
+        <button id="btn-verbs">Praticar Conjugação de Verbos</button>
+        <button id="btn-vocab">Praticar Vocabulário</button>
+    </div>
+</div>
+
+<div id="footer">
+    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
+        Compre-me um pastel de nata
+    </a>
+    <div id="version-container">
+        Version: <span id="version"></span>
+    </div>
+</div>
+
+<script type="module">
+    import { loadVersion, initTheme } from './common.js';
+    initTheme();
+    loadVersion();
+    document.getElementById('btn-verbs').addEventListener('click', () => location.href = 'verb_quiz.html');
+    document.getElementById('btn-vocab').addEventListener('click', () => location.href = 'vocabulary_quiz.html');
+</script>
+</body>
+</html>
