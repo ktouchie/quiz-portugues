@@ -1,21 +1,30 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quiz Português</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        // Apply saved theme before first paint to avoid flash
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
+<button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
+
 <div id="main-container">
     <h1>Bem-vindo ao Quiz de Português!</h1>
     <div id="button-container">
-        <!-- Button to access the verb quiz -->
-        <button onclick="location.href='verb_quiz.html'">Praticar Conjugação de Verbos</button>
-        <!-- Button to access the vocabulary quiz -->
-        <button onclick="location.href='vocabulary_quiz.html'">Praticar Vocabulário</button>
+        <button id="btn-verbs">Praticar Conjugação de Verbos</button>
+        <button id="btn-vocab">Praticar Vocabulário</button>
     </div>
 </div>
+
 <div id="footer">
     <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
         Compre-me um pastel de nata
@@ -24,21 +33,13 @@
         Version: <span id="version"></span>
     </div>
 </div>
-<script>
-    fetch('version.txt')
-        .then(response => response.text())
-        .then(version => {
-            console.log(version);
-            const versionElement = document.getElementById('version');
-            if (versionElement) {
-                versionElement.textContent = version.trim();
-            } else {
-                console.warn('Version element not found');
-            }
-        })
-        .catch(err => {
-            console.error('Error fetching version:', err);
-        });
+
+<script type="module">
+    import { loadVersion, initTheme } from './common.js';
+    initTheme();
+    loadVersion();
+    document.getElementById('btn-verbs').addEventListener('click', () => location.href = 'verb_quiz.html');
+    document.getElementById('btn-vocab').addEventListener('click', () => location.href = 'vocabulary_quiz.html');
 </script>
 </body>
 </html>

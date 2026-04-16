@@ -1,282 +1,393 @@
-/* General Styles */
+/* ── Theme variables ──────────────────────────────────────── */
+:root {
+    --bg:         #f4f6fb;
+    --surface:    #ffffff;
+    --surface-2:  #eef0f7;
+    --border:     #d0d5e8;
+    --accent:     #4a7cf7;
+    --accent-dim: #3a63cc;
+    --correct:    #1e9e6b;
+    --incorrect:  #e03e52;
+    --text:       #1a1e2e;
+    --text-muted: #5a6382;
+    --shadow:     0 4px 24px rgba(0, 0, 0, 0.10);
+    --shadow-sm:  0 2px 8px  rgba(0, 0, 0, 0.07);
+}
+
+[data-theme="dark"] {
+    --bg:         #0f1117;
+    --surface:    #1a1d27;
+    --surface-2:  #242736;
+    --border:     #2e3248;
+    --accent:     #5e9bff;
+    --accent-dim: #4a7cf7;
+    --correct:    #3ddc97;
+    --incorrect:  #ff5c6c;
+    --text:       #e2e8f0;
+    --text-muted: #7b8ab8;
+    --shadow:     0 4px 24px rgba(0, 0, 0, 0.45);
+    --shadow-sm:  0 2px 8px  rgba(0, 0, 0, 0.30);
+}
+
+/* ── Reset & base ─────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-    color: #333;
-    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
     margin: 0 auto;
-    max-width: 800px;
-}
-
-#footer {
-    position: fixed; /* Keeps it in place even when scrolling */
-    bottom: 10px;    /* Distance from the bottom of the viewport */
-    left: 0;
-    width: 100%;     /* Make the footer span the entire width */
-    display: flex;   /* Use flexbox for alignment */
-    justify-content: space-between; /* Spread items to the edges */
-    align-items: center; /* Vertically center items */
-    padding: 10px 20px; /* Add padding for better readability */
-    color: #76c7c0;    /* Text color */
-    z-index: 1000;   /* Ensures it stays above other elements */
-    font-size: 14px; /* Adjust font size as needed */
-}
-
-#support-link {
-    color: #76c7c0;
-    text-decoration: none; /* Remove underline */
-}
-
-#support-link:hover {
-    text-decoration: underline; /* Underline on hover */
-}
-
-#version-container {
-    color: #76c7c0;    /* Text color for version block */
-    text-align: right; /* Align text within this block to the right */
-    white-space: nowrap; /* Prevent "Version" and the version number from wrapping */
-    margin-right: 40px; /* Add some margin to prevent it from being too close to the edge */
-}
-
-h1, h2, h3 {
-    color: #2c3e50;
-}
-
-#setup, #quiz, #result {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-}
-
-body {
-    padding: 10px;
+    padding: 24px 16px 80px;
+    max-width: 680px;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 h1 {
-    font-size: 1.5em;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
 }
 
-#score-timer-container {
-    top: 10px;
-    right: 10px;
+h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 12px;
 }
 
-#score-display, #timer-display {
-    padding: 8px 10px;
-    font-size: 0.9em;
+h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 16px 0 8px;
 }
 
-#question {
-    font-size: 1.1em;
+/* ── Cards ────────────────────────────────────────────────── */
+#setup, #quiz, #result {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
 }
 
-#answer-container input, #answer-container button {
-    width: auto; /* Adjust width to content */
-    max-width: 100%; /* Ensure it doesn’t overflow */
-    font-size: 1em;
-    padding: 8px; /* Reduce padding slightly for smaller button */
-    margin: 10px 0; /* Add some space around */
-}
-
+/* ── Buttons ──────────────────────────────────────────────── */
 button {
-    padding: 10px 20px;
-    font-size: 16px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 10px 22px;
     border: none;
-    border-radius: 5px;
-    background-color: #76c7c0; /* Match the progress bar color */
+    border-radius: 99px;
+    background-color: var(--accent);
     color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s, transform 0.15s, box-shadow 0.15s;
+    box-shadow: var(--shadow-sm);
 }
 
 button:hover {
-    background-color: #5aa9a5; /* Slightly darker shade for hover effect */
+    background-color: var(--accent-dim);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
 }
 
-#next-question {
-    display: inline-block; /* Show the button as inline */
-    margin-top: 10px; /* Space between the button and progress bar */
-    position: relative; /* Prevent overlapping */
-    transform: none; /* Remove centering */
-    left: 0; /* Reset any offset */
-    bottom: auto; /* Let it align naturally */
+button:active {
+    transform: translateY(0);
 }
 
-#tenses label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-#categories {
-    display: flex;
-    flex-wrap: wrap; /* Allow wrapping to the next line */
-    gap: 10px 20px; /* Space between rows and columns */
-    justify-content: space-between; /* Spread items evenly */
-}
-
-#categories label {
-    flex: 1 1 calc(33% - 20px); /* Adjust for 3 columns */
-    text-align: left; /* Align text to the left */
-    margin-bottom: 10px; /* Add spacing between rows */
-}
-
-@media (max-width: 768px) {
-    #categories label {
-        flex: 1 1 calc(50% - 20px); /* Switch to 2 columns on smaller screens */
-    }
-}
-
-#question {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
+/* ── Answer input ─────────────────────────────────────────── */
 #answer-container {
-    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
+#answer {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 9px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--surface-2);
+    color: var(--text);
+    outline: none;
+    flex: 1;
+    min-width: 160px;
+    transition: border-color 0.2s;
+}
+
+#answer:focus {
+    border-color: var(--accent);
+}
+
+/* ── Question text ────────────────────────────────────────── */
+#question {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+/* ── Feedback ─────────────────────────────────────────────── */
+#feedback {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+.correct   { color: var(--correct); }
+.incorrect { color: var(--incorrect); }
+
+/* ── Progress bar ─────────────────────────────────────────── */
 #feedback-progress-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    min-height: 150px; /* Increase minimum height */
+    gap: 8px;
+    min-height: 100px;
 }
 
-#feedback {
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-.correct {
-    color: green;
-}
-
-.incorrect {
-    color: red;
-}
-
-button {
-    margin-top: 10px;
-}
-
-#top-mistakes li {
-    margin-bottom: 5px;
-}
-
-/* Progress Bar Styles */
 #progress-container {
     width: 100%;
-    background-color: #e0e0e0;
-    border-radius: 25px;
-    margin-top: 20px; /* Add more space between progress bar and other elements */
+    background-color: var(--surface-2);
+    border-radius: 99px;
+    height: 8px;
+    overflow: hidden;
 }
 
 #progress-bar {
     width: 0%;
-    height: 20px;
-    background-color: #76c7c0;
-    border-radius: 25px;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-dim));
+    border-radius: 99px;
+    transition: width 0.4s ease;
 }
 
 #progress-percentage {
-    margin-top: 10px;
-    position: relative;
-    z-index: 1;
-    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
 }
 
-/* Score and Timer Display */
+/* ── Next button ──────────────────────────────────────────── */
+#next-question {
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+/* ── Score & Timer (fixed top-right) ─────────────────────── */
 #score-timer-container {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    text-align: right;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     z-index: 1000;
+    text-align: right;
 }
 
 #score-display, #timer-display {
-    background-color: #76c7c0;
+    background-color: var(--accent);
     color: #fff;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-weight: bold;
-    margin-bottom: 10px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
 }
 
-/* Adjusted margins for centering */
-body {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 800px;
+/* ── Theme toggle (fixed top-left) ───────────────────────── */
+#theme-toggle {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    border-radius: 99px;
+    background-color: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    z-index: 1000;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s;
 }
 
-/* Next Button Styles */
-#next-question {
-    display: inline-block;
-    margin-top: 20px; /* Ensure proper spacing above */
-    position: relative; /* Remove absolute positioning */
-    left: auto;
-    transform: none;
-    z-index: 1; /* Ensure it doesn't overlap other elements */
+#theme-toggle:hover {
+    background-color: var(--border);
+    transform: translateY(-1px);
 }
 
-/* Color Coding */
-.regular-verb {
-    color: #00aeff; /* Blue color for regular verbs */
+/* ── Tense / category checkboxes ─────────────────────────── */
+#tenses label, #categories label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
 }
 
-.irregular-verb {
-    color: #4529ff; /* Red color for irregular verbs */
+#categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
 }
 
-.tense-color-0, .ter {
-    color: #249a2e; /* Green shades for tenses */
+#categories label {
+    flex: 1 1 calc(33% - 20px);
 }
 
-.tense-color-1, .ser {
-    color: #009e8c;
+/* ── Translation direction radios ────────────────────────── */
+#setup div label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 16px;
+    margin-bottom: 12px;
 }
 
-.tense-color-2 {
-    color: #c6b403;
+/* ── Top mistakes list ────────────────────────────────────── */
+#top-mistakes {
+    padding-left: 20px;
 }
 
-.tense-color-3 {
-    color: #f9a825;
+#top-mistakes li {
+    margin-bottom: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text-muted);
 }
 
-.tense-color-4, .estar {
-    color: #ef6c00;
+#top-mistakes li strong {
+    color: var(--text);
 }
 
-.tense-color-5 {
-    color: #d84315;
+/* ── Footer ───────────────────────────────────────────────── */
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background-color: var(--bg);
+    border-top: 1px solid var(--border);
+    z-index: 999;
 }
 
-.tense-color-6 {
-    color: #4e342e;
+#support-link {
+    color: var(--accent);
+    text-decoration: none;
 }
 
-.tense-color-7 {
-    color: #37474f;
+#support-link:hover {
+    text-decoration: underline;
 }
 
-.person-color-0 {
-    color: #e91e63; /* Pink shades for persons */
+#version-container {
+    white-space: nowrap;
 }
 
-.person-color-1 {
-    color: #9c27b0;
+/* ── Index page ───────────────────────────────────────────── */
+#main-container {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    box-shadow: var(--shadow);
 }
 
-.person-color-2 {
-    color: #673ab7;
+#button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
 }
 
-.person-color-3 {
-    color: #3f51b5;
+#button-container button {
+    font-size: 1rem;
+    padding: 14px 24px;
+    border-radius: 12px;
+    text-align: left;
 }
 
-.person-color-4 {
-    color: #2196f3;
+/* ── Utility ──────────────────────────────────────────────── */
+.hidden {
+    display: none !important;
+}
+
+/* ── Colour coding: verb regularity ──────────────────────── */
+.regular-verb   { color: #4fc3f7; }
+.irregular-verb { color: #ce93d8; }
+
+/* ── Colour coding: tenses ───────────────────────────────── */
+.tense-color-0 { color: #66bb6a; }
+.tense-color-1 { color: #26c6da; }
+.tense-color-2 { color: #ffd54f; }
+.tense-color-3 { color: #ffb74d; }
+.tense-color-4 { color: #ff8a65; }
+.tense-color-5 { color: #ef5350; }
+.tense-color-6 { color: #ab47bc; }
+.tense-color-7 { color: #7986cb; }
+
+/* ── Colour coding: persons ──────────────────────────────── */
+.person-color-0 { color: #f48fb1; }
+.person-color-1 { color: #ce93d8; }
+.person-color-2 { color: #90caf9; }
+.person-color-3 { color: #80cbc4; }
+.person-color-4 { color: #a5d6a7; }
+
+/* ── Colour coding: participio auxiliaries ───────────────── */
+.ter   { color: #66bb6a; }
+.ser   { color: #26c6da; }
+.estar { color: #ff8a65; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+    body {
+        padding-top: 16px;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+        margin-top: 48px;
+    }
+
+    #setup, #quiz, #result {
+        padding: 16px;
+    }
+
+    #score-timer-container {
+        flex-direction: row;
+        top: auto;
+        right: auto;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    #categories label {
+        flex: 1 1 calc(50% - 20px);
+    }
+
+    #answer-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #answer-container button {
+        width: 100%;
+    }
 }

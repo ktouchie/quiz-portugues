@@ -1,66 +1,79 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <title>Quiz do Vocabulário Portuguese</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quiz de Vocabulário Português</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        // Apply saved theme before first paint to avoid flash
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
-<!-- Score and Timer Display -->
+<button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
+
 <div id="score-timer-container">
-  <div id="score-display">Pontuação: 0</div>
-  <div id="timer-display">Tempo: 00:00</div>
+    <div id="score-display">Pontuação: 0</div>
+    <div id="timer-display">Tempo: 00:00</div>
 </div>
 
-<h1>Quiz dos Vocabulário Portuguese</h1>
+<h1>Quiz de Vocabulário Português</h1>
+
 <div id="setup">
-  <h2>Escolha a direção da tradução</h2>
-  <div>
-    <label>
-      <input type="radio" name="translation-direction" value="true" checked>
-      Inglês → Português
-    </label>
-    <label>
-      <input type="radio" name="translation-direction" value="false">
-      Português → Inglês
-    </label>
-  </div>
-  <h2>Selecione as categorias para praticar</h2>
-  <div id="categories"></div>
-  <button id="start-quiz">Start Quiz</button>
-</div>
-<div id="quiz" style="display: none;">
-  <p id="question"></p>
-  <div id="answer-container">
-    <input type="text" id="answer" autocomplete="off">
-    <button id="submit-answer">Enviar</button>
-  </div>
-  <!-- Feedback and Progress Bar Container -->
-  <div id="feedback-progress-container">
-    <p id="feedback"></p>
-    <div id="progress-container">
-      <div id="progress-bar"></div>
+    <h2>Escolha a direção da tradução</h2>
+    <div>
+        <label>
+            <input type="radio" name="translation-direction" value="true" checked>
+            Inglês → Português
+        </label>
+        <label>
+            <input type="radio" name="translation-direction" value="false">
+            Português → Inglês
+        </label>
     </div>
-    <p id="progress-percentage"></p>
-    <button id="next-question" style="display: none;">Próxima</button>
-  </div>
+    <h2>Selecione as categorias para praticar</h2>
+    <div id="categories"></div>
+    <button id="start-quiz">Iniciar Quiz</button>
 </div>
-<div id="result" style="display: none;">
-  <h2>Parabéns! Traduzou corretamente todos as palavras.</h2>
-  <p id="total-score"></p>
-  <h3>Erros mais comuns</h3>
-  <ol id="top-mistakes"></ol>
-  <button id="restart">Restart Quiz</button>
+
+<div id="quiz" class="hidden">
+    <p id="question"></p>
+    <div id="answer-container">
+        <input type="text" id="answer" autocomplete="off">
+        <button id="submit-answer">Enviar</button>
+    </div>
+    <div id="feedback-progress-container">
+        <p id="feedback" class="hidden"></p>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p id="progress-percentage"></p>
+        <button id="next-question" class="hidden">Próxima</button>
+    </div>
 </div>
-<script src="vocabulary_quiz.js"></script>
+
+<div id="result" class="hidden">
+    <h2>Parabéns! Traduziu corretamente todas as palavras.</h2>
+    <p id="total-score"></p>
+    <h3>Erros mais comuns</h3>
+    <ol id="top-mistakes"></ol>
+    <button id="restart">Reiniciar Quiz</button>
+</div>
+
 <div id="footer">
-  <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
-    Compre-me um pastel de nata
-  </a>
-  <div id="version-container">
-    Version: <span id="version"></span>
-  </div>
+    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
+        Compre-me um pastel de nata
+    </a>
+    <div id="version-container">
+        Version: <span id="version"></span>
+    </div>
 </div>
+
+<script type="module" src="vocabulary_quiz.js"></script>
 </body>
 </html>
