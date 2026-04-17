@@ -47,6 +47,10 @@ All three quizzes follow the same pattern:
 5. Score tracked live; top mistakes and best score shown on the result screen
 6. Timer runs per question, pauses on feedback
 
+## Working Conventions
+
+- After any major update (new module, feature, data change, architecture change), update both `CLAUDE.md` and `README.md` to reflect the current state before committing.
+
 ## Deployment
 
 - **Main branch** auto-deploys to GitHub Pages via `.github/workflows/version-bump.yml`, which also auto-bumps the patch version in `version.txt` (skipped if `version.txt` was changed manually in the same push)
