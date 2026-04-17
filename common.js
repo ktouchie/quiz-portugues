@@ -1,0 +1,60 @@
+// Shared utilities for all quiz pages
+
+export function loadVersion() {
+    fetch('version.txt')
+        .then(r => r.text())
+        .then(v => {
+            const el = document.getElementById('version');
+            if (el) el.textContent = v.trim();
+        })
+        .catch(err => console.error('Error fetching version:', err));
+}
+
+export function initTheme() {
+    const saved = localStorage.getItem('theme');
+    const html = document.documentElement;
+    html.setAttribute('data-theme', saved || 'dark');
+
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+
+    updateToggleIcon(btn, html.getAttribute('data-theme'));
+
+    btn.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateToggleIcon(btn, next);
+    });
+}
+
+function updateToggleIcon(btn, theme) {
+    btn.textContent = theme === 'dark' ? '☀' : '☾';
+    btn.setAttribute('aria-label', theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro');
+}
+
+export function padZero(num) {
+    return num.toString().padStart(2, '0');
+}
+
+export function updateTimerDisplay(timerDisplay, elapsedTime) {
+    const minutes = Math.floor(elapsedTime / 60);
+    const seconds = elapsedTime % 60;
+    timerDisplay.innerText = `Tempo: ${padZero(minutes)}:${padZero(seconds)}`;
+}
+
+export function startTimer(state) {
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(() => {
+        state.elapsedTime++;
+        updateTimerDisplay(state.timerDisplay, state.elapsedTime);
+    }, 1000);
+}
+
+export function stopTimer(state) {
+    if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+    }
+}
