@@ -1,6 +1,7 @@
 import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore } from './common.js';
 import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems } from './srs.js';
 import { initAudio, isAudioAvailable, speak } from './audio.js';
+import { updateStreak, checkMilestone, showMilestoneBanner } from './gamification.js';
 
 /**
  * @typedef {{ timerInterval: number|null, elapsedTime: number, timerDisplay: HTMLElement|null }} TimerState
@@ -292,6 +293,10 @@ export class QuizBase {
             li.textContent = 'Parabéns! Não cometeu nenhum erro.';
             list.appendChild(li);
         }
+
+        updateStreak();
+        const milestone = checkMilestone();
+        if (milestone) showMilestoneBanner(milestone);
 
         const retryBtn = document.getElementById('retry-mistakes');
         if (retryBtn) {
