@@ -21,6 +21,7 @@ class GenderQuiz extends QuizBase {
                     items.push({
                         key: `${category}|||${index}|||f`,
                         masculine: word.masculine,
+                        english: word.english,
                         label: 'feminino',
                         answer: word.feminine,
                     });
@@ -28,6 +29,7 @@ class GenderQuiz extends QuizBase {
                 items.push({
                     key: `${category}|||${index}|||p`,
                     masculine: word.masculine,
+                    english: word.english,
                     label: 'plural masculino',
                     answer: word.plural,
                 });
@@ -47,7 +49,15 @@ class GenderQuiz extends QuizBase {
         el.append(s1, ' de ');
         const s2 = document.createElement('strong');
         s2.className = 'person-color-3';
-        s2.textContent = item.masculine;
+        if (item.english) {
+            const span = document.createElement('span');
+            span.className = 'pt-tooltip';
+            span.dataset.tooltip = item.english;
+            span.textContent = item.masculine;
+            s2.appendChild(span);
+        } else {
+            s2.textContent = item.masculine;
+        }
         el.append(s2, '?');
     }
 

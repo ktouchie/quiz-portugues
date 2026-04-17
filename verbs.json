@@ -23,6 +23,7 @@
   "comer": {
     "regular": true,
     "difficulty": "beginner",
+    "english": "to eat",
     "presente": ["como", "comes", "come", "comemos", "comem"],
     "pretérito": ["comi", "comeste", "comeu", "comemos", "comeram"],
     "imperfeito": ["comia", "comias", "comia", "comíamos", "comiam"],
@@ -60,6 +61,7 @@
   "conseguir": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to manage / to succeed",
     "presente": ["consigo", "consegues", "consegue", "conseguimos", "conseguem"],
     "pretérito": ["consegui", "conseguiste", "conseguiu", "conseguimos", "conseguiram"],
     "imperfeito": ["conseguia", "conseguias", "conseguia", "conseguíamos", "conseguiam"],
@@ -81,6 +83,7 @@
   "dar": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to give",
     "presente": ["dou", "dás", "dá", "damos", "dão"],
     "pretérito": ["dei", "deste", "deu", "demos", "deram"],
     "imperfeito": ["dava", "davas", "dava", "dávamos", "davam"],
@@ -118,6 +121,7 @@
   "descer": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to go down / to descend",
     "presente": ["desço", "desces", "desce", "descemos", "descem"],
     "pretérito": ["desci", "desceste", "desceu", "descemos", "desceram"],
     "imperfeito": ["descia", "descias", "descia", "descíamos", "desciam"],
@@ -132,6 +136,7 @@
   "dizer": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to say / to tell",
     "presente": ["digo", "dizes", "diz", "dizemos", "dizem"],
     "pretérito": ["disse", "disseste", "disse", "dissemos", "disseram"],
     "imperfeito": ["dizia", "dizias", "dizia", "dizíamos", "diziam"],
@@ -162,6 +167,7 @@
   "dormir": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to sleep",
     "presente": ["durmo", "dormes", "dorme", "dormimos", "dormem"],
     "pretérito": ["dormi", "dormiste", "dormiu", "dormimos", "dormiram"],
     "imperfeito": ["dormia", "dormias", "dormia", "dormíamos", "dormiam"],
@@ -190,6 +196,7 @@
   "estar": {
     "regular": false,
     "difficulty": "beginner",
+    "english": "to be (state / location)",
     "presente": ["estou", "estás", "está", "estamos", "estão"],
     "pretérito": ["estive", "estiveste", "esteve", "estivemos", "estiveram"],
     "imperfeito": ["estava", "estavas", "estava", "estávamos", "estavam"],
@@ -227,6 +234,7 @@
   "falar": {
     "regular": true,
     "difficulty": "beginner",
+    "english": "to speak / to talk",
     "presente": ["falo", "falas", "fala", "falamos", "falam"],
     "pretérito": ["falei", "falaste", "falou", "falamos", "falaram"],
     "imperfeito": ["falava", "falavas", "falava", "falávamos", "falavam"],
@@ -264,6 +272,7 @@
   "fazer": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to do / to make",
     "presente": ["faço", "fazes", "faz", "fazemos", "fazem"],
     "pretérito": ["fiz", "fizeste", "fez", "fizemos", "fizeram"],
     "imperfeito": ["fazia", "fazias", "fazia", "fazíamos", "faziam"],
@@ -315,6 +324,7 @@
   "ir": {
     "regular": false,
     "difficulty": "beginner",
+    "english": "to go",
     "presente": ["vou", "vais", "vai", "vamos", "vão"],
     "pretérito": ["fui", "foste", "foi", "fomos", "foram"],
     "imperfeito": ["ia", "ias", "ia", "íamos", "iam"],
@@ -352,6 +362,7 @@
   "ler": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to read",
     "presente": ["leio", "lês", "lê", "lemos", "leem"],
     "pretérito": ["li", "leste", "leu", "lemos", "leram"],
     "imperfeito": ["lia", "lias", "lia", "líamos", "liam"],
@@ -401,6 +412,7 @@
   "ouvir": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to hear / to listen",
     "presente": ["ouço", "ouves", "ouve", "ouvimos", "ouvem"],
     "pretérito": ["ouvi", "ouviste", "ouviu", "ouvimos", "ouviram"],
     "imperfeito": ["ouvia", "ouvias", "ouvia", "ouvíamos", "ouviam"],
@@ -422,6 +434,7 @@
   "partir": {
     "regular": true,
     "difficulty": "beginner",
+    "english": "to leave / to break",
     "presente": ["parto", "partes", "parte", "partimos", "partem"],
     "pretérito": ["parti", "partiste", "partiu", "partimos", "partiram"],
     "imperfeito": ["partia", "partias", "partia", "partíamos", "partiam"],
@@ -436,6 +449,7 @@
   "pedir": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to ask for / to request",
     "presente": ["peço", "pedes", "pede", "pedimos", "pedem"],
     "pretérito": ["pedi", "pediste", "pediu", "pedimos", "pediram"],
     "imperfeito": ["pedia", "pedias", "pedia", "pedíamos", "pediam"],
@@ -450,6 +464,7 @@
   "perder": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to lose / to miss",
     "presente": ["perco", "perdes", "perde", "perdemos", "perdem"],
     "pretérito": ["perdi", "perdeste", "perdeu", "perdemos", "perderam"],
     "imperfeito": ["perdia", "perdias", "perdia", "perdíamos", "perdiam"],
@@ -464,6 +479,7 @@
   "poder": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to be able to / can",
     "presente": ["posso", "podes", "pode", "podemos", "podem"],
     "pretérito": ["pude", "pudeste", "pôde", "pudemos", "puderam"],
     "imperfeito": ["podia", "podias", "podia", "podíamos", "podiam"],
@@ -494,6 +510,7 @@
   "pôr": {
     "regular": false,
     "difficulty": "advanced",
+    "english": "to put / to place",
     "presente": ["ponho", "pões", "põe", "pomos", "põem"],
     "pretérito": ["pus", "puseste", "pôs", "pusemos", "puseram"],
     "imperfeito": ["punha", "punhas", "punha", "púnhamos", "punham"],
@@ -524,6 +541,7 @@
   "preferir": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to prefer",
     "presente": ["prefiro", "preferes", "prefere", "preferimos", "preferem"],
     "pretérito": ["preferi", "preferiste", "preferiu", "preferimos", "preferiram"],
     "imperfeito": ["preferia", "preferias", "preferia", "preferíamos", "preferiam"],
@@ -538,6 +556,7 @@
   "querer": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to want / to love",
     "presente": ["quero", "queres", "quer", "queremos", "querem"],
     "pretérito": ["quis", "quiseste", "quis", "quisemos", "quiseram"],
     "imperfeito": ["queria", "querias", "queria", "queríamos", "queriam"],
@@ -574,6 +593,7 @@
   "saber": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to know",
     "presente": ["sei", "sabes", "sabe", "sabemos", "sabem"],
     "pretérito": ["soube", "soubeste", "soube", "soubemos", "souberam"],
     "imperfeito": ["sabia", "sabias", "sabia", "sabíamos", "sabiam"],
@@ -604,6 +624,7 @@
   "sair": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to leave / to go out",
     "presente": ["saio", "sais", "sai", "saímos", "saem"],
     "pretérito": ["saí", "saíste", "saiu", "saímos", "saíram"],
     "imperfeito": ["saía", "saías", "saía", "saíamos", "saíam"],
@@ -639,6 +660,7 @@
   "ser": {
     "regular": false,
     "difficulty": "beginner",
+    "english": "to be (identity / permanence)",
     "presente": ["sou", "és", "é", "somos", "são"],
     "pretérito": ["fui", "foste", "foi", "fomos", "foram"],
     "imperfeito": ["era", "eras", "era", "éramos", "eram"],
@@ -676,6 +698,7 @@
   "ter": {
     "regular": false,
     "difficulty": "beginner",
+    "english": "to have",
     "presente": ["tenho", "tens", "tem", "temos", "têm"],
     "pretérito": ["tive", "tiveste", "teve", "tivemos", "tiveram"],
     "imperfeito": ["tinha", "tinhas", "tinha", "tínhamos", "tinham"],
@@ -706,6 +729,7 @@
   "trazer": {
     "regular": false,
     "difficulty": "advanced",
+    "english": "to bring",
     "presente": ["trago", "trazes", "traz", "trazemos", "trazem"],
     "pretérito": ["trouxe", "trouxeste", "trouxe", "trouxemos", "trouxeram"],
     "imperfeito": ["trazia", "trazias", "trazia", "trazíamos", "traziam"],
@@ -720,6 +744,7 @@
   "ver": {
     "regular": false,
     "difficulty": "intermediate",
+    "english": "to see",
     "presente": ["vejo", "vês", "vê", "vemos", "veem"],
     "pretérito": ["vi", "viste", "viu", "vimos", "viram"],
     "imperfeito": ["via", "vias", "via", "víamos", "viam"],
@@ -750,6 +775,7 @@
   "vir": {
     "regular": false,
     "difficulty": "advanced",
+    "english": "to come",
     "presente": ["venho", "vens", "vem", "vimos", "vêm"],
     "pretérito": ["vim", "vieste", "veio", "viemos", "vieram"],
     "imperfeito": ["vinha", "vinhas", "vinha", "vínhamos", "vinham"],
