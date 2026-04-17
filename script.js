@@ -20,10 +20,10 @@ const tenses = Object.keys(tenseLabels);
 
 let verbs = {};
 let selectedTenses = [];
-let requiredCorrect = 1;
-let conjugationCounters = {};
-let mistakeCounters = {};
-let conjugationsToPractice = [];
+const requiredCorrect = 1;
+const conjugationCounters = {};
+const mistakeCounters = {};
+const conjugationsToPractice = [];
 let totalScore = 0;
 let currentKey = null;
 let totalConjugationsNeeded = 0;
@@ -101,8 +101,8 @@ function startQuiz() {
     totalConjugationsNeeded = 0;
     conjugationsCompleted = 0;
 
-    for (let verb in verbs) {
-        for (let tense of selectedTenses) {
+    for (const verb in verbs) {
+        for (const tense of selectedTenses) {
             if (tense === "participios_passados" && verbs[verb].participios_passados) {
                 ["ter", "ser", "estar"].forEach(aux => {
                     const key = `${verb}-participios_passados-${aux}`;

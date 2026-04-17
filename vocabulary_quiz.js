@@ -6,10 +6,10 @@ const SEP = "|||";
 let vocabulary = {};
 let selectedCategories = [];
 let ENtoPT = true;
-let requiredCorrect = 1;
-let vocabCounters = {};
-let mistakeCounters = {};
-let vocabToPractice = [];
+const requiredCorrect = 1;
+const vocabCounters = {};
+const mistakeCounters = {};
+const vocabToPractice = [];
 let totalScore = 0;
 let currentKey = null;
 let totalWordsNeeded = 0;
@@ -82,7 +82,7 @@ function startQuiz() {
 
     for (const category of selectedCategories) {
         for (const pt_word in vocabulary[category]) {
-            if (vocabulary[category].hasOwnProperty(pt_word)) {
+            if (Object.hasOwn(vocabulary[category], pt_word)) {
                 const en_word = vocabulary[category][pt_word];
                 const key = `${category}${SEP}${pt_word}${SEP}${en_word}`;
                 vocabCounters[key] = 0;
