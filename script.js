@@ -1,4 +1,4 @@
-import { loadVersion, initTheme, startTimer, stopTimer, updateTimerDisplay } from './common.js';
+import { loadVersion, initTheme, startTimer, stopTimer, updateTimerDisplay, updateBestScore } from './common.js';
 
 const persons = ["eu", "tu", "ele/ela/você", "nós", "eles/elas/vocês"];
 
@@ -225,6 +225,7 @@ function endQuiz() {
     document.getElementById("quiz").classList.add("hidden");
     document.getElementById("result").classList.remove("hidden");
     document.getElementById("total-score").innerText = `Sua pontuação total é: ${totalScore}`;
+    updateBestScore('bestScore_verbs', totalScore);
 
     const sortedMistakes = Object.entries(mistakeCounters).sort((a, b) => b[1] - a[1]);
     const topMistakes = sortedMistakes.filter(item => item[1] > 0).slice(0, 10);
