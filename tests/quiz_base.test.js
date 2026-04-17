@@ -19,8 +19,12 @@ function setupDOM() {
         <div id="progress-bar" style="width:0%"></div>
         <p id="progress-percentage"></p>
         <p id="total-score"></p>
+        <p id="quiz-time"></p>
+        <p id="accuracy"></p>
         <p id="best-score"></p>
+        <p id="mastery-counter"></p>
         <ol id="top-mistakes"></ol>
+        <button id="retry-mistakes" class="hidden"></button>
     `;
 }
 

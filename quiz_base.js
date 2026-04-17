@@ -36,6 +36,9 @@ export class QuizBase {
         this.totalNeeded = 0;
         this.isFeedbackDisplayed = false;
 
+        /** @type {string[]|null} keys to use for retry-mistakes session */
+        this.retryMistakeKeys = null;
+
         /** @type {TimerState} */
         this.timerState = { timerInterval: null, elapsedTime: 0, timerDisplay: null };
     }
@@ -115,8 +118,15 @@ export class QuizBase {
     }
 
     startQuiz() {
-        const items = this.getSelectedItems();
-        if (!items) return;
+        let items;
+        if (this.retryMistakeKeys) {
+            const oldItemData = this.itemData;
+            items = this.retryMistakeKeys.map(k => oldItemData[k]).filter(Boolean);
+            this.retryMistakeKeys = null;
+        } else {
+            items = this.getSelectedItems();
+        }
+        if (!items || items.length === 0) return;
 
         this.itemData = {};
         this.itemCounters = {};
@@ -210,8 +220,16 @@ export class QuizBase {
         document.getElementById('quiz').classList.add('hidden');
         document.getElementById('result').classList.remove('hidden');
 
-        const scoreEl = document.getElementById('total-score');
-        scoreEl.textContent = `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
+        const total = this.correctCount + this.errorCount;
+        const accuracyPct = total > 0 ? Math.round((this.correctCount / total) * 100) : 100;
+        const mins = Math.floor(this.timerState.elapsedTime / 60);
+        const secs = this.timerState.elapsedTime % 60;
+
+        document.getElementById('total-score').textContent =
+            `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
+        document.getElementById('quiz-time').textContent =
+            `Tempo: ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        document.getElementById('accuracy').textContent = `Precisão: ${accuracyPct}%`;
 
         updateBestScore(this.storageKey, this.correctCount);
 
@@ -232,6 +250,22 @@ export class QuizBase {
             li.textContent = 'Parabéns! Não cometeu nenhum erro.';
             list.appendChild(li);
         }
+
+        const retryBtn = document.getElementById('retry-mistakes');
+        if (retryBtn) {
+            const mistakeKeys = Object.keys(this.mistakeCounters).filter(k => this.mistakeCounters[k] > 0);
+            if (mistakeKeys.length > 0) {
+                retryBtn.textContent = `Praticar erros (${mistakeKeys.length})`;
+                retryBtn.classList.remove('hidden');
+                retryBtn.onclick = () => {
+                    this.retryMistakeKeys = mistakeKeys;
+                    document.getElementById('result').classList.add('hidden');
+                    this.startQuiz();
+                };
+            } else {
+                retryBtn.classList.add('hidden');
+            }
+        }
     }
 
     // ── Private helpers ──────────────────────────────────────────────────────
@@ -247,5 +281,9 @@ export class QuizBase {
             : 0;
         document.getElementById('progress-bar').style.width = pct + '%';
         document.getElementById('progress-percentage').textContent = `Progresso: ${pct.toFixed(2)}%`;
+        const masteryEl = document.getElementById('mastery-counter');
+        if (masteryEl) {
+            masteryEl.textContent = `Dominadas: ${this.completedCount}/${this.totalNeeded}`;
+        }
     }
 }

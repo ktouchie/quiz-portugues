@@ -19,8 +19,8 @@
     --surface:    #1a1d27;
     --surface-2:  #242736;
     --border:     #2e3248;
-    --accent:     #5e9bff;
-    --accent-dim: #4a7cf7;
+    --accent:     #7fc1ff;
+    --accent-dim: #5e9bff;
     --correct:    #3ddc97;
     --incorrect:  #ff5c6c;
     --text:       #e2e8f0;
@@ -386,10 +386,51 @@ button:active {
 .ser   { color: #26c6da; }
 .estar { color: #ff8a65; }
 
+/* ── Setup hint & keyboard hint ──────────────────────────── */
+.setup-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: -4px 0 12px;
+}
+
+.keyboard-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: -4px 0 8px;
+}
+
+/* ── Progress info row ────────────────────────────────────── */
+#progress-info {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+#progress-info p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ── Category badge (vocab mistakes) ─────────────────────── */
+.category-badge {
+    display: inline-block;
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 480px) {
     body {
         padding-top: 16px;
+        padding-bottom: 24px;
     }
 
     h1 {
@@ -401,15 +442,24 @@ button:active {
         padding: 16px;
     }
 
+    /* Keep score/timer at top-right on mobile — avoid footer overlap */
     #score-timer-container {
-        flex-direction: row;
-        top: auto;
-        right: auto;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: column;
+        top: 16px;
+        right: 16px;
+        bottom: auto;
+        left: auto;
+        transform: none;
+    }
+
+    /* Footer is static on mobile so it doesn't cover answer input */
+    #footer {
+        position: static;
+        margin-top: 16px;
+    }
+
+    .keyboard-hint {
+        display: none;
     }
 
     #categories label {

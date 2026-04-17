@@ -78,8 +78,8 @@ export function updateBestScore(storageKey, score) {
     const el = document.getElementById('best-score');
     if (!el) return;
     el.textContent = isRecord
-        ? `Novo recorde! Melhor pontuação: ${best}`
-        : `Melhor pontuação: ${best}`;
+        ? `Novo recorde! Melhor resultado: ${best} corretas`
+        : `Melhor resultado: ${best} corretas`;
     el.className = isRecord ? 'correct' : '';
 }
 

@@ -69,13 +69,16 @@ class VocabQuiz extends QuizBase {
     formatMistake(key, count, index) {
         const [category, ptWord, enWord] = key.split('|||');
         const li = document.createElement('li');
-        li.append(`${index + 1}. Categoria: `);
-        _strong(li, category);
-        li.append(', PT: ');
+        const badge = document.createElement('span');
+        badge.className = 'category-badge';
+        badge.textContent = category;
+        li.append(`${index + 1}. `);
+        li.appendChild(badge);
+        li.append(' ');
         _strong(li, ptWord);
-        li.append(', EN: ');
+        li.append(' ← ');
         _strong(li, enWord);
-        li.append(`, Erros: ${count}`);
+        li.append(` (${count} erro${count > 1 ? 's' : ''})`);
         return li;
     }
 }
