@@ -52,6 +52,24 @@ export function startTimer(state) {
     }, 1000);
 }
 
+export function addSelectAll(containerId) {
+    const container = document.getElementById(containerId);
+    const label = document.createElement("label");
+    label.className = "select-all-label";
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.id = `${containerId}-select-all`;
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(" Selecionar tudo"));
+    container.prepend(label);
+
+    cb.addEventListener("change", () => {
+        container.querySelectorAll(`input[type="checkbox"]:not(#${cb.id})`).forEach(other => {
+            other.checked = cb.checked;
+        });
+    });
+}
+
 export function updateBestScore(storageKey, score) {
     const prev = parseInt(localStorage.getItem(storageKey), 10);
     const isRecord = isNaN(prev) || score > prev;

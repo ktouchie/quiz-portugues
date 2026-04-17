@@ -1,4 +1,4 @@
-import { loadVersion, initTheme, startTimer, stopTimer, updateTimerDisplay, updateBestScore } from './common.js';
+import { loadVersion, initTheme, startTimer, stopTimer, updateTimerDisplay, updateBestScore, addSelectAll } from './common.js';
 
 const persons = ["eu", "tu", "ele/ela/você", "nós", "eles/elas/vocês"];
 
@@ -59,6 +59,8 @@ function initializeQuiz() {
         label.appendChild(document.createTextNode(" " + tenseLabels[tense]));
         tensesDiv.appendChild(label);
     });
+
+    addSelectAll("tenses");
 
     // Particípios passados option
     const checkbox = document.createElement("input");
