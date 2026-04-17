@@ -30,17 +30,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function initializeQuiz() {
-    const categoryDiv = document.getElementById("categories");
-    Object.keys(words).forEach(category => {
-        const label = document.createElement("label");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = category;
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(" " + category));
-        categoryDiv.appendChild(label);
-    });
-
     document.getElementById("start-quiz").addEventListener("click", startQuiz);
     document.getElementById("submit-answer").addEventListener("click", submitAnswer);
     document.getElementById("next-question").addEventListener("click", nextQuestion);
@@ -84,13 +73,7 @@ function buildItems(selectedCategories) {
 }
 
 function startQuiz() {
-    const selectedCategories = Array.from(document.querySelectorAll("#categories input:checked")).map(i => i.value);
-    if (selectedCategories.length === 0) {
-        alert("Por favor, selecione pelo menos uma categoria.");
-        return;
-    }
-
-    const allItems = buildItems(selectedCategories);
+    const allItems = buildItems(Object.keys(words));
     itemsToPractice = allItems.map(item => item.key);
     itemCounters = {};
     mistakeCounters = {};

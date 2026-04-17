@@ -1,4 +1,4 @@
-import { loadVersion, initTheme, startTimer, stopTimer, updateTimerDisplay, updateBestScore } from './common.js';
+import { loadVersion, initTheme, startTimer, stopTimer, updateTimerDisplay, updateBestScore, addSelectAll } from './common.js';
 
 // Delimiter unlikely to appear in any word or category name
 const SEP = "|||";
@@ -45,6 +45,8 @@ function initializeQuiz() {
         label.appendChild(document.createTextNode(" " + category));
         categoryDiv.appendChild(label);
     });
+
+    addSelectAll("categories");
 
     document.getElementById("start-quiz").addEventListener("click", startQuiz);
     document.getElementById("submit-answer").addEventListener("click", submitAnswer);
