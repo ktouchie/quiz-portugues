@@ -89,3 +89,12 @@ export function stopTimer(state) {
         state.timerInterval = null;
     }
 }
+
+export function resumeTimer(state) {
+    if (!state.timerInterval) {
+        state.timerInterval = setInterval(() => {
+            state.elapsedTime++;
+            updateTimerDisplay(state.timerDisplay, state.elapsedTime);
+        }, 1000);
+    }
+}

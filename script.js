@@ -1,259 +1,156 @@
-import { loadVersion, initTheme, startTimer, stopTimer, updateTimerDisplay, updateBestScore, addSelectAll } from './common.js';
+import { addSelectAll } from './common.js';
+import { QuizBase } from './quiz_base.js';
+import { PERSONS, TENSE_LABELS, STORAGE_KEYS } from './config.js';
 
-const persons = ["eu", "tu", "ele/ela/você", "nós", "eles/elas/vocês"];
+const TENSE_KEYS = Object.keys(TENSE_LABELS);
 
-// Display labels for tenses (human-readable)
-const tenseLabels = {
-    "presente":                    "presente",
-    "pretérito":                   "pretérito",
-    "imperfeito":                  "imperfeito",
-    "condicional":                 "condicional",
-    "pretérito mais-que-perfeito": "pretérito mais-que-perfeito",
-    "perfeito_composto":           "perfeito composto",
-    "futuro":                      "futuro",
-    "imperativo":                  "imperativo",
-    "conjuntivo":                  "conjuntivo",
-    "infinitivo pessoal":          "infinitivo pessoal",
-};
-
-const tenses = Object.keys(tenseLabels);
-
-let verbs = {};
-let selectedTenses = [];
-const requiredCorrect = 1;
-const conjugationCounters = {};
-const mistakeCounters = {};
-const conjugationsToPractice = [];
-let totalScore = 0;
-let currentKey = null;
-let totalConjugationsNeeded = 0;
-let conjugationsCompleted = 0;
-let isFeedbackDisplayed = false;
-
-// Timer state
-const timerState = { timerInterval: null, elapsedTime: 0, timerDisplay: null };
-
-document.addEventListener("DOMContentLoaded", async () => {
-    initTheme();
-    loadVersion();
-
-    try {
-        const response = await fetch('verbs.json');
-        if (!response.ok) throw new Error("Failed to load verbs data.");
-        verbs = await response.json();
-        initializeQuiz();
-    } catch (error) {
-        console.error(error);
-        alert("Erro ao carregar os dados dos verbos.");
+class VerbQuiz extends QuizBase {
+    constructor() {
+        super(STORAGE_KEYS.verbs);
+        this.selectedTenses = [];
     }
-});
 
-function initializeQuiz() {
-    const tensesDiv = document.getElementById("tenses");
-    tenses.forEach(tense => {
-        const label = document.createElement("label");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = tense;
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(" " + tenseLabels[tense]));
-        tensesDiv.appendChild(label);
-    });
+    async fetchData() {
+        const res = await fetch('verbs.json');
+        if (!res.ok) throw new Error('Failed to load verbs data.');
+        return res.json();
+    }
 
-    addSelectAll("tenses");
+    setupUI() {
+        const tensesDiv = document.getElementById('tenses');
+        TENSE_KEYS.forEach(tense => {
+            const label = document.createElement('label');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = tense;
+            label.appendChild(cb);
+            label.appendChild(document.createTextNode(' ' + TENSE_LABELS[tense]));
+            tensesDiv.appendChild(label);
+        });
+        addSelectAll('tenses');
 
-    // Particípios passados option
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = "participios_passados";
-    const label = document.createElement("label");
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(" particípios passados"));
-    tensesDiv.appendChild(label);
+        const ppCb = document.createElement('input');
+        ppCb.type = 'checkbox';
+        ppCb.value = 'participios_passados';
+        const ppLabel = document.createElement('label');
+        ppLabel.appendChild(ppCb);
+        ppLabel.appendChild(document.createTextNode(' particípios passados'));
+        tensesDiv.appendChild(ppLabel);
+    }
 
-    document.getElementById("start-quiz").addEventListener("click", startQuiz);
-    document.getElementById("submit-answer").addEventListener("click", submitAnswer);
-    document.getElementById("next-question").addEventListener("click", nextQuestion);
-    document.getElementById("restart").addEventListener("click", () => location.reload());
+    getSelectedItems() {
+        this.selectedTenses = Array.from(
+            document.querySelectorAll('#tenses input:checked')
+        ).map(i => i.value);
 
-    timerState.timerDisplay = document.getElementById("timer-display");
-    updateTimerDisplay(timerState.timerDisplay, 0);
-    updateScoreDisplay();
-
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-            if (!isFeedbackDisplayed) {
-                document.getElementById("submit-answer").click();
-            } else {
-                document.getElementById("next-question").click();
-            }
+        if (this.selectedTenses.length === 0) {
+            alert('Por favor, selecione pelo menos um tempo verbal.');
+            return null;
         }
-    });
-}
 
-function startQuiz() {
-    selectedTenses = Array.from(document.querySelectorAll("#tenses input:checked")).map(input => input.value);
-    if (selectedTenses.length === 0) {
-        alert("Por favor, selecione pelo menos um tempo verbal.");
-        return;
-    }
-
-    totalConjugationsNeeded = 0;
-    conjugationsCompleted = 0;
-
-    for (const verb in verbs) {
-        for (const tense of selectedTenses) {
-            if (tense === "participios_passados" && verbs[verb].participios_passados) {
-                ["ter", "ser", "estar"].forEach(aux => {
-                    const key = `${verb}-participios_passados-${aux}`;
-                    conjugationCounters[key] = 0;
-                    mistakeCounters[key] = 0;
-                    conjugationsToPractice.push(key);
-                    totalConjugationsNeeded += requiredCorrect;
-                });
-            } else if (verbs[verb][tense]) {
-                for (let personIdx = 0; personIdx < persons.length; personIdx++) {
-                    if (verbs[verb][tense][personIdx] && verbs[verb][tense][personIdx].length > 0) {
-                        const key = `${verb}-${tense}-${personIdx}`;
-                        conjugationCounters[key] = 0;
-                        mistakeCounters[key] = 0;
-                        conjugationsToPractice.push(key);
-                        totalConjugationsNeeded += requiredCorrect;
+        const items = [];
+        const verbs = this.data;
+        for (const verb in verbs) {
+            for (const tense of this.selectedTenses) {
+                if (tense === 'participios_passados' && verbs[verb].participios_passados) {
+                    for (const aux of ['ter', 'ser', 'estar']) {
+                        items.push({ key: `${verb}|||participios_passados|||${aux}`, verb, tense: 'participios_passados', aux });
+                    }
+                } else if (verbs[verb][tense]) {
+                    for (let personIdx = 0; personIdx < PERSONS.length; personIdx++) {
+                        const form = verbs[verb][tense][personIdx];
+                        if (form && form.length > 0) {
+                            items.push({ key: `${verb}|||${tense}|||${personIdx}`, verb, tense, personIdx });
+                        }
                     }
                 }
             }
         }
+        return items;
     }
 
-    document.getElementById("setup").classList.add("hidden");
-    document.getElementById("quiz").classList.remove("hidden");
-    updateProgressBar();
-    nextQuestion();
-    startTimer(timerState);
-}
+    renderQuestion(key) {
+        const [verb, tense, third] = key.split('|||');
+        const verbs = this.data;
+        const el = document.getElementById('question');
+        el.textContent = '';
 
-function nextQuestion() {
-    if (conjugationsToPractice.length === 0) {
-        endQuiz();
-        return;
-    }
-    isFeedbackDisplayed = false;
+        if (tense === 'participios_passados') {
+            el.append('Qual é o particípio correto para o verbo ');
+            const s1 = document.createElement('strong');
+            s1.className = 'irregular-verb';
+            s1.textContent = verb;
+            el.append(s1, ' usado com o verbo auxiliar ');
+            const s2 = document.createElement('strong');
+            s2.className = third;
+            s2.textContent = third;
+            el.append(s2, '?');
+        } else {
+            const personIdx = parseInt(third, 10);
+            const verbClass = verbs[verb].regular ? 'regular-verb' : 'irregular-verb';
+            const tenseClass = `tense-color-${TENSE_KEYS.indexOf(tense)}`;
+            const personClass = `person-color-${personIdx}`;
 
-    const randomIndex = Math.floor(Math.random() * conjugationsToPractice.length);
-    currentKey = conjugationsToPractice[randomIndex];
-
-    if (currentKey.includes("participios_passados")) {
-        const [verb, , aux] = currentKey.split("-");
-        document.getElementById("question").innerHTML =
-            `Qual é o particípio correto para o verbo ` +
-            `<strong class="irregular-verb">${verb}</strong> usado com o verbo auxiliar ` +
-            `<strong class="${aux}">${aux}</strong>?`;
-    } else {
-        const [verb, tense, personIdx] = currentKey.split("-");
-        const person = persons[personIdx];
-        const verbClass = verbs[verb].regular ? 'regular-verb' : 'irregular-verb';
-        const tenseClass = `tense-color-${tenses.indexOf(tense)}`;
-        const personClass = `person-color-${personIdx}`;
-        document.getElementById("question").innerHTML =
-            `Conjugue o verbo <strong class="${verbClass}">${verb}</strong> no tempo ` +
-            `<strong class="${tenseClass}">${tenseLabels[tense] || tense}</strong> para ` +
-            `<strong class="${personClass}">${person}</strong>:`;
-    }
-
-    document.getElementById("answer").value = "";
-    document.getElementById("feedback").innerHTML = "";
-    document.getElementById("answer-container").classList.remove("hidden");
-    document.getElementById("feedback").classList.add("hidden");
-    document.getElementById("next-question").classList.add("hidden");
-    document.getElementById("answer").focus();
-
-    startTimer(timerState);
-}
-
-function submitAnswer() {
-    const userAnswer = document.getElementById("answer").value.trim().toLowerCase();
-    let correctAnswer;
-
-    if (currentKey.includes("participios_passados")) {
-        const [verb, , aux] = currentKey.split("-");
-        correctAnswer = verbs[verb].participios_passados[aux];
-    } else {
-        const [verb, tense, personIdx] = currentKey.split("-");
-        correctAnswer = verbs[verb][tense][personIdx];
-    }
-
-    const prevCount = conjugationCounters[currentKey];
-
-    if (userAnswer.normalize('NFC') === correctAnswer.toLowerCase().normalize('NFC')) {
-        document.getElementById("feedback").innerHTML = "Correto!";
-        document.getElementById("feedback").className = "correct";
-        conjugationCounters[currentKey]++;
-        totalScore++;
-
-        if (conjugationCounters[currentKey] >= requiredCorrect) {
-            const index = conjugationsToPractice.indexOf(currentKey);
-            if (index > -1) conjugationsToPractice.splice(index, 1);
+            el.append('Conjugue o verbo ');
+            const s1 = document.createElement('strong');
+            s1.className = verbClass;
+            s1.textContent = verb;
+            el.append(s1, ' no tempo ');
+            const s2 = document.createElement('strong');
+            s2.className = tenseClass;
+            s2.textContent = TENSE_LABELS[tense] || tense;
+            el.append(s2, ' para ');
+            const s3 = document.createElement('strong');
+            s3.className = personClass;
+            s3.textContent = PERSONS[personIdx];
+            el.append(s3, ':');
         }
-    } else {
-        document.getElementById("feedback").innerHTML = `Errado. A resposta correta é '${correctAnswer}'.`;
-        document.getElementById("feedback").className = "incorrect";
-        if (conjugationCounters[currentKey] > 0) conjugationCounters[currentKey]--;
-        totalScore--;
-        mistakeCounters[currentKey]++;
     }
 
-    updateScoreDisplay();
+    getCorrectAnswer(key) {
+        const [verb, tense, third] = key.split('|||');
+        if (tense === 'participios_passados') {
+            return this.data[verb].participios_passados[third];
+        }
+        return this.data[verb][tense][parseInt(third, 10)];
+    }
 
-    const countChange = conjugationCounters[currentKey] - prevCount;
-    conjugationsCompleted = Math.max(0, Math.min(totalConjugationsNeeded, conjugationsCompleted + countChange));
-    updateProgressBar();
+    formatMistake(key, count, index) {
+        const [verb, tense, third] = key.split('|||');
+        const li = document.createElement('li');
 
-    document.getElementById("answer-container").classList.add("hidden");
-    document.getElementById("feedback").classList.remove("hidden");
-    document.getElementById("next-question").classList.remove("hidden");
-    isFeedbackDisplayed = true;
-
-    stopTimer(timerState);
-}
-
-function updateProgressBar() {
-    const pct = Math.max(0, Math.min(100, (conjugationsCompleted / totalConjugationsNeeded) * 100));
-    document.getElementById("progress-bar").style.width = pct + "%";
-    document.getElementById("progress-percentage").innerText = `Progresso: ${pct.toFixed(2)}%`;
-}
-
-function endQuiz() {
-    stopTimer(timerState);
-    document.getElementById("quiz").classList.add("hidden");
-    document.getElementById("result").classList.remove("hidden");
-    document.getElementById("total-score").innerText = `Sua pontuação total é: ${totalScore}`;
-    updateBestScore('bestScore_verbs', totalScore);
-
-    const sortedMistakes = Object.entries(mistakeCounters).sort((a, b) => b[1] - a[1]);
-    const topMistakes = sortedMistakes.filter(item => item[1] > 0).slice(0, 10);
-    const topMistakesList = document.getElementById("top-mistakes");
-    topMistakesList.innerHTML = "";
-
-    if (topMistakes.length > 0) {
-        topMistakes.forEach(([key, mistakes], index) => {
-            const li = document.createElement("li");
-            if (key.includes("participios_passados")) {
-                const [verb, , aux] = key.split("-");
-                const correctAnswer = verbs[verb].participios_passados[aux];
-                li.innerHTML = `${index + 1}. Verbo: <strong>${verb}</strong>, Tempo: <strong>particípios passados</strong>, Auxiliar: <strong>${aux}</strong>, Resposta correta: '<strong>${correctAnswer}</strong>', Erros: ${mistakes}`;
-            } else {
-                const [verb, tense, personIdx] = key.split("-");
-                const person = persons[personIdx];
-                const correctAnswer = verbs[verb][tense][personIdx];
-                li.innerHTML = `${index + 1}. Verbo: <strong>${verb}</strong>, Tempo: <strong>${tenseLabels[tense] || tense}</strong>, Pessoa: <strong>${person}</strong>, Resposta correta: '<strong>${correctAnswer}</strong>', Erros: ${mistakes}`;
-            }
-            topMistakesList.appendChild(li);
-        });
-    } else {
-        topMistakesList.innerHTML = "<li>Parabéns! Você não cometeu nenhum erro.</li>";
+        if (tense === 'participios_passados') {
+            const answer = this.data[verb].participios_passados[third];
+            li.append(`${index + 1}. Verbo: `);
+            _strong(li, verb);
+            li.append(', Tempo: ');
+            _strong(li, 'particípios passados');
+            li.append(', Auxiliar: ');
+            _strong(li, third);
+            li.append(', Resposta: ');
+            _strong(li, answer);
+            li.append(`, Erros: ${count}`);
+        } else {
+            const personIdx = parseInt(third, 10);
+            const answer = this.data[verb][tense][personIdx];
+            li.append(`${index + 1}. Verbo: `);
+            _strong(li, verb);
+            li.append(', Tempo: ');
+            _strong(li, TENSE_LABELS[tense] || tense);
+            li.append(', Pessoa: ');
+            _strong(li, PERSONS[personIdx]);
+            li.append(', Resposta: ');
+            _strong(li, answer);
+            li.append(`, Erros: ${count}`);
+        }
+        return li;
     }
 }
 
-function updateScoreDisplay() {
-    document.getElementById("score-display").innerText = `Pontuação: ${totalScore}`;
+function _strong(parent, text) {
+    const s = document.createElement('strong');
+    s.textContent = text;
+    parent.appendChild(s);
 }
+
+document.addEventListener('DOMContentLoaded', () => new VerbQuiz().init());
