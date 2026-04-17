@@ -27,7 +27,11 @@ jobs:
       - name: Detect Manual Version Change
         id: detect-manual-change
         run: |
-          git diff HEAD~1 HEAD -- version.txt > version_diff.txt
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            git diff HEAD~1 HEAD -- version.txt > version_diff.txt
+          else
+            touch version_diff.txt
+          fi
           if [[ -s version_diff.txt ]]; then
             echo "manual_bump=true" >> $GITHUB_ENV
           else
