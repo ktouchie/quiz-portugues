@@ -83,6 +83,13 @@ export class QuizBase {
      */
     formatMistake(_key, _count, _index) { throw new Error('formatMistake() not implemented'); }
 
+    /**
+     * Optional: return a grammar hint string for the given key, or null.
+     * @param {string} _key
+     * @returns {string|null}
+     */
+    getHint(_key) { return null; }
+
     // ── Template hook ────────────────────────────────────────────────────────
 
     /** Override to build setup-screen UI (checkboxes, etc.) after data loads. */
@@ -202,7 +209,7 @@ export class QuizBase {
         feedbackEl.className = '';
 
         if (isCorrect) {
-            feedbackEl.textContent = 'Correto!';
+            feedbackEl.textContent = 'Correto! ';
             feedbackEl.className = 'correct';
             this.correctCount++;
             this.itemCounters[this.currentKey]++;
@@ -214,11 +221,20 @@ export class QuizBase {
                     this.completedCount++;
                 }
             }
-            // SRS quality 4 = correct (will be refined by confidence in Commit 5)
-            this._recordSRS(this.currentKey, 4);
+            this._showConfidenceButtons(feedbackEl, this.currentKey);
         } else {
-            feedbackEl.textContent = `Errado. A resposta correta é "${correctAnswer}".`;
+            feedbackEl.textContent = '';
             feedbackEl.className = 'incorrect';
+            const wrongMsg = document.createElement('span');
+            wrongMsg.textContent = `Errado. A resposta correta é "${correctAnswer}".`;
+            feedbackEl.appendChild(wrongMsg);
+            const hint = this.getHint(this.currentKey);
+            if (hint) {
+                const hintEl = document.createElement('p');
+                hintEl.className = 'grammar-hint';
+                hintEl.textContent = hint;
+                feedbackEl.appendChild(hintEl);
+            }
             this.errorCount++;
             this.mistakeCounters[this.currentKey]++;
             this._recordSRS(this.currentKey, 0);
@@ -229,7 +245,9 @@ export class QuizBase {
 
         document.getElementById('answer-container').classList.add('hidden');
         feedbackEl.classList.remove('hidden');
-        document.getElementById('next-question').classList.remove('hidden');
+        if (!isCorrect) {
+            document.getElementById('next-question').classList.remove('hidden');
+        }
         this.isFeedbackDisplayed = true;
 
         stopTimer(this.timerState);
@@ -293,6 +311,31 @@ export class QuizBase {
     _updateScoreDisplay() {
         const el = document.getElementById('score-display');
         if (el) el.textContent = `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
+    }
+
+    _showConfidenceButtons(feedbackEl, key) {
+        const container = document.createElement('span');
+        container.className = 'confidence-buttons';
+
+        const buttons = [
+            { label: 'Fácil', quality: 5 },
+            { label: 'OK', quality: 4 },
+            { label: 'Difícil', quality: 3 },
+        ];
+
+        buttons.forEach(({ label, quality }) => {
+            const btn = document.createElement('button');
+            btn.className = 'confidence-btn';
+            btn.textContent = label;
+            btn.addEventListener('click', () => {
+                this._recordSRS(key, quality);
+                container.remove();
+                document.getElementById('next-question').classList.remove('hidden');
+            }, { once: true });
+            container.appendChild(btn);
+        });
+
+        feedbackEl.appendChild(container);
     }
 
     _recordSRS(key, quality) {

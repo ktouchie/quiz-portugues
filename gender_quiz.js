@@ -1,5 +1,6 @@
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
+import { getGenderHint } from './grammar_hints.js';
 
 class GenderQuiz extends QuizBase {
     constructor() {
@@ -52,6 +53,11 @@ class GenderQuiz extends QuizBase {
 
     getCorrectAnswer(key) {
         return this.itemData[key].answer;
+    }
+
+    getHint(key) {
+        const [category] = key.split('|||');
+        return getGenderHint(category);
     }
 
     formatMistake(key, count, _index) {

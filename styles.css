@@ -420,6 +420,59 @@ button:active {
     margin: 0;
 }
 
+/* ── Grammar hint (shown after wrong answer) ─────────────── */
+.grammar-hint {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: 6px 0 0;
+    font-style: italic;
+}
+
+/* ── Confidence rating buttons ────────────────────────────── */
+.confidence-buttons {
+    display: inline-flex;
+    gap: 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.confidence-btn {
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background-color: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    box-shadow: none;
+}
+
+.confidence-btn:hover {
+    background-color: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+/* ── Difficulty selector & interleaved toggle ─────────────── */
+#difficulty-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-bottom: 12px;
+}
+
+#difficulty-selector label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.interleaved-label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
 /* ── Category badge (vocab mistakes) ─────────────────────── */
 .category-badge {
     display: inline-block;

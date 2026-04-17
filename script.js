@@ -1,6 +1,7 @@
 import { addSelectAll } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { PERSONS, TENSE_LABELS, STORAGE_KEYS } from './config.js';
+import { getVerbHint } from './grammar_hints.js';
 
 const TENSE_KEYS = Object.keys(TENSE_LABELS);
 
@@ -8,6 +9,8 @@ class VerbQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.verbs);
         this.selectedTenses = [];
+        this.interleaved = false;
+        this.difficultyFilter = 'all';
     }
 
     async fetchData() {
@@ -36,6 +39,41 @@ class VerbQuiz extends QuizBase {
         ppLabel.appendChild(ppCb);
         ppLabel.appendChild(document.createTextNode(' particípios passados'));
         tensesDiv.appendChild(ppLabel);
+
+        // Difficulty selector
+        const setup = document.getElementById('setup');
+        const dueSibling = document.getElementById('srs-due-count');
+
+        const diffH = document.createElement('h2');
+        diffH.textContent = 'Nível de dificuldade';
+        setup.insertBefore(diffH, dueSibling);
+
+        const diffDiv = document.createElement('div');
+        diffDiv.id = 'difficulty-selector';
+        [['all', 'Todos'], ['beginner', 'Iniciante'], ['intermediate', 'Intermédio'], ['advanced', 'Avançado']].forEach(([val, label], i) => {
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'difficulty';
+            radio.value = val;
+            radio.id = `diff-${val}`;
+            if (i === 0) radio.checked = true;
+            const lbl = document.createElement('label');
+            lbl.htmlFor = `diff-${val}`;
+            lbl.appendChild(radio);
+            lbl.appendChild(document.createTextNode(' ' + label));
+            diffDiv.appendChild(lbl);
+        });
+        setup.insertBefore(diffDiv, dueSibling);
+
+        // Interleaved mode toggle
+        const intLabel = document.createElement('label');
+        intLabel.className = 'interleaved-label';
+        const intCb = document.createElement('input');
+        intCb.type = 'checkbox';
+        intCb.id = 'interleaved-mode';
+        intLabel.appendChild(intCb);
+        intLabel.appendChild(document.createTextNode(' Modo intercalado (melhor para retenção)'));
+        setup.insertBefore(intLabel, dueSibling);
     }
 
     getSelectedItems() {
@@ -48,9 +86,13 @@ class VerbQuiz extends QuizBase {
             return null;
         }
 
+        this.difficultyFilter = document.querySelector("input[name='difficulty']:checked")?.value ?? 'all';
+        this.interleaved = document.getElementById('interleaved-mode')?.checked ?? false;
+
         const items = [];
         const verbs = this.data;
         for (const verb in verbs) {
+            if (this.difficultyFilter !== 'all' && verbs[verb].difficulty !== this.difficultyFilter) continue;
             for (const tense of this.selectedTenses) {
                 if (tense === 'participios_passados' && verbs[verb].participios_passados) {
                     for (const aux of ['ter', 'ser', 'estar']) {
@@ -67,6 +109,16 @@ class VerbQuiz extends QuizBase {
             }
         }
         return items;
+    }
+
+    startQuiz() {
+        super.startQuiz();
+        if (this.interleaved && this.itemsToPractice.length > 0) {
+            for (let i = this.itemsToPractice.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [this.itemsToPractice[i], this.itemsToPractice[j]] = [this.itemsToPractice[j], this.itemsToPractice[i]];
+            }
+        }
     }
 
     renderQuestion(key) {
@@ -113,6 +165,11 @@ class VerbQuiz extends QuizBase {
             return this.data[verb].participios_passados[third];
         }
         return this.data[verb][tense][parseInt(third, 10)];
+    }
+
+    getHint(key) {
+        const [verb, tense, third] = key.split('|||');
+        return getVerbHint(tense, verb, third);
     }
 
     formatMistake(key, count, index) {
