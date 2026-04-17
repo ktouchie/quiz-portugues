@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A static client-side European Portuguese language learning application with three quiz modules. No build process — files are served directly from the repository.
+A static client-side European Portuguese language learning application with seven quiz modules plus an SRS manager. No build process — files are served directly from the repository.
 
 ## Running Locally
 
@@ -24,44 +24,54 @@ npm run lint
 
 ## Architecture
 
-**Three independent quiz modules**, each with its own HTML + JS file:
+**Seven independent quiz modules**, each with its own HTML + JS file:
 
-- `verb_quiz.html` + `script.js` — Verb conjugation quiz; loads `verbs.json`
-- `vocabulary_quiz.html` + `vocabulary_quiz.js` — Vocabulary translation quiz; loads `vocabulary.json`
-- `gender_quiz.html` + `gender_quiz.js` — Gender & plural quiz; loads `gender_quiz.json`
-- `index.html` — Home page with streak, mastered count, personal goal; fetches `version.txt` to display version
+- `verb_quiz.html` + `script.js` — Verb conjugation; loads `verbs.json`
+- `vocabulary_quiz.html` + `vocabulary_quiz.js` — Vocabulary translation; loads `vocabulary.json`
+- `gender_quiz.html` + `gender_quiz.js` — Gender & plural; loads `gender_quiz.json`
+- `ser_estar_ficar_quiz.html` + `ser_estar_ficar_quiz.js` — Fill-blank: ser/estar/ficar; loads `ser_estar_ficar.json`
+- `contractions_quiz.html` + `contractions_quiz.js` — Preposition contractions; loads `contractions.json`
+- `subjunctive_quiz.html` + `subjunctive_quiz.js` — Conjuntivo conjugation; loads `subjunctive_quiz.json`
+- `indirect_speech_quiz.html` + `indirect_speech_quiz.js` — Discurso indireto verb forms; loads `indirect_speech.json`
+- `index.html` — Home page with streak, mastered count, links to all modules and SRS manager
+- `srs_manager.html` — SRS management page: view/reset records per item or per module
 
 **Shared:**
 - `common.js` — `initTheme`, `loadVersion`, `startTimer`, `stopTimer`, `resumeTimer`, `updateTimerDisplay`, `updateBestScore`, `addSelectAll`
-- `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, nextQuestion, submitAnswer, endQuiz), SRS integration, confidence buttons, audio, progress bar, retry-mistakes
-- `config.js` — `PERSONS`, `TENSE_LABELS`, `STORAGE_KEYS`
+- `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, nextQuestion, submitAnswer, endQuiz), SRS integration, progress bar, retry-mistakes; abstract methods: `fetchData`, `getSelectedItems`, `renderQuestion`, `getCorrectAnswer`, `formatMistake`, `getLabel`
+- `config.js` — `PERSONS`, `TENSE_LABELS`, `STORAGE_KEYS` (verbs, vocab, gender, serEstarFicar, contractions, subjunctive, indirectSpeech, theme)
 - `srs.js` — SM-2 spaced repetition: `loadSRSState`, `saveSRSState`, `getItemSRS`, `sm2`, `getDueItems`
-- `audio.js` — Web Speech API wrapper: `initAudio`, `isAudioAvailable`, `speak`
 - `gamification.js` — `loadStreak`, `updateStreak`, `getTotalMastered`, `checkMilestone`, `showMilestoneBanner`, `loadGoal`, `saveGoal`, `getGoalProgress`
 - `grammar_hints.js` — `getVerbHint(tense, verb, third)`, `getGenderHint(category)`
 - `styles.css` — Applies to all pages; uses CSS custom properties for dark/light theming
 
 **Data files:**
-- `verbs.json` — `{ verbName: { regular, difficulty, tense: [...5 forms...], exemplos: { presente: [...], pretérito: [...] } } }` — 26 conjugation verbs + 25 participios-only verbs; `difficulty`: `"beginner" | "intermediate" | "advanced"`; `exemplos` on 16 high-frequency verbs
+- `verbs.json` — `{ verbName: { regular, difficulty, tense: [...5 forms...], exemplos: { presente: [...], pretérito: [...] } } }` — 26 conjugation verbs; `difficulty`: `"beginner" | "intermediate" | "advanced"`; `exemplos` on 16 high-frequency verbs
 - `vocabulary.json` — `{ category: { portuguese: "english" } }`; 31 categories, ~548 words
-- `gender_quiz.json` — `{ category: [{ masculine, feminine, plural }] }`; 4 categories, 53 words, 102 quiz items
+- `gender_quiz.json` — `{ category: [{ masculine, feminine, plural, english }] }`; 4 categories, 53 words, 102 quiz items
+- `ser_estar_ficar.json` — `{ category: [{ sentence, answer, hint, english }] }`; 4 categories, 38 items
+- `contractions.json` — `{ category: [{ parts: [prep, article], answer, example, english, hint }] }`; 8 categories, 39 items
+- `subjunctive_quiz.json` — `{ category: [{ prompt, answer, trigger, hint, english }] }`; 6 categories, 38 items
+- `indirect_speech.json` — `[{ direct, context, verb_direct, answer, rule, indirect_full, english, hint }]`; 20 items
 
-**SRS state** is persisted per quiz in `localStorage` under keys `srs_verbs`, `srs_vocab`, `srs_gender`.
-**Best scores** are persisted under `bestScore_verbs`, `bestScore_vocab`, `bestScore_gender`.
-**Gamification** keys: `streak_data`, `seen_milestones`, `goal_data`.
+**SRS state** is persisted per quiz in `localStorage` under keys `srs_verbs`, `srs_vocab`, `srs_gender`, `srs_ser_estar_ficar`, `srs_contractions`, `srs_subjunctive`, `srs_indirect_speech`.
+**Best scores** are persisted under `bestScore_*` keys matching the module names.
+**Gamification** keys: `streak_data`, `seen_milestones`.
 
 ## Quiz mechanics (shared pattern)
 
-All three quizzes share `QuizBase`:
+All quizzes share `QuizBase`:
 1. Setup screen — select tenses/categories/difficulty; SRS due-count shown
 2. Questions drawn randomly; SRS due items sorted first
-3. Correct answer → confidence prompt (Fácil/OK/Difícil → SM-2 quality 5/4/3); item retired
-4. Wrong answer → grammar hint + example sentence (verb quiz); SM-2 quality 0; item stays in pool
+3. Correct first try → SM-2 quality 4; correct after mistakes → quality 2; wrong → quality 0
+4. Wrong answer → grammar hint + example sentence shown; item stays in pool
 5. Score: `correctCount` / `errorCount` tracked independently; best score = max correctCount
 6. Result screen: time, accuracy %, top mistakes, "Praticar erros" retry button
-7. Streak updated on quiz completion; milestones checked; goal progress tracked
+7. Streak updated on quiz completion; milestones checked
 
 **Verb quiz extras:** adaptive difficulty filter (beginner/intermediate/advanced), interleaved mode (Fisher-Yates shuffle), example sentences for 16 high-frequency verbs.
+
+**SRS manager** (`srs_manager.html`): lists all recorded items per module with next-review date; individual or bulk reset.
 
 ## Tooling
 

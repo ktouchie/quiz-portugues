@@ -14,7 +14,14 @@ const DEFAULT_EASE = 2.5;
  * @returns {SRSItem} updated item (mutated in place and returned)
  */
 export function sm2(item, quality) {
+    // Ease factor is always updated, even on failed recalls
+    item.easeFactor = Math.max(
+        1.3,
+        item.easeFactor + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)
+    );
+
     if (quality < 3) {
+        // Failed or barely recalled — reset schedule, item comes back tomorrow
         item.repetitions = 0;
         item.interval = 1;
     } else {
@@ -26,10 +33,6 @@ export function sm2(item, quality) {
             item.interval = Math.round(item.interval * item.easeFactor);
         }
         item.repetitions++;
-        item.easeFactor = Math.max(
-            1.3,
-            item.easeFactor + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)
-        );
     }
     item.nextReview = Date.now() + item.interval * 86_400_000;
     return item;

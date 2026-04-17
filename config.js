@@ -18,8 +18,12 @@ export const TENSE_LABELS = {
 };
 
 export const STORAGE_KEYS = {
-    verbs:  'bestScore_verbs',
-    vocab:  'bestScore_vocab',
-    gender: 'bestScore_gender',
-    theme:  'theme',
+    verbs:          'bestScore_verbs',
+    vocab:          'bestScore_vocab',
+    gender:         'bestScore_gender',
+    serEstarFicar:  'bestScore_ser_estar_ficar',
+    contractions:   'bestScore_contractions',
+    subjunctive:    'bestScore_subjunctive',
+    indirectSpeech: 'bestScore_indirect_speech',
+    theme:          'theme',
 };
