@@ -66,6 +66,11 @@ class VocabQuiz extends QuizBase {
         return this.ENtoPT ? ptWord : enWord;
     }
 
+    getLabel(key) {
+        const [, ptWord, enWord] = key.split('|||');
+        return `${ptWord} ↔ ${enWord}`;
+    }
+
     formatMistake(key, count, index) {
         const [category, ptWord, enWord] = key.split('|||');
         const li = document.createElement('li');

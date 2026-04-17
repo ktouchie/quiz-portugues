@@ -9,7 +9,7 @@ const STREAK_KEY = 'streak_data';
 const SEEN_MILESTONES_KEY = 'seen_milestones';
 const GOAL_KEY = 'goal_data';
 
-const SRS_KEYS = ['srs_verbs', 'srs_vocab', 'srs_gender'];
+const SRS_KEYS = ['srs_verbs', 'srs_vocab', 'srs_gender', 'srs_ser_estar_ficar', 'srs_contractions', 'srs_subjunctive', 'srs_indirect_speech'];
 const MILESTONES = [10, 25, 50, 100, 250, 500];
 
 // ── Streak ──────────────────────────────────────────────────────────────────

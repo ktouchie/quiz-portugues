@@ -1,6 +1,5 @@
 import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore } from './common.js';
 import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems } from './srs.js';
-import { initAudio, isAudioAvailable, speak } from './audio.js';
 import { updateStreak, checkMilestone, showMilestoneBanner } from './gamification.js';
 
 /**
@@ -99,6 +98,14 @@ export class QuizBase {
      */
     getExample(_key) { return null; }
 
+    /**
+     * Return a human-readable label for the given key (used by the SRS manager).
+     * Override in subclasses to provide better labels.
+     * @param {string} _key
+     * @returns {string}
+     */
+    getLabel(_key) { return _key; }
+
     // ── Template hook ────────────────────────────────────────────────────────
 
     /** Override to build setup-screen UI (checkboxes, etc.) after data loads. */
@@ -119,7 +126,6 @@ export class QuizBase {
         }
 
         this.srsState = loadSRSState(this.srsStorageKey);
-        initAudio();
 
         this.timerState.timerDisplay = document.getElementById('timer-display');
         updateTimerDisplay(this.timerState.timerDisplay, 0);
@@ -231,15 +237,16 @@ export class QuizBase {
                     this.completedCount++;
                 }
             }
-            this._appendAudioButton(feedbackEl, correctAnswer);
-            this._showConfidenceButtons(feedbackEl, this.currentKey);
+            // Implicit SRS quality: first-try correct = 4, correct after mistakes = 2 (resets schedule)
+            const quality = this.mistakeCounters[this.currentKey] > 0 ? 2 : 4;
+            this._recordSRS(this.currentKey, quality);
+            document.getElementById('next-question').classList.remove('hidden');
         } else {
             feedbackEl.textContent = '';
             feedbackEl.className = 'incorrect';
             const wrongMsg = document.createElement('span');
             wrongMsg.textContent = `Errado. A resposta correta é "${correctAnswer}". `;
             feedbackEl.appendChild(wrongMsg);
-            this._appendAudioButton(feedbackEl, correctAnswer);
             const hint = this.getHint(this.currentKey);
             if (hint) {
                 const hintEl = document.createElement('p');
@@ -257,6 +264,7 @@ export class QuizBase {
             this.errorCount++;
             this.mistakeCounters[this.currentKey]++;
             this._recordSRS(this.currentKey, 0);
+            document.getElementById('next-question').classList.remove('hidden');
         }
 
         this._updateScoreDisplay();
@@ -264,9 +272,6 @@ export class QuizBase {
 
         document.getElementById('answer-container').classList.add('hidden');
         feedbackEl.classList.remove('hidden');
-        if (!isCorrect) {
-            document.getElementById('next-question').classList.remove('hidden');
-        }
         this.isFeedbackDisplayed = true;
 
         stopTimer(this.timerState);
@@ -336,43 +341,9 @@ export class QuizBase {
         if (el) el.textContent = `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
     }
 
-    _appendAudioButton(parent, text) {
-        if (!isAudioAvailable()) return;
-        const btn = document.createElement('button');
-        btn.className = 'audio-btn';
-        btn.textContent = '🔊';
-        btn.setAttribute('aria-label', 'Ouvir pronúncia');
-        btn.addEventListener('click', () => speak(text));
-        parent.appendChild(btn);
-    }
-
-    _showConfidenceButtons(feedbackEl, key) {
-        const container = document.createElement('span');
-        container.className = 'confidence-buttons';
-
-        const buttons = [
-            { label: 'Fácil', quality: 5 },
-            { label: 'OK', quality: 4 },
-            { label: 'Difícil', quality: 3 },
-        ];
-
-        buttons.forEach(({ label, quality }) => {
-            const btn = document.createElement('button');
-            btn.className = 'confidence-btn';
-            btn.textContent = label;
-            btn.addEventListener('click', () => {
-                this._recordSRS(key, quality);
-                container.remove();
-                document.getElementById('next-question').classList.remove('hidden');
-            }, { once: true });
-            container.appendChild(btn);
-        });
-
-        feedbackEl.appendChild(container);
-    }
-
     _recordSRS(key, quality) {
         const item = getItemSRS(this.srsState, key);
+        if (!item.label) item.label = this.getLabel(key);
         sm2(item, quality);
         saveSRSState(this.srsStorageKey, this.srsState);
     }

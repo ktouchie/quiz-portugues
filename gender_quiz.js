@@ -70,6 +70,12 @@ class GenderQuiz extends QuizBase {
         return getGenderHint(category);
     }
 
+    getLabel(key) {
+        const item = this.itemData[key];
+        if (!item) return key;
+        return `${item.masculine} (${item.label})`;
+    }
+
     formatMistake(key, count, _index) {
         const item = this.itemData[key];
         const li = document.createElement('li');

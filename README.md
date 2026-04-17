@@ -1,16 +1,16 @@
 # Quiz de Português
 
-A browser-based European Portuguese practice app with three quiz modules.
+A browser-based European Portuguese practice app with seven quiz modules.
 
 ## Modules
 
 ### Conjugação de Verbos
-Practice conjugating 51 verbs across 10 tenses plus compound past (*participios passados*):
+Practice conjugating 26 verbs across 10 tenses plus compound past (*participios passados*):
 presente, pretérito, imperfeito, condicional, pretérito mais-que-perfeito, perfeito composto, futuro, imperativo, conjuntivo, and infinitivo pessoal.
 
 - **Difficulty filter** — choose Iniciante (regular verbs), Intermédio, Avançado, or all
 - **Interleaved mode** — shuffles across tenses for better retention
-- **Example sentences** — 16 high-frequency verbs show a contextual example sentence after a wrong answer (presente and pretérito)
+- **Example sentences** — 16 high-frequency verbs show a contextual example sentence after a wrong answer
 - Regular verbs highlighted in blue, irregular in purple
 
 ### Vocabulário
@@ -23,16 +23,25 @@ Practice the feminine singular and masculine plural forms of 53 nouns and adject
 - `-l` endings (fácil → fácil / fáceis, espanhol → espanhola / espanhóis)
 - Irregular and invariable adjectives (bom → boa / bons, feliz → feliz / felizes)
 
-Each form is asked independently at random until all have been answered correctly.
+### Ser / Estar / Ficar
+Fill-in-the-blank sentences across four categories: professions and identity (ser), temporary states (estar), location of people vs. fixed places (ficar vs. estar), and change-of-state results (ficar). All examples use European Portuguese patterns — *estar a + infinitivo* for continuous actions, *ficar* for fixed locations.
+
+### Contrações
+Practice the full range of European Portuguese preposition contractions — *de/em/a/por* with definite/indefinite articles and with demonstratives (*este/esse/aquele*, *isso/aquilo*, *aqui/ali/aí*). Includes context sentences for each.
+
+### Conjuntivo
+Conjugate verbs in the correct conjuntivo form (present, imperfect, or personal future) triggered by expressions of desire, emotion, doubt, necessity, and subordinating conjunctions (*embora*, *quando*, *até que*, *caso*, etc.).
+
+### Discurso Indireto
+Transform direct speech into indirect speech by producing the correct backshifted verb form: present → imperfect, *pretérito* → *mais-que-perfeito composto*, *vou fazer* → *ia fazer*, and EP-specific *estar a + inf* continuations.
 
 ## Features
 
-- **Spaced repetition (SM-2)** — items are scheduled for review based on performance; due items appear first
-- **Confidence rating** — after each correct answer, rate Fácil / OK / Difícil to tune the next review date
-- **Grammar hints** — wrong answers show a rule explanation for the relevant tense or gender pattern
-- **Audio** — 🔊 button reads correct answers aloud using Portuguese TTS (where browser supports it)
+- **Spaced repetition (SM-2)** — items are scheduled for review based on performance; due items appear first; quality is implicit (first-try correct = 4, correct after mistakes = 2, wrong = 0)
+- **SRS manager** — dedicated page to view all recorded items, see next-review dates, and reset individual items or entire modules
+- **Grammar hints** — wrong answers show a rule explanation for the relevant pattern
+- **Hover tooltips** — hovering over key Portuguese words in verb and gender quizzes shows the English translation
 - **Streak & milestones** — daily practice streak displayed on the home page; milestone banners at 10, 25, 50, 100, 250, 500 mastered items
-- **Personal goal** — set a target (e.g. "100 items in 30 days") and track progress from the home page
 - **Retry mistakes** — one-click session to re-practice only the items you got wrong
 - **Best score** — personal best saved per module in your browser
 - **Progress bar** and live score (corrects / errors) during the quiz
