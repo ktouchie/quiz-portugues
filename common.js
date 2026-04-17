@@ -52,6 +52,19 @@ export function startTimer(state) {
     }, 1000);
 }
 
+export function updateBestScore(storageKey, score) {
+    const prev = parseInt(localStorage.getItem(storageKey), 10);
+    const isRecord = isNaN(prev) || score > prev;
+    if (isRecord) localStorage.setItem(storageKey, score);
+    const best = isRecord ? score : prev;
+    const el = document.getElementById('best-score');
+    if (!el) return;
+    el.textContent = isRecord
+        ? `Novo recorde! Melhor pontuação: ${best}`
+        : `Melhor pontuação: ${best}`;
+    el.className = isRecord ? 'correct' : '';
+}
+
 export function stopTimer(state) {
     if (state.timerInterval) {
         clearInterval(state.timerInterval);

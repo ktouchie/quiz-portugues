@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quiz dos Verbos Portugueses</title>
+    <title>Quiz de Género e Plural</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <script>
-        // Apply saved theme before first paint to avoid flash
         (function() {
             const t = localStorage.getItem('theme');
             if (t) document.documentElement.setAttribute('data-theme', t);
@@ -23,11 +22,11 @@
 </div>
 
 <a href="index.html" id="back-link">← Menu</a>
-<h1>Quiz dos Verbos Portugueses</h1>
+<h1>Quiz de Género e Plural</h1>
 
 <div id="setup">
-    <h2>Selecione os tempos para praticar</h2>
-    <div id="tenses"></div>
+    <h2>Selecione as categorias para praticar</h2>
+    <div id="categories"></div>
     <button id="start-quiz">Iniciar Quiz</button>
 </div>
 
@@ -48,7 +47,7 @@
 </div>
 
 <div id="result" class="hidden">
-    <h2>Parabéns! Conjugou corretamente todos os verbos.</h2>
+    <h2>Parabéns! Completou todas as palavras.</h2>
     <p id="total-score"></p>
     <p id="best-score"></p>
     <h3>Erros mais comuns</h3>
@@ -68,6 +67,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js"></script>
+<script type="module" src="gender_quiz.js"></script>
 </body>
 </html>
