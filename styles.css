@@ -386,6 +386,14 @@ button:active {
 .ser   { color: #26c6da; }
 .estar { color: #ff8a65; }
 
+/* ── SRS due-items notice ─────────────────────────────────── */
+.srs-due {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 12px;
+}
+
 /* ── Setup hint & keyboard hint ──────────────────────────── */
 .setup-hint {
     font-size: 0.85rem;

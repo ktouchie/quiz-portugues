@@ -1,4 +1,5 @@
 import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore } from './common.js';
+import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems } from './srs.js';
 
 /**
  * @typedef {{ timerInterval: number|null, elapsedTime: number, timerDisplay: HTMLElement|null }} TimerState
@@ -41,6 +42,11 @@ export class QuizBase {
 
         /** @type {TimerState} */
         this.timerState = { timerInterval: null, elapsedTime: 0, timerDisplay: null };
+
+        // SRS storage key is derived from best-score key, e.g. bestScore_verbs → srs_verbs
+        this.srsStorageKey = storageKey.replace('bestScore_', 'srs_');
+        /** @type {import('./srs.js').SRSState} */
+        this.srsState = {};
     }
 
     // ── Abstract methods ─────────────────────────────────────────────────────
@@ -96,11 +102,14 @@ export class QuizBase {
             return;
         }
 
+        this.srsState = loadSRSState(this.srsStorageKey);
+
         this.timerState.timerDisplay = document.getElementById('timer-display');
         updateTimerDisplay(this.timerState.timerDisplay, 0);
         this._updateScoreDisplay();
 
         this.setupUI();
+        this._updateDueCount();
 
         document.getElementById('start-quiz').addEventListener('click', () => this.startQuiz());
         document.getElementById('submit-answer').addEventListener('click', () => this.submitAnswer());
@@ -140,6 +149,14 @@ export class QuizBase {
             this.itemCounters[item.key] = 0;
             this.mistakeCounters[item.key] = 0;
             return item.key;
+        });
+
+        // Sort: due-for-review items appear before new items
+        const dueSet = new Set(getDueItems(this.srsState));
+        this.itemsToPractice.sort((a, b) => {
+            const aDue = dueSet.has(a) ? 0 : 1;
+            const bDue = dueSet.has(b) ? 0 : 1;
+            return aDue - bDue;
         });
 
         this.totalNeeded = this.itemsToPractice.length;
@@ -197,11 +214,14 @@ export class QuizBase {
                     this.completedCount++;
                 }
             }
+            // SRS quality 4 = correct (will be refined by confidence in Commit 5)
+            this._recordSRS(this.currentKey, 4);
         } else {
             feedbackEl.textContent = `Errado. A resposta correta é "${correctAnswer}".`;
             feedbackEl.className = 'incorrect';
             this.errorCount++;
             this.mistakeCounters[this.currentKey]++;
+            this._recordSRS(this.currentKey, 0);
         }
 
         this._updateScoreDisplay();
@@ -273,6 +293,20 @@ export class QuizBase {
     _updateScoreDisplay() {
         const el = document.getElementById('score-display');
         if (el) el.textContent = `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
+    }
+
+    _recordSRS(key, quality) {
+        const item = getItemSRS(this.srsState, key);
+        sm2(item, quality);
+        saveSRSState(this.srsStorageKey, this.srsState);
+    }
+
+    _updateDueCount() {
+        const el = document.getElementById('srs-due-count');
+        if (!el) return;
+        const due = getDueItems(this.srsState).length;
+        el.textContent = due > 0 ? `${due} ${due === 1 ? 'item' : 'itens'} para rever hoje` : '';
+        el.classList.toggle('hidden', due === 0);
     }
 
     _updateProgressBar() {
