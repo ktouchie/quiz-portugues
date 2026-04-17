@@ -17,7 +17,7 @@
 <button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
 
 <div id="score-timer-container">
-    <div id="score-display">Pontuação: 0</div>
+    <div id="score-display">Corretas: 0 | Erros: 0</div>
     <div id="timer-display">Tempo: 00:00</div>
 </div>
 
@@ -25,6 +25,8 @@
 <h1>Quiz de Género e Plural</h1>
 
 <div id="setup">
+    <p class="setup-hint">Pratique as formas femininas e plurais de nomes e adjetivos.</p>
+    <p id="srs-due-count" class="srs-due hidden"></p>
     <button id="start-quiz">Iniciar Quiz</button>
 </div>
 
@@ -34,12 +36,16 @@
         <input type="text" id="answer" autocomplete="off">
         <button id="submit-answer">Enviar</button>
     </div>
+    <p class="keyboard-hint">Pressione Enter para enviar</p>
     <div id="feedback-progress-container">
         <p id="feedback" class="hidden"></p>
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
-        <p id="progress-percentage"></p>
+        <div id="progress-info">
+            <p id="progress-percentage"></p>
+            <p id="mastery-counter"></p>
+        </div>
         <button id="next-question" class="hidden">Próxima</button>
     </div>
 </div>
@@ -47,10 +53,13 @@
 <div id="result" class="hidden">
     <h2>Parabéns! Completou todas as palavras.</h2>
     <p id="total-score"></p>
+    <p id="quiz-time"></p>
+    <p id="accuracy"></p>
     <p id="best-score"></p>
     <h3>Erros mais comuns</h3>
     <ol id="top-mistakes"></ol>
     <div id="result-buttons">
+        <button id="retry-mistakes" class="hidden">Praticar erros</button>
         <button id="restart">Reiniciar Quiz</button>
         <a href="index.html"><button>← Menu principal</button></a>
     </div>

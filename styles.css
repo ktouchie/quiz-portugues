@@ -19,8 +19,8 @@
     --surface:    #1a1d27;
     --surface-2:  #242736;
     --border:     #2e3248;
-    --accent:     #5e9bff;
-    --accent-dim: #4a7cf7;
+    --accent:     #7fc1ff;
+    --accent-dim: #5e9bff;
     --correct:    #3ddc97;
     --incorrect:  #ff5c6c;
     --text:       #e2e8f0;
@@ -332,6 +332,30 @@ button:active {
     #back-link { margin-top: 48px; }
 }
 
+/* ── Milestone banner ─────────────────────────────────────── */
+#milestone-banner {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: var(--shadow);
+    z-index: 2000;
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    pointer-events: none;
+}
+
+#milestone-banner.milestone-banner--visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
 /* ── Index page ───────────────────────────────────────────── */
 #main-container {
     background-color: var(--surface);
@@ -339,6 +363,76 @@ button:active {
     border-radius: 12px;
     padding: 32px 24px;
     box-shadow: var(--shadow);
+}
+
+#stats-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+#goal-section {
+    margin-bottom: 16px;
+}
+
+#goal-progress-bar-wrap {
+    width: 100%;
+    background-color: var(--surface-2);
+    border-radius: 99px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+#goal-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--correct), var(--accent));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+#goal-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+#goal-form {
+    margin-bottom: 16px;
+}
+
+#goal-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+#goal-inputs input[type="number"] {
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 7px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--surface-2);
+    color: var(--text);
+    width: 90px;
+    outline: none;
+}
+
+#goal-inputs input[type="number"]:focus {
+    border-color: var(--accent);
+}
+
+#goal-save {
+    font-size: 0.85rem;
+    padding: 7px 16px;
 }
 
 #button-container {
@@ -386,10 +480,143 @@ button:active {
 .ser   { color: #26c6da; }
 .estar { color: #ff8a65; }
 
+/* ── SRS due-items notice ─────────────────────────────────── */
+.srs-due {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 12px;
+}
+
+/* ── Setup hint & keyboard hint ──────────────────────────── */
+.setup-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: -4px 0 12px;
+}
+
+.keyboard-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: -4px 0 8px;
+}
+
+/* ── Progress info row ────────────────────────────────────── */
+#progress-info {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+#progress-info p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ── Audio pronunciation button ──────────────────────────── */
+.audio-btn {
+    font-size: 0.85rem;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    box-shadow: none;
+    vertical-align: middle;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.audio-btn:hover {
+    background-color: var(--surface-2);
+    color: var(--text);
+    transform: none;
+}
+
+/* ── Grammar hint (shown after wrong answer) ─────────────── */
+.grammar-hint {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: 6px 0 0;
+    font-style: italic;
+}
+
+/* ── Example sentence (shown after wrong answer for verbs) ── */
+.example-sentence {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+    padding: 6px 10px;
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+}
+
+/* ── Confidence rating buttons ────────────────────────────── */
+.confidence-buttons {
+    display: inline-flex;
+    gap: 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.confidence-btn {
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background-color: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    box-shadow: none;
+}
+
+.confidence-btn:hover {
+    background-color: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+/* ── Difficulty selector & interleaved toggle ─────────────── */
+#difficulty-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-bottom: 12px;
+}
+
+#difficulty-selector label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.interleaved-label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+/* ── Category badge (vocab mistakes) ─────────────────────── */
+.category-badge {
+    display: inline-block;
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 480px) {
     body {
         padding-top: 16px;
+        padding-bottom: 24px;
     }
 
     h1 {
@@ -401,15 +628,24 @@ button:active {
         padding: 16px;
     }
 
+    /* Keep score/timer at top-right on mobile — avoid footer overlap */
     #score-timer-container {
-        flex-direction: row;
-        top: auto;
-        right: auto;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: column;
+        top: 16px;
+        right: 16px;
+        bottom: auto;
+        left: auto;
+        transform: none;
+    }
+
+    /* Footer is static on mobile so it doesn't cover answer input */
+    #footer {
+        position: static;
+        margin-top: 16px;
+    }
+
+    .keyboard-hint {
+        display: none;
     }
 
     #categories label {

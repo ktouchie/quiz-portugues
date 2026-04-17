@@ -15,7 +15,12 @@ npx serve .
 python3 -m http.server
 ```
 
-No npm dependencies to install.
+Install dev dependencies (for linting and tests only):
+```
+npm install
+npm test
+npm run lint
+```
 
 ## Architecture
 
@@ -24,28 +29,46 @@ No npm dependencies to install.
 - `verb_quiz.html` + `script.js` — Verb conjugation quiz; loads `verbs.json`
 - `vocabulary_quiz.html` + `vocabulary_quiz.js` — Vocabulary translation quiz; loads `vocabulary.json`
 - `gender_quiz.html` + `gender_quiz.js` — Gender & plural quiz; loads `gender_quiz.json`
-- `index.html` — Home page linking to all three quizzes; fetches `version.txt` to display version
+- `index.html` — Home page with streak, mastered count, personal goal; fetches `version.txt` to display version
 
 **Shared:**
-- `common.js` — Exported utilities: `initTheme`, `loadVersion`, `startTimer`, `stopTimer`, `updateTimerDisplay`, `updateBestScore`, `addSelectAll`
+- `common.js` — `initTheme`, `loadVersion`, `startTimer`, `stopTimer`, `resumeTimer`, `updateTimerDisplay`, `updateBestScore`, `addSelectAll`
+- `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, nextQuestion, submitAnswer, endQuiz), SRS integration, confidence buttons, audio, progress bar, retry-mistakes
+- `config.js` — `PERSONS`, `TENSE_LABELS`, `STORAGE_KEYS`
+- `srs.js` — SM-2 spaced repetition: `loadSRSState`, `saveSRSState`, `getItemSRS`, `sm2`, `getDueItems`
+- `audio.js` — Web Speech API wrapper: `initAudio`, `isAudioAvailable`, `speak`
+- `gamification.js` — `loadStreak`, `updateStreak`, `getTotalMastered`, `checkMilestone`, `showMilestoneBanner`, `loadGoal`, `saveGoal`, `getGoalProgress`
+- `grammar_hints.js` — `getVerbHint(tense, verb, third)`, `getGenderHint(category)`
 - `styles.css` — Applies to all pages; uses CSS custom properties for dark/light theming
 
 **Data files:**
-- `verbs.json` — Structure: `{ verbName: { regular: bool, tense: [eu, tu, ele/ela/você, nós, eles/elas/vocês] } }` for 10 tenses + `participios_passados`; 51 verbs
-- `vocabulary.json` — Structure: `{ category: { portuguese: "english" } }`; 31 categories, ~548 words
-- `gender_quiz.json` — Structure: `{ category: [{ masculine, feminine, plural }] }`; 4 categories, 53 words, 102 quiz items
+- `verbs.json` — `{ verbName: { regular, difficulty, tense: [...5 forms...], exemplos: { presente: [...], pretérito: [...] } } }` — 26 conjugation verbs + 25 participios-only verbs; `difficulty`: `"beginner" | "intermediate" | "advanced"`; `exemplos` on 16 high-frequency verbs
+- `vocabulary.json` — `{ category: { portuguese: "english" } }`; 31 categories, ~548 words
+- `gender_quiz.json` — `{ category: [{ masculine, feminine, plural }] }`; 4 categories, 53 words, 102 quiz items
 
-**Best scores** are persisted per quiz in `localStorage` under keys `bestScore_verbs`, `bestScore_vocab`, `bestScore_gender`.
+**SRS state** is persisted per quiz in `localStorage` under keys `srs_verbs`, `srs_vocab`, `srs_gender`.
+**Best scores** are persisted under `bestScore_verbs`, `bestScore_vocab`, `bestScore_gender`.
+**Gamification** keys: `streak_data`, `seen_milestones`, `goal_data`.
 
 ## Quiz mechanics (shared pattern)
 
-All three quizzes follow the same pattern:
-1. Setup screen — select tenses/categories (verb & vocab) or click straight through (gender)
-2. Questions shown one at a time, randomly drawn from the remaining pool
-3. Correct answer advances the counter; wrong answer decrements it (min 0)
-4. A word/form is retired from the pool once answered correctly `REQUIRED_CORRECT` times (currently 1)
-5. Score tracked live; top mistakes and best score shown on the result screen
-6. Timer runs per question, pauses on feedback
+All three quizzes share `QuizBase`:
+1. Setup screen — select tenses/categories/difficulty; SRS due-count shown
+2. Questions drawn randomly; SRS due items sorted first
+3. Correct answer → confidence prompt (Fácil/OK/Difícil → SM-2 quality 5/4/3); item retired
+4. Wrong answer → grammar hint + example sentence (verb quiz); SM-2 quality 0; item stays in pool
+5. Score: `correctCount` / `errorCount` tracked independently; best score = max correctCount
+6. Result screen: time, accuracy %, top mistakes, "Praticar erros" retry button
+7. Streak updated on quiz completion; milestones checked; goal progress tracked
+
+**Verb quiz extras:** adaptive difficulty filter (beginner/intermediate/advanced), interleaved mode (Fisher-Yates shuffle), example sentences for 16 high-frequency verbs.
+
+## Tooling
+
+- **ESLint**: flat config (`eslint.config.js`), ES2022 modules, browser globals
+- **Vitest**: jsdom environment, tests in `tests/`
+- **lefthook**: pre-commit runs `npm run lint` + `npm test` via `~/.local/bin/npm`
+- **CI**: `.github/workflows/ci.yml` runs lint + test on push/PR to main
 
 ## Working Conventions
 

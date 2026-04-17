@@ -78,8 +78,8 @@ export function updateBestScore(storageKey, score) {
     const el = document.getElementById('best-score');
     if (!el) return;
     el.textContent = isRecord
-        ? `Novo recorde! Melhor pontuação: ${best}`
-        : `Melhor pontuação: ${best}`;
+        ? `Novo recorde! Melhor resultado: ${best} corretas`
+        : `Melhor resultado: ${best} corretas`;
     el.className = isRecord ? 'correct' : '';
 }
 
@@ -87,5 +87,14 @@ export function stopTimer(state) {
     if (state.timerInterval) {
         clearInterval(state.timerInterval);
         state.timerInterval = null;
+    }
+}
+
+export function resumeTimer(state) {
+    if (!state.timerInterval) {
+        state.timerInterval = setInterval(() => {
+            state.elapsedTime++;
+            updateTimerDisplay(state.timerDisplay, state.elapsedTime);
+        }, 1000);
     }
 }
