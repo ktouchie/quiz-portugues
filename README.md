@@ -8,7 +8,10 @@ A browser-based European Portuguese practice app with three quiz modules.
 Practice conjugating 51 verbs across 10 tenses plus compound past (*participios passados*):
 presente, pretérito, imperfeito, condicional, pretérito mais-que-perfeito, perfeito composto, futuro, imperativo, conjuntivo, and infinitivo pessoal.
 
-Select any combination of tenses to practice. Regular verbs are highlighted in blue, irregular in purple.
+- **Difficulty filter** — choose Iniciante (regular verbs), Intermédio, Avançado, or all
+- **Interleaved mode** — shuffles across tenses for better retention
+- **Example sentences** — 16 high-frequency verbs show a contextual example sentence after a wrong answer (presente and pretérito)
+- Regular verbs highlighted in blue, irregular in purple
 
 ### Vocabulário
 Translate ~548 words across 31 categories (animals, food, directions, emotions, occupations, and more) in either direction — English → Portuguese or Portuguese → English.
@@ -24,16 +27,22 @@ Each form is asked independently at random until all have been answered correctl
 
 ## Features
 
-- **Spaced repetition**: wrong answers re-enter the pool; a word is retired only after a correct answer
-- **Best score**: your personal best is saved per module in your browser and shown after each session
-- **Progress bar** and live score during the quiz
-- **Top mistakes** summary at the end
+- **Spaced repetition (SM-2)** — items are scheduled for review based on performance; due items appear first
+- **Confidence rating** — after each correct answer, rate Fácil / OK / Difícil to tune the next review date
+- **Grammar hints** — wrong answers show a rule explanation for the relevant tense or gender pattern
+- **Audio** — 🔊 button reads correct answers aloud using Portuguese TTS (where browser supports it)
+- **Streak & milestones** — daily practice streak displayed on the home page; milestone banners at 10, 25, 50, 100, 250, 500 mastered items
+- **Personal goal** — set a target (e.g. "100 items in 30 days") and track progress from the home page
+- **Retry mistakes** — one-click session to re-practice only the items you got wrong
+- **Best score** — personal best saved per module in your browser
+- **Progress bar** and live score (corrects / errors) during the quiz
+- **Accuracy & time** shown on the result screen
 - **Dark / light theme** toggle, saved across sessions
-- **Keyboard friendly**: Enter to submit or advance, Tab between fields
+- **Keyboard friendly** — Enter to submit or advance
 
 ## Running Locally
 
-No build step or dependencies required. Serve the files with any HTTP server:
+No build step required for the app itself. Serve the files with any HTTP server:
 
 ```bash
 python3 -m http.server
@@ -42,6 +51,14 @@ npx serve .
 ```
 
 Then open `http://localhost:8000`.
+
+For development (linting + tests):
+
+```bash
+npm install
+npm run lint
+npm test
+```
 
 ## Deployment
 

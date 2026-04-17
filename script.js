@@ -172,6 +172,13 @@ class VerbQuiz extends QuizBase {
         return getVerbHint(tense, verb, third);
     }
 
+    getExample(key) {
+        const [verb, tense, third] = key.split('|||');
+        if (tense === 'participios_passados') return null;
+        const personIdx = parseInt(third, 10);
+        return this.data[verb]?.exemplos?.[tense]?.[personIdx] ?? null;
+    }
+
     formatMistake(key, count, index) {
         const [verb, tense, third] = key.split('|||');
         const li = document.createElement('li');

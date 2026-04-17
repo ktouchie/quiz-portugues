@@ -92,6 +92,13 @@ export class QuizBase {
      */
     getHint(_key) { return null; }
 
+    /**
+     * Optional: return an example sentence for the given key, or null.
+     * @param {string} _key
+     * @returns {string|null}
+     */
+    getExample(_key) { return null; }
+
     // ── Template hook ────────────────────────────────────────────────────────
 
     /** Override to build setup-screen UI (checkboxes, etc.) after data loads. */
@@ -239,6 +246,13 @@ export class QuizBase {
                 hintEl.className = 'grammar-hint';
                 hintEl.textContent = hint;
                 feedbackEl.appendChild(hintEl);
+            }
+            const example = this.getExample(this.currentKey);
+            if (example) {
+                const exEl = document.createElement('p');
+                exEl.className = 'example-sentence';
+                exEl.textContent = example;
+                feedbackEl.appendChild(exEl);
             }
             this.errorCount++;
             this.mistakeCounters[this.currentKey]++;

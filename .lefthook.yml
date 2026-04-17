@@ -1,12 +1,6 @@
 pre-commit:
   commands:
     lint:
-      run: |
-        export PATH="$HOME/.local/share/fnm:$PATH"
-        eval "$(fnm env --shell zsh)"
-        npm run lint
+      run: ~/.local/bin/npm run lint
     test:
-      run: |
-        export PATH="$HOME/.local/share/fnm:$PATH"
-        eval "$(fnm env --shell zsh)"
-        npm test
+      run: ~/.local/bin/npm test

@@ -22,6 +22,7 @@
   },
   "comer": {
     "regular": true,
+    "difficulty": "beginner",
     "presente": ["como", "comes", "come", "comemos", "comem"],
     "pretérito": ["comi", "comeste", "comeu", "comemos", "comeram"],
     "imperfeito": ["comia", "comias", "comia", "comíamos", "comiam"],
@@ -31,7 +32,23 @@
     "futuro": ["comerei", "comerás", "comerá", "comeremos", "comerão"],
     "imperativo": ["", "come", "coma", "comamos", "comam"],
     "conjuntivo": ["coma", "comas", "coma", "comamos", "comam"],
-    "infinitivo pessoal": ["comer", "comeres", "comer", "comermos", "comerem"]
+    "infinitivo pessoal": ["comer", "comeres", "comer", "comermos", "comerem"],
+    "exemplos": {
+      "presente": [
+        "Eu como pão todos os dias.",
+        "Tu comes muito devagar.",
+        "Ele come carne ao almoço.",
+        "Nós comemos juntos à noite.",
+        "Eles comem fruta ao pequeno-almoço."
+      ],
+      "pretérito": [
+        "Eu comi uma maçã.",
+        "Tu comeste a sopa toda.",
+        "Ela comeu no restaurante.",
+        "Nós comemos pizza ontem.",
+        "Eles comeram tarde."
+      ]
+    }
   },
   "completar": {
     "participios_passados": {
@@ -42,6 +59,7 @@
   },
   "conseguir": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["consigo", "consegues", "consegue", "conseguimos", "conseguem"],
     "pretérito": ["consegui", "conseguiste", "conseguiu", "conseguimos", "conseguiram"],
     "imperfeito": ["conseguia", "conseguias", "conseguia", "conseguíamos", "conseguiam"],
@@ -62,6 +80,7 @@
   },
   "dar": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["dou", "dás", "dá", "damos", "dão"],
     "pretérito": ["dei", "deste", "deu", "demos", "deram"],
     "imperfeito": ["dava", "davas", "dava", "dávamos", "davam"],
@@ -71,7 +90,23 @@
     "futuro": ["darei", "darás", "dará", "daremos", "darão"],
     "imperativo": ["", "dá", "dê", "demos", "deem"],
     "conjuntivo": ["dê", "dês", "dê", "demos", "deem"],
-    "infinitivo pessoal": ["dar", "dares", "dar", "darmos", "darem"]
+    "infinitivo pessoal": ["dar", "dares", "dar", "darmos", "darem"],
+    "exemplos": {
+      "presente": [
+        "Eu dou uma prenda à minha mãe.",
+        "Tu dás sempre bons conselhos.",
+        "Ele dá aulas de matemática.",
+        "Nós damos o nosso melhor.",
+        "Eles dão apoio à equipa."
+      ],
+      "pretérito": [
+        "Eu dei o livro ao João.",
+        "Tu deste uma boa resposta.",
+        "Ela deu uma festa.",
+        "Nós demos tudo o que tínhamos.",
+        "Eles deram as boas-vindas."
+      ]
+    }
   },
   "descalçar": {
     "participios_passados": {
@@ -82,6 +117,7 @@
   },
   "descer": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["desço", "desces", "desce", "descemos", "descem"],
     "pretérito": ["desci", "desceste", "desceu", "descemos", "desceram"],
     "imperfeito": ["descia", "descias", "descia", "descíamos", "desciam"],
@@ -95,6 +131,7 @@
   },
   "dizer": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["digo", "dizes", "diz", "dizemos", "dizem"],
     "pretérito": ["disse", "disseste", "disse", "dissemos", "disseram"],
     "imperfeito": ["dizia", "dizias", "dizia", "dizíamos", "diziam"],
@@ -104,10 +141,27 @@
     "futuro": ["direi", "dirás", "dirá", "diremos", "dirão"],
     "imperativo": ["", "diz", "diga", "digamos", "digam"],
     "conjuntivo": ["diga", "digas", "diga", "digamos", "digam"],
-    "infinitivo pessoal": ["dizer", "dizeres", "dizer", "dizermos", "dizerem"]
+    "infinitivo pessoal": ["dizer", "dizeres", "dizer", "dizermos", "dizerem"],
+    "exemplos": {
+      "presente": [
+        "Eu digo sempre a verdade.",
+        "Tu dizes coisas bonitas.",
+        "Ela diz que vai chegar tarde.",
+        "Nós dizemos olá a todos.",
+        "Eles dizem que têm fome."
+      ],
+      "pretérito": [
+        "Eu disse o que pensei.",
+        "Tu disseste uma mentira.",
+        "Ele disse adeus e foi embora.",
+        "Nós dissemos a verdade.",
+        "Eles disseram que não podiam vir."
+      ]
+    }
   },
   "dormir": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["durmo", "dormes", "dorme", "dormimos", "dormem"],
     "pretérito": ["dormi", "dormiste", "dormiu", "dormimos", "dormiram"],
     "imperfeito": ["dormia", "dormias", "dormia", "dormíamos", "dormiam"],
@@ -135,6 +189,7 @@
   },
   "estar": {
     "regular": false,
+    "difficulty": "beginner",
     "presente": ["estou", "estás", "está", "estamos", "estão"],
     "pretérito": ["estive", "estiveste", "esteve", "estivemos", "estiveram"],
     "imperfeito": ["estava", "estavas", "estava", "estávamos", "estavam"],
@@ -144,7 +199,23 @@
     "futuro": ["estarei", "estarás", "estará", "estaremos", "estarão"],
     "imperativo": ["", "está", "esteja", "estejamos", "estejam"],
     "conjuntivo": ["esteja", "estejas", "esteja", "estejamos", "estejam"],
-    "infinitivo pessoal": ["estar", "estares", "estar", "estarmos", "estarem"]
+    "infinitivo pessoal": ["estar", "estares", "estar", "estarmos", "estarem"],
+    "exemplos": {
+      "presente": [
+        "Eu estou bem, obrigada.",
+        "Tu estás muito cansado hoje.",
+        "Ela está em casa.",
+        "Nós estamos prontos para sair.",
+        "Eles estão à espera do autocarro."
+      ],
+      "pretérito": [
+        "Eu estive no hospital ontem.",
+        "Tu estiveste em Lisboa?",
+        "Ele esteve doente a semana passada.",
+        "Nós estivemos na praia.",
+        "Eles estiveram aqui durante uma hora."
+      ]
+    }
   },
   "expulsar": {
     "participios_passados": {
@@ -155,6 +226,7 @@
   },
   "falar": {
     "regular": true,
+    "difficulty": "beginner",
     "presente": ["falo", "falas", "fala", "falamos", "falam"],
     "pretérito": ["falei", "falaste", "falou", "falamos", "falaram"],
     "imperfeito": ["falava", "falavas", "falava", "falávamos", "falavam"],
@@ -164,7 +236,23 @@
     "futuro": ["falarei", "falarás", "falará", "falaremos", "falarão"],
     "imperativo": ["", "fala", "fale", "falemos", "falem"],
     "conjuntivo": ["fale", "fales", "fale", "falemos", "falem"],
-    "infinitivo pessoal": ["falar", "falares", "falar", "falarmos", "falarem"]
+    "infinitivo pessoal": ["falar", "falares", "falar", "falarmos", "falarem"],
+    "exemplos": {
+      "presente": [
+        "Eu falo português todos os dias.",
+        "Tu falas muito depressa.",
+        "Ele fala com a professora.",
+        "Nós falamos sobre o fim de semana.",
+        "Eles falam três línguas."
+      ],
+      "pretérito": [
+        "Eu falei com ela ontem.",
+        "Tu falaste muito alto.",
+        "Ela falou sobre o seu trabalho.",
+        "Nós falámos durante horas.",
+        "Eles falaram com o diretor."
+      ]
+    }
   },
   "fartar": {
     "participios_passados": {
@@ -175,6 +263,7 @@
   },
   "fazer": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["faço", "fazes", "faz", "fazemos", "fazem"],
     "pretérito": ["fiz", "fizeste", "fez", "fizemos", "fizeram"],
     "imperfeito": ["fazia", "fazias", "fazia", "fazíamos", "faziam"],
@@ -184,7 +273,23 @@
     "futuro": ["farei", "farás", "fará", "faremos", "farão"],
     "imperativo": ["", "faz", "faça", "façamos", "façam"],
     "conjuntivo": ["faça", "faças", "faça", "façamos", "façam"],
-    "infinitivo pessoal": ["fazer", "fazeres", "fazer", "fazermos", "fazerem"]
+    "infinitivo pessoal": ["fazer", "fazeres", "fazer", "fazermos", "fazerem"],
+    "exemplos": {
+      "presente": [
+        "Eu faço o jantar às sete.",
+        "Tu fazes muito barulho.",
+        "Ele faz exercício todos os dias.",
+        "Nós fazemos os trabalhos de casa.",
+        "Eles fazem uma festa no sábado."
+      ],
+      "pretérito": [
+        "Eu fiz uma torta ontem.",
+        "Tu fizeste bem em vir.",
+        "Ela fez os anos na quinta-feira.",
+        "Nós fizemos uma viagem longa.",
+        "Eles fizeram muito barulho."
+      ]
+    }
   },
   "ganhar": {
     "participios_passados": {
@@ -209,6 +314,7 @@
   },
   "ir": {
     "regular": false,
+    "difficulty": "beginner",
     "presente": ["vou", "vais", "vai", "vamos", "vão"],
     "pretérito": ["fui", "foste", "foi", "fomos", "foram"],
     "imperfeito": ["ia", "ias", "ia", "íamos", "iam"],
@@ -218,7 +324,23 @@
     "futuro": ["irei", "irás", "irá", "iremos", "irão"],
     "imperativo": ["", "vai", "vá", "vamos", "vão"],
     "conjuntivo": ["vá", "vás", "vá", "vamos", "vão"],
-    "infinitivo pessoal": ["ir", "ires", "ir", "irmos", "irem"]
+    "infinitivo pessoal": ["ir", "ires", "ir", "irmos", "irem"],
+    "exemplos": {
+      "presente": [
+        "Eu vou ao supermercado.",
+        "Tu vais à escola a pé?",
+        "Ela vai ao médico amanhã.",
+        "Nós vamos ao cinema ao fim de semana.",
+        "Eles vão de férias em agosto."
+      ],
+      "pretérito": [
+        "Eu fui ao Porto no verão.",
+        "Tu foste ao jogo ontem?",
+        "Ele foi trabalhar cedo.",
+        "Nós fomos ao teatro.",
+        "Eles foram embora sem despedir."
+      ]
+    }
   },
   "juntar": {
     "participios_passados": {
@@ -229,6 +351,7 @@
   },
   "ler": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["leio", "lês", "lê", "lemos", "leem"],
     "pretérito": ["li", "leste", "leu", "lemos", "leram"],
     "imperfeito": ["lia", "lias", "lia", "líamos", "liam"],
@@ -277,6 +400,7 @@
   },
   "ouvir": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["ouço", "ouves", "ouve", "ouvimos", "ouvem"],
     "pretérito": ["ouvi", "ouviste", "ouviu", "ouvimos", "ouviram"],
     "imperfeito": ["ouvia", "ouvias", "ouvia", "ouvíamos", "ouviam"],
@@ -297,6 +421,7 @@
   },
   "partir": {
     "regular": true,
+    "difficulty": "beginner",
     "presente": ["parto", "partes", "parte", "partimos", "partem"],
     "pretérito": ["parti", "partiste", "partiu", "partimos", "partiram"],
     "imperfeito": ["partia", "partias", "partia", "partíamos", "partiam"],
@@ -310,6 +435,7 @@
   },
   "pedir": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["peço", "pedes", "pede", "pedimos", "pedem"],
     "pretérito": ["pedi", "pediste", "pediu", "pedimos", "pediram"],
     "imperfeito": ["pedia", "pedias", "pedia", "pedíamos", "pediam"],
@@ -323,6 +449,7 @@
   },
   "perder": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["perco", "perdes", "perde", "perdemos", "perdem"],
     "pretérito": ["perdi", "perdeste", "perdeu", "perdemos", "perderam"],
     "imperfeito": ["perdia", "perdias", "perdia", "perdíamos", "perdiam"],
@@ -336,6 +463,7 @@
   },
   "poder": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["posso", "podes", "pode", "podemos", "podem"],
     "pretérito": ["pude", "pudeste", "pôde", "pudemos", "puderam"],
     "imperfeito": ["podia", "podias", "podia", "podíamos", "podiam"],
@@ -345,10 +473,27 @@
     "futuro": ["poderei", "poderás", "poderá", "poderemos", "poderão"],
     "imperativo": ["", "pode", "possa", "possamos", "possam"],
     "conjuntivo": ["possa", "possas", "possa", "possamos", "possam"],
-    "infinitivo pessoal": ["poder", "poderes", "poder", "podermos", "poderem"]
+    "infinitivo pessoal": ["poder", "poderes", "poder", "podermos", "poderem"],
+    "exemplos": {
+      "presente": [
+        "Eu posso ajudar-te.",
+        "Tu podes vir amanhã?",
+        "Ele pode falar mais devagar?",
+        "Nós podemos resolver isso juntos.",
+        "Eles podem ficar até às dez."
+      ],
+      "pretérito": [
+        "Eu pude acabar o trabalho a tempo.",
+        "Tu pudeste vir à festa?",
+        "Ela pôde descansar no fim de semana.",
+        "Nós pudemos ver o espetáculo.",
+        "Eles puderam entrar sem bilhete."
+      ]
+    }
   },
   "pôr": {
     "regular": false,
+    "difficulty": "advanced",
     "presente": ["ponho", "pões", "põe", "pomos", "põem"],
     "pretérito": ["pus", "puseste", "pôs", "pusemos", "puseram"],
     "imperfeito": ["punha", "punhas", "punha", "púnhamos", "punham"],
@@ -358,10 +503,27 @@
     "futuro": ["porei", "porás", "porá", "poremos", "porão"],
     "imperativo": ["", "põe", "ponha", "ponhamos", "ponham"],
     "conjuntivo": ["ponha", "ponhas", "ponha", "ponhamos", "ponham"],
-    "infinitivo pessoal": ["pôr", "pores", "pôr", "pormos", "porem"]
+    "infinitivo pessoal": ["pôr", "pores", "pôr", "pormos", "porem"],
+    "exemplos": {
+      "presente": [
+        "Eu ponho o casaco quando sai de casa.",
+        "Tu pões os livros na mochila.",
+        "Ele põe o carro na garagem.",
+        "Nós pomos a mesa ao jantar.",
+        "Eles põem as chaves no bolso."
+      ],
+      "pretérito": [
+        "Eu pus o casaco na cadeira.",
+        "Tu puseste o copo em cima da mesa.",
+        "Ela pôs os documentos na pasta.",
+        "Nós pusemos tudo no lugar.",
+        "Eles puseram as malas no carro."
+      ]
+    }
   },
   "preferir": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["prefiro", "preferes", "prefere", "preferimos", "preferem"],
     "pretérito": ["preferi", "preferiste", "preferiu", "preferimos", "preferiram"],
     "imperfeito": ["preferia", "preferias", "preferia", "preferíamos", "preferiam"],
@@ -375,6 +537,7 @@
   },
   "querer": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["quero", "queres", "quer", "queremos", "querem"],
     "pretérito": ["quis", "quiseste", "quis", "quisemos", "quiseram"],
     "imperfeito": ["queria", "querias", "queria", "queríamos", "queriam"],
@@ -383,7 +546,23 @@
     "perfeito_composto": ["tenho querido", "tens querido", "tem querido", "temos querido", "têm querido"],
     "futuro": ["quererei", "quererás", "quererá", "quereremos", "quererão"],
     "conjuntivo": ["queira", "queiras", "queira", "queiramos", "queiram"],
-    "infinitivo pessoal": ["querer", "queres", "querer", "querermos", "quererem"]
+    "infinitivo pessoal": ["querer", "queres", "querer", "querermos", "quererem"],
+    "exemplos": {
+      "presente": [
+        "Eu quero aprender português.",
+        "Tu queres um café?",
+        "Ele quer ser médico.",
+        "Nós queremos visitar Lisboa.",
+        "Eles querem mais tempo."
+      ],
+      "pretérito": [
+        "Eu quis ir mas não pude.",
+        "Tu quiseste ajudar, obrigado.",
+        "Ela quis falar comigo.",
+        "Nós quisemos ficar mais tempo.",
+        "Eles quiseram desistir."
+      ]
+    }
   },
   "romper": {
     "participios_passados": {
@@ -394,6 +573,7 @@
   },
   "saber": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["sei", "sabes", "sabe", "sabemos", "sabem"],
     "pretérito": ["soube", "soubeste", "soube", "soubemos", "souberam"],
     "imperfeito": ["sabia", "sabias", "sabia", "sabíamos", "sabiam"],
@@ -403,10 +583,27 @@
     "futuro": ["saberei", "saberás", "saberá", "saberemos", "saberão"],
     "imperativo": ["", "sabe", "saiba", "saibamos", "saibam"],
     "conjuntivo": ["saiba", "saibas", "saiba", "saibamos", "saibam"],
-    "infinitivo pessoal": ["saber", "saberes", "saber", "sabermos", "saberem"]
+    "infinitivo pessoal": ["saber", "saberes", "saber", "sabermos", "saberem"],
+    "exemplos": {
+      "presente": [
+        "Eu sei onde fica a estação.",
+        "Tu sabes falar francês?",
+        "Ele sabe tocar guitarra.",
+        "Nós sabemos a resposta.",
+        "Eles sabem cozinhar muito bem."
+      ],
+      "pretérito": [
+        "Eu soube a notícia ontem.",
+        "Tu soubeste o que aconteceu?",
+        "Ela soube da morte do avô.",
+        "Nós soubemos tarde demais.",
+        "Eles souberam a verdade no fim."
+      ]
+    }
   },
   "sair": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["saio", "sais", "sai", "saímos", "saem"],
     "pretérito": ["saí", "saíste", "saiu", "saímos", "saíram"],
     "imperfeito": ["saía", "saías", "saía", "saíamos", "saíam"],
@@ -441,6 +638,7 @@
   },
   "ser": {
     "regular": false,
+    "difficulty": "beginner",
     "presente": ["sou", "és", "é", "somos", "são"],
     "pretérito": ["fui", "foste", "foi", "fomos", "foram"],
     "imperfeito": ["era", "eras", "era", "éramos", "eram"],
@@ -450,7 +648,23 @@
     "futuro": ["serei", "serás", "será", "seremos", "serão"],
     "imperativo": ["", "sê", "seja", "sejamos", "sejam"],
     "conjuntivo": ["seja", "sejas", "seja", "sejamos", "sejam"],
-    "infinitivo pessoal": ["ser", "seres", "ser", "sermos", "serem"]
+    "infinitivo pessoal": ["ser", "seres", "ser", "sermos", "serem"],
+    "exemplos": {
+      "presente": [
+        "Eu sou português.",
+        "Tu és muito simpático.",
+        "Ela é professora de inglês.",
+        "Nós somos bons amigos.",
+        "Eles são de Lisboa."
+      ],
+      "pretérito": [
+        "Eu fui o primeiro a chegar.",
+        "Tu foste muito corajoso.",
+        "Ele foi o melhor da turma.",
+        "Nós fomos os vencedores.",
+        "Elas foram as últimas a sair."
+      ]
+    }
   },
   "soltar": {
     "participios_passados": {
@@ -461,6 +675,7 @@
   },
   "ter": {
     "regular": false,
+    "difficulty": "beginner",
     "presente": ["tenho", "tens", "tem", "temos", "têm"],
     "pretérito": ["tive", "tiveste", "teve", "tivemos", "tiveram"],
     "imperfeito": ["tinha", "tinhas", "tinha", "tínhamos", "tinham"],
@@ -470,10 +685,27 @@
     "futuro": ["terei", "terás", "terá", "teremos", "terão"],
     "imperativo": ["", "tem", "tenha", "tenhamos", "tenham"],
     "conjuntivo": ["tenha", "tenhas", "tenha", "tenhamos", "tenham"],
-    "infinitivo pessoal": ["ter", "teres", "ter", "termos", "terem"]
+    "infinitivo pessoal": ["ter", "teres", "ter", "termos", "terem"],
+    "exemplos": {
+      "presente": [
+        "Eu tenho dois irmãos.",
+        "Tu tens muito talento.",
+        "Ela tem um cão em casa.",
+        "Nós temos uma reunião às três.",
+        "Eles têm muita paciência."
+      ],
+      "pretérito": [
+        "Eu tive uma boa ideia.",
+        "Tu tiveste sorte no exame.",
+        "Ele teve um acidente de carro.",
+        "Nós tivemos muito trabalho.",
+        "Eles tiveram um filho no ano passado."
+      ]
+    }
   },
   "trazer": {
     "regular": false,
+    "difficulty": "advanced",
     "presente": ["trago", "trazes", "traz", "trazemos", "trazem"],
     "pretérito": ["trouxe", "trouxeste", "trouxe", "trouxemos", "trouxeram"],
     "imperfeito": ["trazia", "trazias", "trazia", "trazíamos", "traziam"],
@@ -487,6 +719,7 @@
   },
   "ver": {
     "regular": false,
+    "difficulty": "intermediate",
     "presente": ["vejo", "vês", "vê", "vemos", "veem"],
     "pretérito": ["vi", "viste", "viu", "vimos", "viram"],
     "imperfeito": ["via", "vias", "via", "víamos", "viam"],
@@ -496,10 +729,27 @@
     "futuro": ["verei", "verás", "verá", "veremos", "verão"],
     "imperativo": ["", "vê", "veja", "vejamos", "vejam"],
     "conjuntivo": ["veja", "vejas", "veja", "vejamos", "vejam"],
-    "infinitivo pessoal": ["ver", "veres", "ver", "vermos", "verem"]
+    "infinitivo pessoal": ["ver", "veres", "ver", "vermos", "verem"],
+    "exemplos": {
+      "presente": [
+        "Eu vejo televisão à noite.",
+        "Tu vês bem sem óculos?",
+        "Ele vê o jogo no café.",
+        "Nós vemos o pôr do sol da janela.",
+        "Eles veem tudo o que acontece."
+      ],
+      "pretérito": [
+        "Eu vi um filme ótimo ontem.",
+        "Tu viste as notícias?",
+        "Ela viu o acidente na estrada.",
+        "Nós vimos a exposição no museu.",
+        "Eles viram os fogos de artifício."
+      ]
+    }
   },
   "vir": {
     "regular": false,
+    "difficulty": "advanced",
     "presente": ["venho", "vens", "vem", "vimos", "vêm"],
     "pretérito": ["vim", "vieste", "veio", "viemos", "vieram"],
     "imperfeito": ["vinha", "vinhas", "vinha", "vínhamos", "vinham"],
@@ -509,6 +759,22 @@
     "futuro": ["virei", "virás", "virá", "viremos", "virão"],
     "imperativo": ["", "vem", "venha", "venhamos", "venham"],
     "conjuntivo": ["venha", "venhas", "venha", "venhamos", "venham"],
-    "infinitivo pessoal": ["vir", "vires", "vir", "virmos", "virem"]
+    "infinitivo pessoal": ["vir", "vires", "vir", "virmos", "virem"],
+    "exemplos": {
+      "presente": [
+        "Eu venho a pé para o trabalho.",
+        "Tu vens à festa esta noite?",
+        "Ele vem de Coimbra.",
+        "Nós vimos de autocarro.",
+        "Eles vêm todos os fins de semana."
+      ],
+      "pretérito": [
+        "Eu vim cedo hoje de manhã.",
+        "Tu vieste de táxi?",
+        "Ela veio visitar-nos ontem.",
+        "Nós viemos de comboio.",
+        "Eles vieram de propósito."
+      ]
+    }
   }
 }
