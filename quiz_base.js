@@ -1,5 +1,6 @@
 import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore } from './common.js';
 import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems } from './srs.js';
+import { initAudio, isAudioAvailable, speak } from './audio.js';
 
 /**
  * @typedef {{ timerInterval: number|null, elapsedTime: number, timerDisplay: HTMLElement|null }} TimerState
@@ -110,6 +111,7 @@ export class QuizBase {
         }
 
         this.srsState = loadSRSState(this.srsStorageKey);
+        initAudio();
 
         this.timerState.timerDisplay = document.getElementById('timer-display');
         updateTimerDisplay(this.timerState.timerDisplay, 0);
@@ -221,13 +223,15 @@ export class QuizBase {
                     this.completedCount++;
                 }
             }
+            this._appendAudioButton(feedbackEl, correctAnswer);
             this._showConfidenceButtons(feedbackEl, this.currentKey);
         } else {
             feedbackEl.textContent = '';
             feedbackEl.className = 'incorrect';
             const wrongMsg = document.createElement('span');
-            wrongMsg.textContent = `Errado. A resposta correta é "${correctAnswer}".`;
+            wrongMsg.textContent = `Errado. A resposta correta é "${correctAnswer}". `;
             feedbackEl.appendChild(wrongMsg);
+            this._appendAudioButton(feedbackEl, correctAnswer);
             const hint = this.getHint(this.currentKey);
             if (hint) {
                 const hintEl = document.createElement('p');
@@ -311,6 +315,16 @@ export class QuizBase {
     _updateScoreDisplay() {
         const el = document.getElementById('score-display');
         if (el) el.textContent = `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
+    }
+
+    _appendAudioButton(parent, text) {
+        if (!isAudioAvailable()) return;
+        const btn = document.createElement('button');
+        btn.className = 'audio-btn';
+        btn.textContent = '🔊';
+        btn.setAttribute('aria-label', 'Ouvir pronúncia');
+        btn.addEventListener('click', () => speak(text));
+        parent.appendChild(btn);
     }
 
     _showConfidenceButtons(feedbackEl, key) {
