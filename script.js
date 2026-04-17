@@ -131,7 +131,7 @@ class VerbQuiz extends QuizBase {
             el.append('Qual é o particípio correto para o verbo ');
             const s1 = document.createElement('strong');
             s1.className = 'irregular-verb';
-            s1.textContent = verb;
+            _withTooltip(s1, verb, verbs[verb].english);
             el.append(s1, ' usado com o verbo auxiliar ');
             const s2 = document.createElement('strong');
             s2.className = third;
@@ -146,7 +146,7 @@ class VerbQuiz extends QuizBase {
             el.append('Conjugue o verbo ');
             const s1 = document.createElement('strong');
             s1.className = verbClass;
-            s1.textContent = verb;
+            _withTooltip(s1, verb, verbs[verb].english);
             el.append(s1, ' no tempo ');
             const s2 = document.createElement('strong');
             s2.className = tenseClass;
@@ -215,6 +215,18 @@ function _strong(parent, text) {
     const s = document.createElement('strong');
     s.textContent = text;
     parent.appendChild(s);
+}
+
+function _withTooltip(el, text, translation) {
+    if (translation) {
+        const span = document.createElement('span');
+        span.className = 'pt-tooltip';
+        span.dataset.tooltip = translation;
+        span.textContent = text;
+        el.appendChild(span);
+    } else {
+        el.textContent = text;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => new VerbQuiz().init());

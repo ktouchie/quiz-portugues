@@ -25,24 +25,6 @@
         <span id="mastered-display" class="hidden"></span>
     </div>
 
-    <div id="goal-section" class="hidden">
-        <div id="goal-progress-bar-wrap">
-            <div id="goal-progress-bar"></div>
-        </div>
-        <p id="goal-label"></p>
-    </div>
-
-    <div id="goal-form">
-        <p class="setup-hint">Defina uma meta pessoal (opcional):</p>
-        <div id="goal-inputs">
-            <input type="number" id="goal-target" min="1" max="2000" placeholder="N.º itens" aria-label="Número de itens a dominar">
-            <span>itens em</span>
-            <input type="number" id="goal-days" min="1" max="365" placeholder="Dias" aria-label="Dias para atingir a meta">
-            <span>dias</span>
-            <button id="goal-save">Guardar meta</button>
-        </div>
-    </div>
-
     <div id="button-container">
         <button id="btn-verbs">Praticar Conjugação de Verbos</button>
         <button id="btn-vocab">Praticar Vocabulário</button>
@@ -61,7 +43,7 @@
 
 <script type="module">
     import { loadVersion, initTheme } from './common.js';
-    import { loadStreak, getTotalMastered, loadGoal, saveGoal, getGoalProgress } from './gamification.js';
+    import { loadStreak, getTotalMastered } from './gamification.js';
 
     initTheme();
     loadVersion();
@@ -81,29 +63,6 @@
         el.textContent = `${mastered} item${mastered > 1 ? 'ns' : ''} dominado${mastered > 1 ? 's' : ''}`;
         el.classList.remove('hidden');
     }
-
-    // Goal display
-    const goal = loadGoal();
-    if (goal) {
-        const { mastered: m, daysLeft, pct } = getGoalProgress(goal);
-        const section = document.getElementById('goal-section');
-        section.classList.remove('hidden');
-        document.getElementById('goal-progress-bar').style.width = pct + '%';
-        document.getElementById('goal-label').textContent =
-            `Meta: ${m}/${goal.target} itens (${pct}%) — ${daysLeft} dia${daysLeft !== 1 ? 's' : ''} restante${daysLeft !== 1 ? 's' : ''}`;
-    }
-
-    // Goal form
-    document.getElementById('goal-save').addEventListener('click', () => {
-        const target = parseInt(document.getElementById('goal-target').value, 10);
-        const days = parseInt(document.getElementById('goal-days').value, 10);
-        if (!target || !days || target < 1 || days < 1) {
-            alert('Introduza valores válidos para a meta.');
-            return;
-        }
-        saveGoal(target, days);
-        location.reload();
-    });
 
     document.getElementById('btn-verbs').addEventListener('click', () => location.href = 'verb_quiz.html');
     document.getElementById('btn-vocab').addEventListener('click', () => location.href = 'vocabulary_quiz.html');
