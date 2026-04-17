@@ -1,0 +1,63 @@
+{
+  "Nomes em -or": [
+    { "masculine": "ator", "feminine": "atriz", "plural": "atores" },
+    { "masculine": "trabalhador", "feminine": "trabalhadora", "plural": "trabalhadores" },
+    { "masculine": "diretor", "feminine": "diretora", "plural": "diretores" },
+    { "masculine": "professor", "feminine": "professora", "plural": "professores" },
+    { "masculine": "cantor", "feminine": "cantora", "plural": "cantores" },
+    { "masculine": "escritor", "feminine": "escritora", "plural": "escritores" },
+    { "masculine": "doutor", "feminine": "doutora", "plural": "doutores" },
+    { "masculine": "trabalhador rural", "feminine": "trabalhadora rural", "plural": "trabalhadores rurais" },
+    { "masculine": "imperador", "feminine": "imperatriz", "plural": "imperadores" }
+  ],
+  "Palavras em -ão": [
+    { "masculine": "campeão", "feminine": "campeã", "plural": "campeões" },
+    { "masculine": "alemão", "feminine": "alemã", "plural": "alemães" },
+    { "masculine": "cristão", "feminine": "cristã", "plural": "cristãos" },
+    { "masculine": "irmão", "feminine": "irmã", "plural": "irmãos" },
+    { "masculine": "leão", "feminine": "leoa", "plural": "leões" },
+    { "masculine": "cidadão", "feminine": "cidadã", "plural": "cidadãos" },
+    { "masculine": "capitão", "feminine": "capitã", "plural": "capitães" },
+    { "masculine": "guardião", "feminine": "guardiã", "plural": "guardiões" },
+    { "masculine": "anfitrião", "feminine": "anfitriã", "plural": "anfitriões" },
+    { "masculine": "aldeão", "feminine": "aldeã", "plural": "aldeões" },
+    { "masculine": "charlatão", "feminine": "charlatã", "plural": "charlatões" },
+    { "masculine": "catalão", "feminine": "catalã", "plural": "catalães" },
+    { "masculine": "cão", "feminine": "cadela", "plural": "cães" },
+    { "masculine": "homem", "feminine": "mulher", "plural": "homens" },
+    { "masculine": "pão", "feminine": null, "plural": "pães" },
+    { "masculine": "mão", "feminine": null, "plural": "mãos" },
+    { "masculine": "avião", "feminine": null, "plural": "aviões" }
+  ],
+  "Adjetivos em -l": [
+    { "masculine": "espanhol", "feminine": "espanhola", "plural": "espanhóis" },
+    { "masculine": "difícil", "feminine": "difícil", "plural": "difíceis" },
+    { "masculine": "útil", "feminine": "útil", "plural": "úteis" },
+    { "masculine": "fácil", "feminine": "fácil", "plural": "fáceis" },
+    { "masculine": "terrível", "feminine": "terrível", "plural": "terríveis" },
+    { "masculine": "possível", "feminine": "possível", "plural": "possíveis" },
+    { "masculine": "incrível", "feminine": "incrível", "plural": "incríveis" },
+    { "masculine": "responsável", "feminine": "responsável", "plural": "responsáveis" },
+    { "masculine": "azul", "feminine": "azul", "plural": "azuis" },
+    { "masculine": "fóssil", "feminine": "fóssil", "plural": "fósseis" },
+    { "masculine": "civil", "feminine": "civil", "plural": "civis" },
+    { "masculine": "comum", "feminine": "comum", "plural": "comuns" },
+    { "masculine": "animal", "feminine": "animal", "plural": "animais" },
+    { "masculine": "papel", "feminine": null, "plural": "papéis" }
+  ],
+  "Outros adjetivos e nomes": [
+    { "masculine": "juiz", "feminine": "juíza", "plural": "juízes" },
+    { "masculine": "feliz", "feminine": "feliz", "plural": "felizes" },
+    { "masculine": "capaz", "feminine": "capaz", "plural": "capazes" },
+    { "masculine": "simples", "feminine": "simples", "plural": "simples" },
+    { "masculine": "mau", "feminine": "má", "plural": "maus" },
+    { "masculine": "bom", "feminine": "boa", "plural": "bons" },
+    { "masculine": "grande", "feminine": "grande", "plural": "grandes" },
+    { "masculine": "jovem", "feminine": "jovem", "plural": "jovens" },
+    { "masculine": "inteligente", "feminine": "inteligente", "plural": "inteligentes" },
+    { "masculine": "português", "feminine": "portuguesa", "plural": "portugueses" },
+    { "masculine": "francês", "feminine": "francesa", "plural": "franceses" },
+    { "masculine": "inglês", "feminine": "inglesa", "plural": "ingleses" },
+    { "masculine": "rapaz", "feminine": "rapariga", "plural": "rapazes" }
+  ]
+}
