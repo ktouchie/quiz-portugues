@@ -49,6 +49,13 @@ ksp {
     // Exports Room's schema JSON per version to android/app/schemas/, checked into version
     // control — this is what makes the schema-versioning story in the spec (§6.2) real, since it
     // gives Room's migration tests something to validate against as the schema evolves.
+    //
+    // KNOWN ISSUE: this path isn't variant-scoped, so kspDebugKotlin and kspReleaseKotlin race
+    // writing the same file if both run in one invocation (e.g. `./gradlew test` or `build`,
+    // which touch every variant) — intermittently fails with "Empty schema file". CI works
+    // around it by scoping to `testDebugUnitTest` specifically (android-ci.yml). The real fix is
+    // a per-variant schema directory via AGP's variant API; not done yet since only the debug
+    // variant is actually exercised anywhere right now.
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 

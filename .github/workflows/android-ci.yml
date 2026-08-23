@@ -47,7 +47,11 @@ jobs:
       - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
       - name: Unit tests
-        run: ./gradlew test --stacktrace
+        # Scoped to the debug variant deliberately, not the blanket `test` task: `room.schemaLocation`
+        # isn't variant-scoped, so running both testDebugUnitTest and testReleaseUnitTest races two
+        # KSP tasks writing the same schema JSON, intermittently producing "Empty schema file". Debug
+        # is also the only variant that matters here - it's what build-pre-release-apk ships.
+        run: ./gradlew testDebugUnitTest --stacktrace
 
   # Instrumented/Compose UI tests (src/androidTest) need an emulator, which is slow and a common
   # source of first-pass CI flakiness — deliberately not wired into this workflow yet, per the
