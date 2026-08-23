@@ -13,6 +13,9 @@ on:
   push:
     branches:
       - main
+      # TEMPORARY, remove at merge time: lets this workflow run on its own development branch
+      # before it exists on main, where workflow_dispatch would otherwise need it to be first.
+      - claude/portuguese-quiz-app-redesign-or782k
   workflow_dispatch: {}
 
 defaults:
