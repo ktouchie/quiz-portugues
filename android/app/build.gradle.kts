@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -44,17 +45,49 @@ android {
     }
 }
 
+ksp {
+    // Exports Room's schema JSON per version to android/app/schemas/, checked into version
+    // control — this is what makes the schema-versioning story in the spec (§6.2) real, since it
+    // gives Room's migration tests something to validate against as the schema evolves.
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+// The repo-root verbs.json / vocabulary.json are the single source of truth for content (shared
+// with the web app — see docs/MOBILE_APP_SPEC.md §4/§6.3). Rather than committing a second copy
+// under source control that can drift, copy them into assets/ at build time and gitignore the
+// copies (see .gitignore).
+val copyContentJson by tasks.registering(Copy::class) {
+    from(rootProject.projectDir.parentFile) {
+        include("verbs.json", "vocabulary.json")
+    }
+    into("src/main/assets")
+}
+
+tasks.named("preBuild") {
+    dependsOn(copyContentJson)
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.kotlinx.coroutines.core)
+    ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    // Android's bundled org.json classes are stubs on the local unit-test JVM (they throw
+    // "not mocked" at runtime). This is the real reference implementation, same package name,
+    // so code under src/main using org.json is actually testable under ./gradlew test.
+    testImplementation(libs.org.json)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.ext.junit)

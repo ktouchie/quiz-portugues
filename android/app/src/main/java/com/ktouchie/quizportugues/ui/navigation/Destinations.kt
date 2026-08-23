@@ -1,0 +1,31 @@
+package com.ktouchie.quizportugues.ui.navigation
+
+/**
+ * Top-level navigation graph (docs/MOBILE_APP_SPEC.md §4):
+ * Home -> Module Home (Verbs/Vocabulary) -> Setup (Advanced) -> Session -> Results.
+ *
+ * `moduleId` matches the string module identifiers used throughout the content/srs/data layers
+ * ("verbs", "vocabulary" — see content/QuizItem.kt's `QuizItem.module`).
+ */
+sealed class Destination(val route: String) {
+    data object Home : Destination("home")
+
+    data object ModuleHome : Destination("module/{moduleId}") {
+        fun route(moduleId: String) = "module/$moduleId"
+    }
+
+    data object Setup : Destination("module/{moduleId}/setup") {
+        fun route(moduleId: String) = "module/$moduleId/setup"
+    }
+
+    data object Session : Destination("module/{moduleId}/session") {
+        fun route(moduleId: String) = "module/$moduleId/session"
+    }
+
+    data object Results : Destination("module/{moduleId}/results") {
+        fun route(moduleId: String) = "module/$moduleId/results"
+    }
+}
+
+const val MODULE_VERBS = "verbs"
+const val MODULE_VOCABULARY = "vocabulary"

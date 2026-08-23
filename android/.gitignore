@@ -1,10 +1,14 @@
 *.iml
 .gradle/
-/local.properties
+local.properties
 .idea/
 .DS_Store
-/build
+build/
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# Copied from the repo-root verbs.json/vocabulary.json at build time (see app/build.gradle.kts'
+# copyContentJson task) — the repo root is the single source of truth, not these copies.
+/app/src/main/assets/verbs.json
+/app/src/main/assets/vocabulary.json
