@@ -30,7 +30,7 @@ class GenderQuiz extends QuizBase {
                     key: `${category}|||${index}|||p`,
                     masculine: word.masculine,
                     english: word.english,
-                    label: 'plural masculino',
+                    label: 'plural',
                     answer: word.plural,
                 });
             });
