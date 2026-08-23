@@ -121,7 +121,7 @@ srs_records(item_id TEXT PRIMARY KEY, module TEXT, repetitions INT, ease_factor 
 best_scores(module TEXT PRIMARY KEY, best_correct_count INT)
 streak_data(id INTEGER PRIMARY KEY CHECK (id = 1), current_streak INT, longest_streak INT,
             last_completed_date TEXT)
-seen_milestones(module TEXT, milestone INT, PRIMARY KEY (module, milestone))
+seen_milestones(milestone INTEGER PRIMARY KEY)
 ```
 
 This directly replaces the `srs_verbs`/`srs_vocab`/`bestScore_*`/`streak_data`/`seen_milestones`
