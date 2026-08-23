@@ -1,0 +1,82 @@
+name: Android CI
+
+# Separate from ci.yml (Node toolchain, web app) — this is JVM/Android SDK, a different
+# toolchain entirely. Triggered on push to main and on demand (workflow_dispatch also lets this
+# run against a feature branch without merging, e.g. to get a pre-release APK to test before
+# opening a PR — pick the branch in the "Run workflow" dropdown).
+#
+# docs/MOBILE_APP_SPEC.md §12.2: lint -> unit tests -> (only if both pass) build and publish a
+# debug-signed pre-release APK to a rolling GitHub Release, so the newest build is always one tap
+# away from a phone browser.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    working-directory: android
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Lint
+        run: ./gradlew lint --stacktrace
+
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Unit tests
+        run: ./gradlew test --stacktrace
+
+  # Instrumented/Compose UI tests (src/androidTest) need an emulator, which is slow and a common
+  # source of first-pass CI flakiness — deliberately not wired into this workflow yet, per the
+  # spec's own allowance to skip/defer them if they prove too slow or flaky. They still exist and
+  # run fine via `./gradlew connectedAndroidTest` against a real device/emulator locally.
+
+  build-pre-release-apk:
+    needs: [lint, unit-test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+      - name: Publish pre-release APK
+        uses: ncipollo/release-action@v1
+        with:
+          tag: android-preview-latest
+          name: Android preview (latest)
+          body: >
+            Automatically rebuilt from ${{ github.sha }}.
+            Debug-signed — enable "install from unknown sources" to install directly on your
+            phone. This release is overwritten on every successful build; it is not a stable
+            version history.
+          artifacts: android/app/build/outputs/apk/debug/app-debug.apk
+          allowUpdates: true
+          prerelease: true
+          token: ${{ secrets.GITHUB_TOKEN }}
