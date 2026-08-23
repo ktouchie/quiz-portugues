@@ -76,8 +76,8 @@
   "cultivar": {
     "participios_passados": {
       "ter": "cultivado",
-      "ser": "culto",
-      "estar": "culto"
+      "ser": "cultivado",
+      "estar": "cultivado"
     }
   },
   "dar": {
@@ -201,7 +201,7 @@
     "pretérito": ["estive", "estiveste", "esteve", "estivemos", "estiveram"],
     "imperfeito": ["estava", "estavas", "estava", "estávamos", "estavam"],
     "condicional": ["estaria", "estarias", "estaria", "estaríamos", "estariam"],
-    "pretérito mais-que-perfeito": ["tinha sido", "tinhas sido", "tinha sido", "tínhamos sido", "tinham sido"],
+    "pretérito mais-que-perfeito": ["tinha estado", "tinhas estado", "tinha estado", "tínhamos estado", "tinham estado"],
     "perfeito_composto": ["tenho estado", "tens estado", "tem estado", "temos estado", "têm estado"],
     "futuro": ["estarei", "estarás", "estará", "estaremos", "estarão"],
     "imperativo": ["", "está", "esteja", "estejamos", "estejam"],
@@ -383,7 +383,7 @@
   },
   "limpar": {
     "participios_passados": {
-      "ter": "limpo",
+      "ter": "limpado",
       "ser": "limpo",
       "estar": "limpo"
     }

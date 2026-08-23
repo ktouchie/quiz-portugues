@@ -214,7 +214,7 @@
     "até logo": "see you later",
     "boa noite": "good night",
     "boa tarde": "good afternoon",
-    "bom aproveito": "bon appétit",
+    "bom apetite": "bon appétit",
     "bom dia": "good morning",
     "bom trabalho": "good work",
     "com licença": "excuse me",
@@ -248,7 +248,7 @@
     "semana": "week"
   },
   "Horas do Dia": {
-    "madrugada": "dawn or dusk",
+    "madrugada": "the small hours (pre-dawn)",
     "manhã": "morning",
     "meia-noite": "midnight",
     "meio-dia": "midday, noon",
@@ -268,7 +268,7 @@
     "cinco em ponto": "five o'clock sharp",
     "por volta das duas": "around two o'clock",
     "quatorze horas": "two o'clock",
-    "dezenove e trinta": "seven thirty"
+    "dezanove e trinta": "seven thirty"
   },
   "Lugares": {
     "aeroporto": "airport",
@@ -290,7 +290,7 @@
     "restaurante": "restaurant",
     "rua": "street",
     "universidade": "university",
-    "veranda": "balcony",
+    "varanda": "balcony",
     "vila": "village"
   },
   "Meses": {
@@ -470,15 +470,15 @@
     "bisavô": "great-grandfather",
     "bisneto": "great-grandson",
     "casado": "married",
-    "cugnada": "sister-in-law",
-    "cugnado": "brother-in-law",
+    "cunhada": "sister-in-law",
+    "cunhado": "brother-in-law",
     "enteada": "stepdaughter",
     "enteado": "stepson",
     "filha": "daughter",
     "filho": "son",
     "irmã": "sister",
     "irmão": "brother",
-    "madraste": "stepmother",
+    "madrasta": "stepmother",
     "marido": "husband",
     "mulher": "wife",
     "mãe": "mother",
@@ -486,7 +486,7 @@
     "neta": "grand-daughter",
     "neto": "grandson",
     "noivo": "fiancé",
-    "padraste": "stepfather",
+    "padrasto": "stepfather",
     "pai": "father",
     "primo": "cousin",
     "sobrinha": "niece",
