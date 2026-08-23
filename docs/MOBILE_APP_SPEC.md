@@ -1,21 +1,28 @@
-# European Portuguese Quiz — Mobile App v1 Specification
+# European Portuguese Quiz — Android App v1 Specification
 
 Status: draft, pending final owner sign-off before GitHub issues are filed.
 Source: synthesized from four expert reviews (software engineering, Android/mobile-game UX,
 language pedagogy, European Portuguese linguistics) of the existing web app, plus a decision
 round with the product owner. See "Decision log" at the bottom for how each call was made.
 
+**Revision note:** the app was originally speced as a React Native (Expo) app targeting Android +
+iOS. The product owner pivoted to a fully native Android app (Kotlin + Jetpack Compose), Android
+only, no iOS. This revision reflects that pivot throughout.
+
 ## 1. Goals
 
-- Port the concept of the existing static web quiz app (`/`) to a native-feeling mobile app,
-  reusing the parts of the existing system that are genuinely portable (the SM-2 spaced-repetition
-  engine, gamification rules, and the JSON content itself) while rebuilding the UI layer for touch.
+- Port the concept of the existing static web quiz app (`/`) to a native Android app, reusing what
+  the software-engineering review found genuinely portable — the SM-2 spaced-repetition algorithm,
+  gamification rules, and the JSON content itself — while rebuilding the UI natively.
 - Ship a real, finished v1 rather than a partial port of all seven modules — depth over breadth.
-- Keep the web app and mobile app in sync going forward: shared logic and content live in one
-  place and both clients consume it.
+- The product owner develops and validates this app entirely from their phone, with no desktop/
+  laptop in the loop. Every push to `main` must produce an installable APK reachable from the
+  phone with nothing more than a browser — this drives the CI design in §12.
 
 ## 2. Non-goals for v1
 
+- **No iOS.** A physical iPhone requires an Apple Developer Program account for any installable
+  build (TestFlight or ad-hoc) — out of scope entirely, not deferred.
 - No backend, accounts, or cross-device sync. Progress is local to the device (same trust model
   as today's `localStorage`, just backed by a real embedded database).
 - No monetization (no ads, no subscription, no IAP).
@@ -28,56 +35,53 @@ round with the product owner. See "Decision log" at the bottom for how each call
 
 ## 3. Tech stack
 
-- **React Native** via **Expo** (managed workflow, EAS Build for both Android and iOS from one
-  codebase). Expo is chosen over bare RN because there's no native-module requirement identified
-  yet (no custom hardware access beyond haptics/vibration, which Expo covers), and EAS removes the
-  need to maintain Xcode/Android Studio build config directly.
-- **TypeScript** throughout the shared core and the app, to catch the composite-key/data-shape
-  problems the engineering review flagged in the current plain-JS system.
-- **expo-sqlite** for on-device persistence (see §6) rather than AsyncStorage, so item records have
-  real primary keys and queryable structure instead of flat JSON blobs.
-- **Navigation**: `react-navigation` (native-stack).
-- Target both **Android and iOS** from launch (per product decision).
+- **Kotlin**, native Android, no cross-platform framework.
+- **Jetpack Compose** (Material 3) for the entire UI layer.
+- **Jetpack Navigation Compose** for screen navigation.
+- **Room** (built on SQLite) for on-device persistence — see §6.
+- **Gradle** build system — this is also what makes the CI pre-release pipeline in §12
+  straightforward: a GitHub Actions runner with the Android SDK can build an installable APK
+  directly with `./gradlew assembleDebug`, no third-party build-cloud service required.
+- Android `Vibrator` / `HapticFeedbackConstants` APIs for haptics (no Expo/RN dependency).
+- Minimum SDK: to be set when the project is scaffolded (#7.1) — target recent Android versions
+  only, no legacy-device support requirement was raised.
 
 ## 4. Repository structure (monorepo)
 
 The existing static site stays at the repo root, unchanged in its own deployment story (GitHub
-Pages via the existing workflows). A new top-level `mobile/` app is added, and the currently
-web-only shared logic is extracted into a platform-agnostic package both sides import.
+Pages via the existing workflows). A new top-level `android/` directory holds the native Kotlin
+app as a standard Gradle project.
 
 ```
 /                          # existing static web app (unchanged deploy story)
   index.html, *.html, *.js, *.json, styles.css, ...
   tests/                   # existing web app tests (unchanged)
-/packages/core/            # NEW — platform-agnostic, no DOM/browser API dependencies
-  src/
-    srs.ts                 # ported from srs.js — SM-2 algorithm, pure functions
-    gamification.ts        # ported from gamification.js — streak/milestone/goal logic
-    content/
-      verbs.ts              # typed loader + normalizer for verbs.json
-      vocabulary.ts          # typed loader + normalizer for vocabulary.json
-      types.ts               # shared content item types (see §6.1)
-  test/                    # vitest unit tests for the above (ported from tests/srs.test.js etc.)
-  package.json
-/mobile/                   # NEW — Expo React Native app
-  app/                     # screens (see §8-9)
-  src/
-    db/                     # expo-sqlite schema + repositories (see §6.2)
-    components/
-    theme/                  # ported from styles.css custom properties (see §11)
-  package.json              # depends on @quiz-portugues/core via workspace reference
+/android/                  # NEW — native Kotlin app (Gradle project)
+  app/
+    src/main/java/.../     # Kotlin source
+      srs/                  # SM-2 algorithm, ported from srs.js (see §7)
+      gamification/          # streak/milestone/goal logic, ported from gamification.js
+      data/                  # Room entities, DAOs, repositories (see §6)
+      content/                # loaders/normalizers for the bundled verbs.json / vocabulary.json
+      ui/                     # Compose screens, per module
+    src/main/assets/         # bundled verbs.json, vocabulary.json (see §6.3)
+    src/test/                # JUnit unit tests (SRS, gamification, content loaders)
+    src/androidTest/         # Compose UI tests
+  build.gradle.kts, settings.gradle.kts
 /docs/
   MOBILE_APP_SPEC.md        # this file
-package.json                 # root — npm/pnpm workspaces covering packages/core and mobile
 ```
 
-Content JSON (`verbs.json`, `vocabulary.json`) stays at the repo root as the single source of
-truth; `packages/core`'s content loaders read/normalize it, and both the web app and the Expo app
-bundle it at build time (no runtime fetch needed on mobile — see §6.3).
+Unlike the original React Native plan, there is **no shared code package** between the web app and
+the Android app — Kotlin cannot consume the web app's JavaScript/TypeScript, and there is no
+cross-platform runtime bridging them. What *is* shared is the **content JSON** (`verbs.json`,
+`vocabulary.json`, at the repo root) and a small set of **conventions** both apps must honor by
+hand — most importantly, stable content-item IDs (§6.1). The SM-2 and gamification logic are
+reimplemented natively in Kotlin, using `srs.js`/`gamification.js` as the behavioral reference —
+see §7.
 
-This is a structural refactor, not a rewrite of the web app's behavior: `script.js` and
-`vocabulary_quiz.js` continue to work as before during the transition, and can be migrated to
-import from `packages/core` incrementally rather than as a single risky cutover.
+This is a structural addition, not a rewrite of the web app's behavior: `script.js`,
+`vocabulary_quiz.js`, `srs.js`, and `gamification.js` are untouched by this work.
 
 ## 5. Content scope (v1)
 
@@ -89,33 +93,27 @@ Two modules only:
 2. **Vocabulary** — all 31 categories / ~548 words in `vocabulary.json`.
 
 No content re-authoring is required beyond the fixes already applied (see the "Content fixes
-applied" section below) — the existing JSON is reused as-is, just re-shaped into the typed schema
-in §6.1.
+applied" section below) — the existing JSON is reused as-is, bundled into the Android app as
+assets and parsed at runtime into the typed models described in §6.1.
 
 ## 6. Data model & persistence
 
 ### 6.1 Stable content IDs
 
-Today's system addresses items by pipe-delimited composite strings assembled at runtime
+Today's web app addresses items by pipe-delimited composite strings assembled at runtime
 (`` `${verb}|||${tense}|||${personIdx}` ``). This is fragile (silently orphans SRS history if
-content is reordered) and doesn't translate cleanly to a typed system. For v1:
+content is reordered) and both apps now parse the same JSON independently, so the derivation rule
+needs to be a documented, shared **convention** rather than shared code:
 
 - Every quizzable item gets a **stable, deterministic ID** computed once at content-load time from
-  its natural key (verb name + tense + person index; category + word for vocabulary) and cached —
-  functionally similar to today's composite key, but treated as an opaque typed `ItemId`, not
-  parsed apart at runtime.
-- `packages/core/src/content/types.ts` defines a common envelope:
-  ```ts
-  interface QuizItem {
-    id: ItemId;
-    module: 'verbs' | 'vocabulary';
-    prompt: string;
-    answer: string;
-    // module-specific metadata (tense, person, category, difficulty, etc.)
-  }
-  ```
+  its natural key (verb name + tense + person index; category + word for vocabulary), documented
+  here so the Android Kotlin loader and (if the web app is ever updated to match) the web JS loader
+  derive identical IDs independently.
+- The Android app's Kotlin data classes mirror this: a `QuizItem` with a stable `id: String`,
+  `module` type, prompt/answer fields, and module-specific metadata (tense, person, category,
+  difficulty, etc.).
 
-### 6.2 SQLite schema
+### 6.2 Room schema
 
 ```
 srs_records(item_id TEXT PRIMARY KEY, module TEXT, repetitions INT, ease_factor REAL,
@@ -127,28 +125,28 @@ seen_milestones(module TEXT, milestone INT, PRIMARY KEY (module, milestone))
 ```
 
 This directly replaces the `srs_verbs`/`srs_vocab`/`bestScore_*`/`streak_data`/`seen_milestones`
-`localStorage` keys with real tables, keyed by the stable `item_id` from §6.1 instead of ad hoc
-strings. Schema carries a `schema_version` row from day one so a future migration (e.g., adding
-cloud sync) doesn't require a painful retrofit — this was flagged independently by the engineering
-review as the single biggest structural gap in the current system.
+`localStorage` keys with real Room entities/DAOs, keyed by the stable `item_id` from §6.1 instead
+of ad hoc strings. Room's schema versioning (`@Database(version = ...)`) is used from day one so a
+future migration (e.g., adding cloud sync) doesn't require a painful retrofit.
 
 ### 6.3 Offline-first
 
-All content JSON ships inside the app bundle (it's ~100KB total — trivial). No network fetch is
-required to use the app; this also sidesteps the current web app's "one `alert()` on fetch failure"
-error handling gap.
+`verbs.json` and `vocabulary.json` ship inside the APK under `app/src/main/assets/` (it's ~100KB
+total — trivial). No network fetch is required to use the app.
 
 ## 7. SRS engine
 
-Port `srs.js`'s `sm2()` function to `packages/core/src/srs.ts` essentially line-for-line — it's
-already pure and side-effect-free, per the engineering review. Behavior for v1 stays as today
-(quality 4 / correct-after-mistake 2 / wrong 0) — **not** adopting the pedagogy review's suggested
-finer-grained quality scale (0/2/3/4 with latency/attempt-count input) or redefined "mastered"
-threshold (`repetitions ≥ 2 && interval ≥ 7 days` instead of `repetitions > 0`) for v1, to keep the
-port low-risk and behaviorally identical to the web app users already know. Both are flagged as
-strong v1.1 candidates — see §13.
+Port `srs.js`'s `sm2()` function to Kotlin (`android/app/.../srs/`) — it's already pure and
+side-effect-free, per the engineering review, so this is a direct line-for-line translation of the
+algorithm, not a redesign. Behavior for v1 stays as today (quality 4 / correct-after-mistake 2 /
+wrong 0) — **not** adopting the pedagogy review's suggested finer-grained quality scale (0/2/3/4
+with latency/attempt-count input) or redefined "mastered" threshold (`repetitions ≥ 2 && interval
+≥ 7 days` instead of `repetitions > 0`) for v1, to keep behavior identical to the web app users
+already know. Both are flagged as strong v1.1 candidates — see §13.
 
-Due-item prioritization (due items sorted before new items) carries over unchanged.
+Due-item prioritization (due items sorted before new items) carries over unchanged. Unit tests
+should assert the same behavior as `tests/srs.test.js`, so the two implementations stay provably
+in sync even though they don't share code.
 
 ## 8. Session design
 
@@ -168,64 +166,96 @@ Due-item prioritization (due items sorted before new items) carries over unchang
 ## 9. Input model & UI
 
 - **Verb Conjugation**: typed free-text input (preserves the production/recall skill this module
-  is actually testing), with a **custom accent bar** above the keyboard offering one-tap insertion
-  of `á é í ó ú â ê ô ã õ ç` — addresses the mobile-specific friction the game-dev review flagged
-  (no EP accented characters on a default mobile keyboard layout). Answer comparison reuses the
-  existing `.trim().toLowerCase().normalize('NFC')` logic from `quiz_base.js`.
+  is actually testing), with a **custom accent bar** above the keyboard (a Compose row of tap
+  targets) offering one-tap insertion of `á é í ó ú â ê ô ã õ ç` — addresses the mobile-specific
+  friction the game-dev review flagged (no EP accented characters on a default mobile keyboard
+  layout). Answer comparison reuses the existing `.trim().toLowerCase().normalize('NFC')` logic
+  from `quiz_base.js` as its behavioral reference, reimplemented in Kotlin.
 - **Vocabulary**: tap/multiple-choice (4 options: 1 correct + 3 distractors drawn from the same
   category where possible, falling back to random same-module distractors). Recognition is a
   reasonable proxy for this module and removes typing friction entirely for the higher-volume,
   faster-paced module.
 - Wrong-answer feedback keeps the current pattern: show the grammar hint / correct answer in place,
   item stays in the session pool (per `quiz_base.js`'s existing retry-in-pool behavior), user taps
-  to continue rather than pressing Enter.
+  to continue.
 - Results screen: time, accuracy %, top mistakes list, "Practice mistakes" retry button — same
   shape as today's, laid out for a phone screen.
 
 ## 10. Gamification
 
-Ported as-is from `gamification.js`: streak (day-based, resets on a missed day), milestone
-thresholds (10/25/50/100/250/500 mastered items) with a one-time celebratory banner, and the home
-screen shows streak + mastered count exactly as `index.html` does today.
+Reimplemented in Kotlin using `gamification.js` as the behavioral reference: streak (day-based,
+resets on a missed day), milestone thresholds (10/25/50/100/250/500 mastered items) with a
+one-time celebratory banner, and the home screen shows streak + mastered count exactly as
+`index.html` does today.
 
-**Game feel — minimal for v1** (per product decision): a haptic tick (Expo Haptics,
-`impactAsync(Light)` on correct, a distinct pattern on wrong) plus a basic scale/color
-transition on the feedback state. No sound design, no XP/combo meter, no confetti — those are
-backlog (§13).
+**Game feel — minimal for v1** (per product decision): a haptic tick (Android `Vibrator`/
+`HapticFeedbackConstants`, correct vs. wrong distinguishable) plus a basic scale/color transition
+on the feedback state. No sound design, no XP/combo meter, no confetti — those are backlog (§13).
 
 ## 11. Theming
 
-Port the dark/light theme from `styles.css`'s CSS custom properties into a small RN theme object
-(`mobile/src/theme/`) with the same token names/values, respecting the OS-level light/dark setting
-by default (mirroring the current `initTheme` behavior from `common.js`).
+Port the dark/light theme from `styles.css`'s CSS custom properties into a Compose Material 3
+theme (`ColorScheme`) with equivalent token values, respecting the OS-level light/dark setting by
+default (mirroring the current `initTheme` behavior from `common.js`).
 
 ## 12. Testing & CI
 
-- `packages/core` gets its own Vitest suite (ported from `tests/srs.test.js`, plus new coverage for
-  `gamification.ts` and the content normalizers — the engineering review flagged
-  `gamification.js` as currently untested despite being business-logic-dense).
-- `mobile/` gets component/screen tests via `@testing-library/react-native` for the session flow
-  (Quick Practice happy path, wrong-answer-stays-in-pool, results screen) and a smoke test that the
-  app boots and reaches the home screen.
-- CI: extend `.github/workflows/ci.yml` (or add a sibling workflow) to run `packages/core` and
-  `mobile` test suites alongside the existing web app lint/test job. EAS builds are triggered
-  manually / on release tags for v1, not on every push.
+This section is the one that matters most for the product owner's phone-only workflow: **every
+push to `main` must end with an installable APK reachable from a phone browser, with no desktop
+step in between.**
+
+### 12.1 Tests
+
+- `android/app/src/test/`: JUnit unit tests for the ported SM-2 algorithm and gamification logic
+  (mirroring `tests/srs.test.js`'s cases for behavioral parity with the web app), plus tests for
+  the content loaders/normalizers (stable ID generation from §6.1).
+- `android/app/src/androidTest/`: Compose UI tests for the Quick Practice happy path, the
+  wrong-answer-stays-in-pool behavior, and the results screen.
+
+### 12.2 CI pipeline (new workflow, e.g. `.github/workflows/android-ci.yml`)
+
+Runs independently of the existing web-app `ci.yml` (different toolchain — JVM/Android SDK vs.
+Node), triggered **on every push to `main`**:
+
+1. **Lint** — `./gradlew lint` (and ktlint/detekt if adopted).
+2. **Unit tests** — `./gradlew test`.
+3. **Instrumented/Compose UI tests** — `./gradlew connectedAndroidTest` (or Robolectric-based
+   equivalents if instrumented tests prove too slow/flaky for CI).
+4. **Final step, only if 1–3 all pass: build and publish a pre-release APK.**
+   - Build a debug-signed APK: `./gradlew assembleDebug` (no release keystore or secrets required
+     — debug signing is sufficient for sideloading on a personal device with "install from unknown
+     sources" enabled; this is deliberately separate from the signed release build in §13/epic
+     "Release prep", which is for eventual Play Store submission).
+   - Publish the APK as the asset on a **rolling GitHub Release** (fixed tag, e.g.
+     `android-preview-latest`, marked as a pre-release, asset overwritten each run — via an action
+     like `softprops/action-gh-release` or `ncipollo/release-action` with `GITHUB_TOKEN`, no extra
+     secrets needed). This gives a **stable, bookmarkable URL** the product owner can open on their
+     phone at any time to download and install the newest build — no need to dig through Actions
+     run history.
+   - The workflow run summary also links directly to the release for convenience.
+
+This means: push to `main` → CI lints, tests, and (if green) builds → a fresh APK is one tap away
+on the product owner's phone within a few minutes, every time.
 
 ## 13. Out of scope for v1 — backlog
 
 Recorded here so they aren't lost, not because they're unimportant:
 
+- iOS, if ever revisited — would need a decision on native Swift vs. a cross-platform rewrite,
+  since the Android app is not built on a cross-platform framework.
 - Remaining 5 quiz modules (gender & plural, ser/estar/ficar, contractions, subjunctive, indirect
-  speech), ported using the same shared-core pattern established by verbs/vocabulary.
+  speech), ported using the same Kotlin/Compose patterns established by verbs/vocabulary.
 - Local notifications (daily due-item digest + streak-at-risk reminder) — flagged by the game-dev
   review as the highest-leverage retention feature not in v1.
 - Full "game feel" polish: sound design, in-session combo/XP display, richer animations.
-- Cloud backup / accounts / cross-device sync, using the `schema_version`-ready SQLite schema from
-  §6.2 as the migration starting point.
+- Cloud backup / accounts / cross-device sync, using the Room schema-versioning from §6.2 as the
+  migration starting point.
 - Monetization (revisit once there's usage data).
 - Finer-grained SM-2 quality scoring and a stricter "mastered" definition (§7).
 - Listening/speaking practice, guided CEFR curriculum path, diagnostic placement test.
 - Home-screen widget (streak + due count).
+- Signed release build + Google Play Store submission (separate from the CI pre-release APK in
+  §12.2 — tracked under the "Release prep" epic).
 
 ## 14. Known content gaps (not v1-blocking, tracked for future content work)
 
@@ -242,7 +272,7 @@ From the language-accuracy review, out of scope for the Verb/Vocabulary v1 app b
 
 ## Content fixes already applied (pre-mobile-port cleanup)
 
-Committed to `main`-bound branch ahead of this spec, since they affect data both apps will share:
+Committed ahead of this spec, since they affect data both apps will share:
 
 - `verbs.json`: `estar`'s pretérito mais-que-perfeito wrongly reused `ser`'s participle
   ("tinha sido" → "tinha estado"); `cultivar`/`limpar` had incorrect `participios_passados` forms.
@@ -250,20 +280,22 @@ Committed to `main`-bound branch ahead of this spec, since they affect data both
   inherently feminine invariable nouns like "mão" — relabeled to gender-neutral "plural" (a code
   fix, not a data fix, since the item's `masculine` field doubles as the generic prompt slot).
 - `vocabulary.json`: EP spelling fix (dezenove → dezanove) and several typos/mistranslations
-  (cugnada/cugnado, madraste/padraste, veranda, "bom aproveito", madrugada).
+  (cugnada/cugnado → cunhada/cunhado, madraste/padraste → madrasta/padrasto, veranda → varanda,
+  "bom aproveito" → "bom apetite"), and a mistranslation (madrugada is pre-dawn, not dusk).
 
 ## Decision log
 
 | Decision | Choice | Source |
 |---|---|---|
-| Platform | React Native (Expo) | Product owner |
+| Platform | Native Android (Kotlin + Jetpack Compose) | Product owner (pivoted from React Native/Expo) |
+| Target OS | Android only — no iOS | Product owner |
 | v1 module scope | Verb Conjugation + Vocabulary | Product owner |
-| Backend/sync | None — local only | Product owner |
+| Backend/sync | None — local only (Room) | Product owner |
 | Input model | Hybrid: typed+accent bar for verbs, multiple-choice for vocabulary | Product owner, synthesizing pedagogy + game-dev reviews |
 | Monetization | None | Product owner |
 | Notifications | None in v1 | Product owner |
-| Target OS | Android + iOS at launch | Product owner |
-| Repo structure | Monorepo, shared `packages/core` | Product owner (conditional on shareable code — confirmed by engineering review) |
+| Repo structure | Monorepo, `android/` directory, no shared code package (content JSON + conventions only) | Product owner + engineering review, revised for the Kotlin pivot |
 | Content bugs found in review | Fixed immediately | Product owner |
 | Game-feel polish | Minimal (haptics + basic animation) | Product owner |
 | Session design | Quick Practice (capped, SRS-first, interleaved) default; Advanced full setup available | Product owner, synthesizing pedagogy + game-dev reviews |
+| CI pre-release builds | Every push to `main` builds a debug-signed APK as the final CI step, published to a rolling GitHub Release for phone-only installation | Product owner (develops entirely from phone, no desktop in the loop) |
