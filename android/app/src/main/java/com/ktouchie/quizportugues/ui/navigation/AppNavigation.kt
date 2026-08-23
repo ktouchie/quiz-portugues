@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ktouchie.quizportugues.ui.home.HomeScreen
 import com.ktouchie.quizportugues.ui.module.ModuleHomeScreen
+import com.ktouchie.quizportugues.ui.verbs.VerbSessionScreen
 import com.ktouchie.quizportugues.ui.vocabulary.VocabularySessionScreen
 
 private val moduleIdArg: List<NamedNavArgument> = listOf(
@@ -53,14 +54,14 @@ fun AppNavigation() {
 
         composable(Destination.Session.route, arguments = moduleIdArg) { backStackEntry ->
             val moduleId = backStackEntry.arguments?.getString("moduleId").orEmpty()
-            if (moduleId == MODULE_VOCABULARY) {
-                VocabularySessionScreen(
-                    onDone = {
-                        navController.popBackStack(Destination.ModuleHome.route(moduleId), inclusive = false)
-                    },
-                )
-            } else {
-                PlaceholderScreen(label = "Session ($moduleId)")
+            val onDone = {
+                navController.popBackStack(Destination.ModuleHome.route(moduleId), inclusive = false)
+                Unit
+            }
+            when (moduleId) {
+                MODULE_VOCABULARY -> VocabularySessionScreen(onDone = onDone)
+                MODULE_VERBS -> VerbSessionScreen(onDone = onDone)
+                else -> PlaceholderScreen(label = "Session ($moduleId)")
             }
         }
 
