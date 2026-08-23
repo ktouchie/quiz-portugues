@@ -80,6 +80,25 @@ All quizzes share `QuizBase`:
 - **lefthook**: pre-commit runs `npm run lint` + `npm test` via `~/.local/bin/npm`
 - **CI**: `.github/workflows/ci.yml` runs lint + test on push/PR to main
 
+## Android App (`android/`)
+
+A native Android app (Kotlin + Jetpack Compose, no cross-platform framework) is being built
+alongside the web app, starting with the Verb Conjugation and Vocabulary modules only. Full design
+in `docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label on GitHub issues.
+
+- Standard Gradle project: `android/app/src/main/java/com/ktouchie/quizportugues/`, with `srs/`,
+  `gamification/`, `data/` (Room), `content/`, and `ui/` sub-packages as they're added.
+- **No shared code with the web app** — Kotlin can't consume the web app's JS. `srs.js` and
+  `gamification.js` are the *behavioral reference* for the Kotlin ports, not shared modules. The
+  two things genuinely shared are the content JSON (`verbs.json`, `vocabulary.json` at the repo
+  root, bundled into the APK as assets) and the stable-content-ID convention documented in the
+  spec — both apps must derive identical IDs independently.
+- Persistence: Room (SQLite) replacing the web app's `localStorage` keys — see spec §6.2 for the
+  schema.
+- Build: `./gradlew lint test` for CI-equivalent checks; `./gradlew assembleDebug` for an
+  installable APK. Requires the Android SDK — not available in this sandbox, so changes here
+  can't be build-verified locally; rely on careful review plus the Android CI workflow.
+
 ## Working Conventions
 
 - After any major update (new module, feature, data change, architecture change), update both `CLAUDE.md` and `README.md` to reflect the current state before committing.
