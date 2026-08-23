@@ -72,3 +72,7 @@ npm test
 ## Deployment
 
 Pushing to `main` triggers a GitHub Actions workflow that bumps the patch version in `version.txt` and deploys to GitHub Pages. Pull requests get an automatic preview deployment with a link posted as a PR comment.
+
+## Android App (in progress)
+
+A native Android app (Kotlin + Jetpack Compose) is under development in `android/`, starting with the Verb Conjugation and Vocabulary modules. It reuses the same `verbs.json`/`vocabulary.json` content as the web app and reimplements the SM-2 spaced-repetition and gamification logic natively. See `docs/MOBILE_APP_SPEC.md` for the full design and the repo's issues for progress.

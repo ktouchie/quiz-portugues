@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder launcher foreground (simple ring) — real branding is tracked separately (issue #45). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,21 C70.02,21 83,33.98 83,50 C83,66.02 70.02,79 54,79 C37.98,79 25,66.02 25,50 C25,33.98 37.98,21 54,21 Z M54,33 C44.61,33 37,40.61 37,50 C37,59.39 44.61,67 54,67 C63.39,67 71,59.39 71,50 C71,40.61 63.39,33 54,33 Z" />
+</vector>
