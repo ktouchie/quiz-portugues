@@ -2,8 +2,10 @@ package com.ktouchie.quizportugues.ui.verbs
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ktouchie.quizportugues.content.CefrLevel
+import com.ktouchie.quizportugues.content.Difficulty
 import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.VerbQuizItem
 import com.ktouchie.quizportugues.content.answersMatch
@@ -60,8 +62,22 @@ sealed interface VerbSessionUiState {
  *  - **Input modality**: each selected item independently renders multiple-choice or typed,
  *    decided by [isReadyForTyping] on that item's own SRS record — not a fixed per-module choice.
  *    A wrong typed answer demotes the item back to multiple-choice for free (see Production.kt).
+ *
+ * [savedStateHandle] optionally carries an Advanced-mode selection from [VerbSetupScreen] (nav
+ * args "tenses"/"difficulty", comma-joined tense names + an optional [Difficulty] name) — when
+ * present, the session pool is that selection, uncapped and *not* restricted to unlocked CEFR
+ * tiers (docs/MOBILE_APP_SPEC.md §8); when absent (Quick Practice, launched directly from Module
+ * Home), behavior is unchanged from before Advanced mode existed.
  */
-class VerbSessionViewModel(application: Application) : AndroidViewModel(application) {
+class VerbSessionViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
+
+    private val selectedTenses: Set<String>? = savedStateHandle.get<String>("tenses")
+        ?.takeIf { it.isNotBlank() }
+        ?.split(",")
+        ?.toSet()
+    private val difficultyFilter: Difficulty? = savedStateHandle.get<String>("difficulty")
+        ?.takeIf { it.isNotBlank() }
+        ?.let { Difficulty.valueOf(it) }
 
     private val db = AppDatabase.getInstance(application)
     private val srsRepository = SrsRepository(db.srsRecordDao())
@@ -96,6 +112,20 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
         val now = System.currentTimeMillis()
         records = srsRepository.getAllRecords(MODULE_VERBS)
 
+        val items = if (selectedTenses != null) buildAdvancedPool(now) else buildQuickPracticePool(now)
+
+        pool.clear()
+        pool.addAll(items.shuffled())
+        totalQuestions = pool.size
+        correctCount = 0
+        errorCount = 0
+        mistakeCounts.clear()
+        startedAt = now
+
+        showNextQuestion()
+    }
+
+    private fun buildQuickPracticePool(now: Long): List<VerbQuizItem> {
         val itemsByLevel: Map<CefrLevel, List<String>> = allItems.groupBy({ cefrLevelOf(it) }, { it.id })
         val unlocked = unlockedTiers(itemsByLevel, records)
         val eligible = allItems.filter { cefrLevelOf(it) in unlocked }
@@ -111,15 +141,20 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
         val restNotDue = notDue.filterNot { cefrLevelOf(it) == frontier }.shuffled()
         val filler = (frontierFirst + restNotDue).take(fillerNeeded)
 
-        pool.clear()
-        pool.addAll((capped + filler).shuffled())
-        totalQuestions = pool.size
-        correctCount = 0
-        errorCount = 0
-        mistakeCounts.clear()
-        startedAt = now
+        return capped + filler
+    }
 
-        showNextQuestion()
+    /** Advanced mode (docs/MOBILE_APP_SPEC.md §8): the user's chosen tenses/difficulty, not
+     *  restricted to unlocked CEFR tiers, no session cap — due items still surface first. */
+    private fun buildAdvancedPool(now: Long): List<VerbQuizItem> {
+        val tenses = selectedTenses.orEmpty()
+        val eligible = allItems.filter {
+            it.tense in tenses && (difficultyFilter == null || it.difficulty == difficultyFilter)
+        }
+        val dueIds = records.filterValues { it.nextReview in 1..now }.keys
+        val due = eligible.filter { it.id in dueIds }
+        val notDue = eligible.filterNot { it.id in dueIds }
+        return due + notDue
     }
 
     private fun showNextQuestion() {

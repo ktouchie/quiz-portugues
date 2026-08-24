@@ -2,6 +2,7 @@ package com.ktouchie.quizportugues.ui.vocabulary
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ktouchie.quizportugues.content.CefrLevel
 import com.ktouchie.quizportugues.content.QuestionModality
@@ -67,8 +68,18 @@ sealed interface SessionUiState {
  * No dependency-injection framework is set up yet (deliberately, to avoid scope creep before
  * there's a second consumer that would justify one) — [AndroidViewModel] gives just enough
  * [Application] context to build [AppDatabase] directly.
+ *
+ * [savedStateHandle] optionally carries an Advanced-mode selection from [VocabularySetupScreen]
+ * (nav arg "categories", comma-joined category names) — when present, the session pool is that
+ * selection, uncapped and *not* restricted to unlocked CEFR tiers (docs/MOBILE_APP_SPEC.md §8);
+ * when absent (Quick Practice), behavior is unchanged from before Advanced mode existed.
  */
-class VocabularySessionViewModel(application: Application) : AndroidViewModel(application) {
+class VocabularySessionViewModel(application: Application, savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
+
+    private val selectedCategories: Set<String>? = savedStateHandle.get<String>("categories")
+        ?.takeIf { it.isNotBlank() }
+        ?.split(",")
+        ?.toSet()
 
     private val db = AppDatabase.getInstance(application)
     private val srsRepository = SrsRepository(db.srsRecordDao())
@@ -103,6 +114,20 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
         val now = System.currentTimeMillis()
         records = srsRepository.getAllRecords(MODULE_VOCABULARY)
 
+        val items = if (selectedCategories != null) buildAdvancedPool(now) else buildQuickPracticePool(now)
+
+        pool.clear()
+        pool.addAll(items.shuffled())
+        totalQuestions = pool.size
+        correctCount = 0
+        errorCount = 0
+        mistakeCounts.clear()
+        startedAt = now
+
+        showNextQuestion()
+    }
+
+    private fun buildQuickPracticePool(now: Long): List<VocabularyQuizItem> {
         val itemsByLevel: Map<CefrLevel, List<String>> = allItems.groupBy({ cefrLevelOf(it) }, { it.id })
         val unlocked = unlockedTiers(itemsByLevel, records)
         val eligible = allItems.filter { cefrLevelOf(it) in unlocked }
@@ -118,15 +143,18 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
         val restNotDue = notDue.filterNot { cefrLevelOf(it) == frontier }.shuffled()
         val filler = (frontierFirst + restNotDue).take(fillerNeeded)
 
-        pool.clear()
-        pool.addAll((capped + filler).shuffled())
-        totalQuestions = pool.size
-        correctCount = 0
-        errorCount = 0
-        mistakeCounts.clear()
-        startedAt = now
+        return capped + filler
+    }
 
-        showNextQuestion()
+    /** Advanced mode (docs/MOBILE_APP_SPEC.md §8): the user's chosen categories, not restricted to
+     *  unlocked CEFR tiers, no session cap — due items still surface first. */
+    private fun buildAdvancedPool(now: Long): List<VocabularyQuizItem> {
+        val categories = selectedCategories.orEmpty()
+        val eligible = allItems.filter { it.category in categories }
+        val dueIds = records.filterValues { it.nextReview in 1..now }.keys
+        val due = eligible.filter { it.id in dueIds }
+        val notDue = eligible.filterNot { it.id in dueIds }
+        return due + notDue
     }
 
     private fun showNextQuestion() {

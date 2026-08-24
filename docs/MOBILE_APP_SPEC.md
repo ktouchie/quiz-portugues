@@ -173,6 +173,12 @@ in sync even though they don't share code.
   who wants to deliberately drill "all preterite forms" or "all Comida vocabulary" goes.
 - Session length is configurable in Advanced mode only; Quick Practice's cap is a fixed constant
   for v1 (tunable later, not user-facing).
+- **Implemented** (GitHub #28/#34): `VerbSetupScreen`/`VocabularySetupScreen` (tense+difficulty and
+  category pickers, defaulting to everything selected), passed to the session route as nav-arg
+  query params (`tenses`/`difficulty`/`categories`) read via `SavedStateHandle`. Each session
+  ViewModel's `startSession()` branches on whether a selection is present: absent → the existing
+  Quick Practice pool logic, unchanged; present → `buildAdvancedPool()` — due items first, no cap,
+  no CEFR-tier filter, restricted only to the chosen tenses/difficulty or categories.
 
 ## 9. Input model & UI
 
@@ -334,6 +340,16 @@ on the product owner's phone within a few minutes, every time.
 
 Recorded here so they aren't lost, not because they're unimportant:
 
+- Vocabulary translation-direction toggle (EN→PT / PT→EN, present in `vocabulary_quiz.js`'s web
+  setup screen) — not carried over to `VocabularySetupScreen`. The mobile session pipeline
+  hardcodes PT→EN throughout (prompt is always the Portuguese word, answer is always the English
+  one, for both multiple-choice and typed); supporting the other direction needs changes through
+  `VocabularySessionViewModel`, not just the setup screen, so it's deferred rather than half-built.
+- Verb "modo intercalado" (interleaved) toggle and the "particípios passados" tense checkbox from
+  `script.js`'s web setup screen — not carried over to `VerbSetupScreen`. Interleaving is
+  unconditional in the mobile app already (every session pool is shuffled, there's no sequential
+  mode to toggle against), so the toggle would control nothing; participios_passados-only verbs
+  are out of the mobile Verb Conjugation module's scope entirely (§14).
 - iOS, if ever revisited — would need a decision on native Swift vs. a cross-platform rewrite,
   since the Android app is not built on a cross-platform framework.
 - Remaining 5 quiz modules (gender & plural, ser/estar/ficar, contractions, subjunctive, indirect

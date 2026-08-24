@@ -18,7 +18,13 @@ sealed class Destination(val route: String) {
         fun route(moduleId: String) = "module/$moduleId/setup"
     }
 
-    data object Session : Destination("module/{moduleId}/session") {
+    /**
+     * `tenses`/`difficulty` (Verb Conjugation) and `categories` (Vocabulary) are optional query
+     * args carrying an Advanced-mode selection from [Destination.Setup] — see
+     * `VerbSessionViewModel`/`VocabularySessionViewModel`. Absent entirely for Quick Practice,
+     * launched directly from Module Home via [route].
+     */
+    data object Session : Destination("module/{moduleId}/session?tenses={tenses}&difficulty={difficulty}&categories={categories}") {
         fun route(moduleId: String) = "module/$moduleId/session"
     }
 
