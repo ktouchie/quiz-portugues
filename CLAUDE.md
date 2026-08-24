@@ -95,6 +95,13 @@ in `docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label 
   spec — both apps must derive identical IDs independently.
 - Persistence: Room (SQLite) replacing the web app's `localStorage` keys — see spec §6.2 for the
   schema.
+- **Gameplay is mastery-gated, per item, not fixed per module** (spec §9): every verb and
+  vocabulary category carries an Android-only CEFR tag (`content/CefrTiers.kt`) that gates content
+  breadth (`content/ContentProgression.kt`'s `unlockedTiers()`, sequential unlock at 80% "seen" per
+  tier); independently, each item renders multiple-choice or typed based on its own SRS record
+  crossing `srs/Production.kt`'s `isReadyForTyping()` bar — deliberately a different, stricter
+  check than gamification's loose "mastered" count. No custom accent-bar keyboard; typed input
+  relies on the device keyboard's own accent long-press.
 - Build: `./gradlew lint test` for CI-equivalent checks; `./gradlew assembleDebug` for an
   installable APK. Requires the Android SDK — not available in this sandbox, so changes here
   can't be build-verified locally; rely on careful review plus the Android CI workflow.

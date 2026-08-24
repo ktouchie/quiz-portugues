@@ -11,19 +11,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ktouchie.quizportugues.content.QuestionModality
+import com.ktouchie.quizportugues.ui.common.MultipleChoiceOptions
+import com.ktouchie.quizportugues.ui.common.TypedAnswerInput
 import com.ktouchie.quizportugues.ui.common.hapticCorrect
 import com.ktouchie.quizportugues.ui.common.hapticWrong
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 
 /**
- * Vocabulary Quick Practice session (docs/MOBILE_APP_SPEC.md §8/§9): tap/multiple-choice input,
- * results shown in place when the session ends — mirrors quiz_base.js's actual behavior of
- * transitioning within a single page rather than navigating to a separate results URL.
+ * Vocabulary Quick Practice session (docs/MOBILE_APP_SPEC.md §8/§9): each question renders
+ * multiple-choice or typed input depending on the item's own typing readiness, results shown in
+ * place when the session ends — mirrors quiz_base.js's actual behavior of transitioning within a
+ * single page rather than navigating to a separate results URL.
  */
 @Composable
 fun VocabularySessionScreen(
@@ -36,7 +41,7 @@ fun VocabularySessionScreen(
         is SessionUiState.Loading -> LoadingContent()
         is SessionUiState.InProgress -> InProgressContent(
             state = s,
-            onAnswerSelected = viewModel::onAnswerSelected,
+            onAnswerGiven = viewModel::onAnswerGiven,
             onContinue = viewModel::onContinue,
         )
         is SessionUiState.Finished -> ResultsContent(state = s, onDone = onDone)
@@ -53,7 +58,7 @@ private fun LoadingContent() {
 @Composable
 private fun InProgressContent(
     state: SessionUiState.InProgress,
-    onAnswerSelected: (String) -> Unit,
+    onAnswerGiven: (String) -> Unit,
     onContinue: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -76,12 +81,18 @@ private fun InProgressContent(
         Text("${state.correctCount} certas · ${state.errorCount} erradas")
         Text(text = "Qual é o significado de \"${state.question.item.portuguese}\"?")
 
-        state.question.options.forEach { option ->
-            Button(
-                onClick = { onAnswerSelected(option) },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(option)
+        // Keyed on the item id so input state resets when a new question appears.
+        key(state.question.item.id) {
+            when (state.question.modality) {
+                QuestionModality.TYPED -> TypedAnswerInput(
+                    enabled = state.feedback == null,
+                    onSubmit = onAnswerGiven,
+                )
+                QuestionModality.MULTIPLE_CHOICE -> MultipleChoiceOptions(
+                    options = state.question.options,
+                    enabled = state.feedback == null,
+                    onSelect = onAnswerGiven,
+                )
             }
         }
 

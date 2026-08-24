@@ -1,12 +1,10 @@
 package com.ktouchie.quizportugues.ui.verbs
 
-import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNode
+import androidx.compose.ui.test.onAllNodes
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ktouchie.quizportugues.ui.theme.QuizPortuguesTheme
 import org.junit.Rule
@@ -14,8 +12,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Smoke test: typing a (deliberately wrong) answer and submitting shows feedback with a
- * "Continuar" button. Mirrors VocabularySessionScreenTest's coverage for the typed-input module.
+ * Smoke test for the default (no SRS history yet) path: every item starts multiple-choice —
+ * docs/MOBILE_APP_SPEC.md §9 — so a fresh session renders tappable options like Vocabulary's,
+ * not a typed field. Coverage for the typed path (an item that's crossed its typing-readiness
+ * threshold) needs a way to seed Room state ahead of screen launch, which the ViewModel doesn't
+ * expose yet — see the Testing & CI epic for that follow-up.
  */
 @RunWith(AndroidJUnit4::class)
 class VerbSessionScreenTest {
@@ -24,7 +25,7 @@ class VerbSessionScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun submittingAnAnswerShowsFeedbackAndAContinueButton() {
+    fun answeringAQuestionShowsFeedbackAndAContinueButton() {
         composeTestRule.setContent {
             QuizPortuguesTheme {
                 VerbSessionScreen(onDone = {})
@@ -32,11 +33,10 @@ class VerbSessionScreenTest {
         }
 
         composeTestRule.waitUntil(timeoutMillis = 5_000) {
-            composeTestRule.onAllNodesWithText("Responder").fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodes(hasClickAction()).fetchSemanticsNodes().size >= 4
         }
 
-        composeTestRule.onNode(hasSetTextAction()).performTextInput("xyzxyz")
-        composeTestRule.onNodeWithText("Responder").performClick()
+        composeTestRule.onAllNodes(hasClickAction())[0].performClick()
 
         composeTestRule.onNodeWithText("Continuar").assertExists()
     }

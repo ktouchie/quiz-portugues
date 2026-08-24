@@ -29,6 +29,11 @@ class SrsRepository(private val dao: SrsRecordDao) {
     suspend fun getDueItemIds(module: String, now: Long = System.currentTimeMillis()): List<String> =
         dao.getDueForModule(module, now).map { it.itemId }
 
+    /** All of a module's SRS records, keyed by item id — the input to tier-unlock and
+     *  typing-readiness checks (docs/MOBILE_APP_SPEC.md §9), which need more than just due ids. */
+    suspend fun getAllRecords(module: String): Map<String, SrsRecord> =
+        dao.getAllForModule(module).associate { it.itemId to it.toDomain() }
+
     suspend fun countMastered(): Int = dao.countMastered()
 }
 

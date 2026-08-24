@@ -2,45 +2,35 @@ package com.ktouchie.quizportugues.ui.verbs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.tenseLabel
+import com.ktouchie.quizportugues.ui.common.MultipleChoiceOptions
+import com.ktouchie.quizportugues.ui.common.TypedAnswerInput
 import com.ktouchie.quizportugues.ui.common.hapticCorrect
 import com.ktouchie.quizportugues.ui.common.hapticWrong
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 
-private val ACCENT_CHARS = listOf("á", "ã", "â", "à", "é", "ê", "í", "ó", "ô", "õ", "ú", "ç")
-
 /**
- * Verb Conjugation Quick Practice session (docs/MOBILE_APP_SPEC.md §8/§9): typed free-text
- * input with a custom accent bar (no EP accented characters on a default mobile keyboard),
- * results shown in place rather than as a separate route — same pattern as the Vocabulary
- * session, matching how quiz_base.js actually behaves.
+ * Verb Conjugation Quick Practice session (docs/MOBILE_APP_SPEC.md §8/§9): each question renders
+ * multiple-choice or typed input depending on the item's own typing readiness — free-text input
+ * relies on the device keyboard's own accent long-press, no in-app accent picker. Results shown
+ * in place rather than as a separate route — same pattern as the Vocabulary session, matching how
+ * quiz_base.js actually behaves.
  */
 @Composable
 fun VerbSessionScreen(
@@ -53,7 +43,7 @@ fun VerbSessionScreen(
         is VerbSessionUiState.Loading -> LoadingContent()
         is VerbSessionUiState.InProgress -> InProgressContent(
             state = s,
-            onAnswerSubmitted = viewModel::onAnswerSubmitted,
+            onAnswerGiven = viewModel::onAnswerGiven,
             onContinue = viewModel::onContinue,
         )
         is VerbSessionUiState.Finished -> ResultsContent(state = s, onDone = onDone)
@@ -70,7 +60,7 @@ private fun LoadingContent() {
 @Composable
 private fun InProgressContent(
     state: VerbSessionUiState.InProgress,
-    onAnswerSubmitted: (String) -> Unit,
+    onAnswerGiven: (String) -> Unit,
     onContinue: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -96,12 +86,19 @@ private fun InProgressContent(
                 "${tenseLabel(state.item.tense)} para ${state.item.person}:",
         )
 
-        // Keyed on the item id so the typed text resets when a new question appears.
+        // Keyed on the item id so input state resets when a new question appears.
         key(state.item.id) {
-            AnswerInput(
-                enabled = state.feedback == null,
-                onSubmit = onAnswerSubmitted,
-            )
+            when (state.modality) {
+                QuestionModality.TYPED -> TypedAnswerInput(
+                    enabled = state.feedback == null,
+                    onSubmit = onAnswerGiven,
+                )
+                QuestionModality.MULTIPLE_CHOICE -> MultipleChoiceOptions(
+                    options = state.options,
+                    enabled = state.feedback == null,
+                    onSelect = onAnswerGiven,
+                )
+            }
         }
 
         state.feedback?.let { feedback ->
@@ -114,40 +111,6 @@ private fun InProgressContent(
             feedback.exampleSentence?.let { Text("Exemplo: $it") }
             Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
                 Text("Continuar")
-            }
-        }
-    }
-}
-
-@Composable
-private fun AnswerInput(enabled: Boolean, onSubmit: (String) -> Unit) {
-    var answerText by remember { mutableStateOf("") }
-
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            items(ACCENT_CHARS) { char ->
-                OutlinedButton(onClick = { answerText += char }, enabled = enabled) {
-                    Text(char)
-                }
-            }
-        }
-        OutlinedTextField(
-            value = answerText,
-            onValueChange = { answerText = it },
-            enabled = enabled,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.None,
-                imeAction = ImeAction.Done,
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { onSubmit(answerText) },
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-            Button(onClick = { onSubmit(answerText) }, enabled = enabled) {
-                Text("Responder")
             }
         }
     }
