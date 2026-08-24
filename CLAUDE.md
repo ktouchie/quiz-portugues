@@ -92,8 +92,10 @@ All quizzes share `QuizBase`:
 
 A native Android app (Kotlin + Jetpack Compose, no cross-platform framework). The website is the
 web version of the app — same look and features — so every PR ships the Android change *and* its
-web equivalent, with tests for both (rollout tracked in epic #59). Full design in
-`docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label on GitHub issues.
+web equivalent, with tests for both (rollout tracked in epic #59). All seven modules exist on both
+apps. Release to the Google Play Store is deferred until the full app is built and tested through
+several rounds from the phone (epic #12). Full design in `docs/MOBILE_APP_SPEC.md`; implementation
+tracked via the `mobile-app` label on GitHub issues.
 
 - Standard Gradle project: `android/app/src/main/java/com/ktouchie/quizportugues/`, with `srs/`,
   `gamification/`, `data/` (Room), `content/`, and `ui/` sub-packages as they're added.
