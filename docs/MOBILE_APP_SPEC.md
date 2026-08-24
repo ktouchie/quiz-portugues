@@ -184,10 +184,17 @@ broaden which content is in play as the learner shows they've got the current se
 ask for typed recall once an individual item is genuinely well-known — not as a blanket property of
 "being a verb question."
 
-**Content breadth — CEFR tiers.** Every verb and every vocabulary category carries a hand-assigned
-CEFR level (A1–C2), defined Android-side in `content/CefrTiers.kt` — an enrichment layer over the
-existing content JSON, not a change to it, so `verbs.json`/`vocabulary.json` and the web app's
-`difficulty` field/adaptive-difficulty filter are untouched. `content/ContentProgression.kt`'s
+**Content breadth — CEFR tiers.** Every verb, every conjugation *tense*, and every vocabulary
+category carries a hand-assigned CEFR level (A1–C2), defined Android-side in `content/CefrTiers.kt`
+— an enrichment layer over the existing content JSON, not a change to it, so
+`verbs.json`/`vocabulary.json` and the web app's `difficulty` field/adaptive-difficulty filter are
+untouched. A verb conjugation item's effective level is the *harder* of its verb's level and its
+tense's level (`TENSE_CEFR_LEVEL`, e.g. presente = A1, futuro/condicional/conjuntivo = B1,
+infinitivo pessoal = C1) — verb frequency and tense complexity are independent axes, so an A1 verb
+like "falar" still has its conjuntivo/mais-que-perfeito forms gated behind B1/B2 rather than opening
+up on day one just because the verb itself is elementary. (An earlier version of this only tagged
+the verb, not the tense — a real bug caught after the first Quick Practice session surfaced
+subjunctive/pluperfect forms of basic verbs to a brand-new learner.) `content/ContentProgression.kt`'s
 `unlockedTiers()` opens tiers sequentially: A1 is always unlocked, and each next tier unlocks once
 ≥80% of the current tier's items have been reviewed correctly at least once (the same "seen" bar
 gamification's mastered-count uses). An empty tier (no content assigned yet, e.g. vocabulary's
@@ -202,16 +209,32 @@ interval, is multiple-choice; once it crosses that bar, it starts appearing as t
 answer demotes it back to multiple-choice automatically via the SM-2 reset. This applies uniformly
 to both modules — Vocabulary items graduate to typed recall the same way Verb Conjugation items do.
 
-- **Multiple-choice** (both modules): 4 options — 1 correct + 3 distractors. Vocabulary distractors
-  are drawn from the same category where possible, falling back to random same-module distractors.
-  Verb Conjugation distractors are other persons' conjugated forms of the *same verb and tense*
-  where possible (the classic wrong-conjugation confusion), falling back to other verbs' forms of
-  the same tense/person.
+- **Multiple-choice** (both modules): 4 options — 1 correct + 3 distractors, picked for genuine
+  confusability rather than being obviously wrong (product feedback: the first version's distractors
+  were too easy to eliminate by elimination alone).
+  - **Verb Conjugation**: ranked hardest-first — the same verb's own form in a *different tense,
+    same person* (shares the stem, differs only in the ending actually being tested; e.g. for
+    "eu ___" (fazer, presente) = "faço", offering "fiz"/"fazia"/"farei" rather than "fazes"/"faz"),
+    falling back to other persons of the same verb+tense, then finally other verbs' forms of the
+    same tense/person (only reached when a verb+tense genuinely lacks enough distinct forms, e.g.
+    imperativo has no "eu" form).
+  - **Vocabulary**: ranked by `content/StringSimilarity.kt`'s Levenshtein-based similarity score
+    against the correct item's Portuguese word, checked two ways — same-language look-alikes (e.g.
+    "irmã" as a distractor for "irmão") and false-friend-style cross-language look-alikes (e.g.
+    "constipation" as a distractor for "constipação", which actually means "a cold" in EP) — then
+    sampled from the top-8 shortlist so the same word doesn't repeat identical distractors every
+    attempt.
 - **Typed** (both modules, once an item is typing-ready): free-text input relying on the device
   keyboard's own long-press accent picker (every stock Android/Gboard keyboard already offers
   `á é í ó ú â ê ô ã õ ç` this way) — no in-app accent bar. Answer comparison reuses the existing
   `.trim().toLowerCase().normalize('NFC')` logic from `quiz_base.js` as its behavioral reference,
   reimplemented in Kotlin (`content/AnswerMatching.kt`).
+- Progress bar and counter (e.g. "4/12") reflect items *permanently cleared* (`correctCount`), not
+  which question is currently on screen — a wrong answer requeues the item rather than shrinking the
+  pool, so a "current question number" metric both overstates progress before it's earned and never
+  advances on a miss. Only reaches `totalQuestions`/`totalQuestions` once the last item is answered
+  correctly, immediately before the session ends (fixes an earlier off-by-one where the bar looked
+  "done" a question early).
 - Wrong-answer feedback keeps the current pattern: show the grammar hint / correct answer in place,
   item stays in the session pool (per `quiz_base.js`'s existing retry-in-pool behavior), user taps
   to continue.

@@ -55,6 +55,32 @@ val VERB_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
     "vir" to C2,
 )
 
+/**
+ * Grammatical complexity of each conjugation tense, independent of which verb it's applied to —
+ * "eu falo" (A1 verb, presente) and "eu fale" (A1 verb, conjuntivo) are not the same difficulty.
+ * An item's effective level is the *harder* of its verb and its tense (see [cefrLevelOf]), so a
+ * basic verb's advanced-tense forms stay gated behind the tense's own tier rather than opening up
+ * immediately just because the verb itself is elementary — this is what stops a first-ever Quick
+ * Practice session from surfacing conjuntivo or mais-que-perfeito forms of "falar"/"ser".
+ * Approximate, grounded in the same general EP CEFR ordering as [VERB_CEFR_LEVEL]: presente is
+ * introduced first (A1); pretérito/imperfeito/imperativo next (A2); futuro, condicional, and a
+ * first exposure to the conjuntivo follow (B1); the compound/less common past tenses are more
+ * advanced (B2); infinitivo pessoal — a construction fairly particular to Portuguese — comes last
+ * (C1). Every tense in [VERB_TENSES] MUST appear here (enforced in [CefrTiersTest]).
+ */
+val TENSE_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "presente" to A1,
+    "pretérito" to A2,
+    "imperfeito" to A2,
+    "imperativo" to A2,
+    "futuro" to B1,
+    "condicional" to B1,
+    "conjuntivo" to B1,
+    "pretérito mais-que-perfeito" to B2,
+    "perfeito_composto" to B2,
+    "infinitivo pessoal" to C1,
+)
+
 val VOCABULARY_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
     // A1 — closed, high-frequency sets and the phrases every beginner course opens with.
     "Números" to A1,
@@ -99,10 +125,18 @@ val VOCABULARY_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
 fun verbCefrLevel(verb: String): CefrLevel =
     VERB_CEFR_LEVEL[verb] ?: error("No CEFR level assigned for verb \"$verb\" — add it to VERB_CEFR_LEVEL")
 
+fun tenseCefrLevel(tense: String): CefrLevel =
+    TENSE_CEFR_LEVEL[tense] ?: error("No CEFR level assigned for tense \"$tense\" — add it to TENSE_CEFR_LEVEL")
+
 fun vocabularyCategoryCefrLevel(category: String): CefrLevel =
     VOCABULARY_CATEGORY_CEFR_LEVEL[category]
         ?: error("No CEFR level assigned for vocabulary category \"$category\" — add it to VOCABULARY_CATEGORY_CEFR_LEVEL")
 
-fun cefrLevelOf(item: VerbQuizItem): CefrLevel = verbCefrLevel(item.verb)
+/** The harder of the verb's own level and the tense's level — see [TENSE_CEFR_LEVEL]. */
+fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
+    val verbLevel = verbCefrLevel(item.verb)
+    val tenseLevel = tenseCefrLevel(item.tense)
+    return if (verbLevel.ordinal >= tenseLevel.ordinal) verbLevel else tenseLevel
+}
 
 fun cefrLevelOf(item: VocabularyQuizItem): CefrLevel = vocabularyCategoryCefrLevel(item.category)
