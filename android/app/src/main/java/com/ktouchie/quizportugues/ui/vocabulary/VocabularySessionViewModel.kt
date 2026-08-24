@@ -219,6 +219,28 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
         showNextQuestion()
     }
 
+    /**
+     * Re-launches a session scoped to just the items the last round got wrong — see the matching
+     * comment in VerbSessionViewModel for why this exists (SM-2 never schedules a same-day due
+     * date, so "Nada por rever" right after a session with mistakes is expected, not a bug; this
+     * is the actual same-day fix).
+     */
+    fun onRetryMistakes() {
+        val mistakeIds = mistakeCounts.keys.toSet()
+        if (mistakeIds.isEmpty()) return
+        val mistakeItems = allItems.filter { it.id in mistakeIds }
+
+        pool.clear()
+        pool.addAll(mistakeItems.shuffled())
+        totalQuestions = pool.size
+        correctCount = 0
+        errorCount = 0
+        mistakeCounts.clear()
+        startedAt = System.currentTimeMillis()
+
+        showNextQuestion()
+    }
+
     private fun finishSession() {
         viewModelScope.launch {
             gamificationRepository.recordScoreIfBest(MODULE_VOCABULARY, correctCount)
