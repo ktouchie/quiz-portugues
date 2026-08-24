@@ -1,6 +1,7 @@
 package com.ktouchie.quizportugues.content
 
 import java.io.File
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -27,6 +28,17 @@ class CefrTiersTest {
     }
 
     @Test
+    fun `every conjugation tense has a CEFR level assigned`() {
+        val rawJson = File(repoRoot, "verbs.json").readText()
+        val entries = parseVerbEntries(rawJson).values
+        val tenses = entries.flatMap { it.tenses.keys }.toSet()
+        assertTrue("No tenses found in verbs.json at $repoRoot", tenses.isNotEmpty())
+
+        val untagged = tenses - TENSE_CEFR_LEVEL.keys
+        assertTrue("Tenses missing a CEFR level: $untagged", untagged.isEmpty())
+    }
+
+    @Test
     fun `every vocabulary category has a CEFR level assigned`() {
         val rawJson = File(repoRoot, "vocabulary.json").readText()
         val categories = parseVocabularyEntries(rawJson).map { it.category }.toSet()
@@ -35,4 +47,32 @@ class CefrTiersTest {
         val untagged = categories - VOCABULARY_CATEGORY_CEFR_LEVEL.keys
         assertTrue("Vocabulary categories missing a CEFR level: $untagged", untagged.isEmpty())
     }
+
+    @Test
+    fun `an A1 verb in an advanced tense is gated by the tense, not the verb`() {
+        // "falar" is A1, but conjuntivo is B1 — the combined item must not be treated as A1, or a
+        // first-ever session could surface it before futuro/condicional/conjuntivo unlock.
+        val item = verbItem(verb = "falar", tense = "conjuntivo")
+        assertEquals(CefrLevel.B1, cefrLevelOf(item))
+    }
+
+    @Test
+    fun `an advanced verb in the simplest tense is gated by the verb, not the tense`() {
+        // "vir" is C2 even in presente, its simplest tense — a beginner still doesn't know "vir".
+        val item = verbItem(verb = "vir", tense = "presente")
+        assertEquals(CefrLevel.C2, cefrLevelOf(item))
+    }
+
+    private fun verbItem(verb: String, tense: String) = VerbQuizItem(
+        id = verbItemId(verb, tense, 0),
+        verb = verb,
+        tense = tense,
+        personIndex = 0,
+        person = "eu",
+        answer = "x",
+        regular = true,
+        difficulty = Difficulty.BEGINNER,
+        english = "x",
+        exampleSentence = null,
+    )
 }

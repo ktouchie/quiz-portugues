@@ -34,7 +34,6 @@ sealed interface VerbSessionUiState {
         val modality: QuestionModality,
         /** Shuffled answer options; only populated when [modality] is [QuestionModality.MULTIPLE_CHOICE]. */
         val options: List<String> = emptyList(),
-        val questionNumber: Int,
         val totalQuestions: Int,
         val correctCount: Int,
         val errorCount: Int,
@@ -134,36 +133,43 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
             item = item,
             modality = modality,
             options = if (modality == QuestionModality.MULTIPLE_CHOICE) buildOptions(item) else emptyList(),
-            questionNumber = totalQuestions - pool.size + 1,
             totalQuestions = totalQuestions,
             correctCount = correctCount,
             errorCount = errorCount,
         )
     }
 
-    /** Distractors are other persons' forms of the same (verb, tense) where possible — the
-     *  classic wrong-conjugation confusion — falling back to other verbs' forms of the same
-     *  tense/person when a verb+tense doesn't have enough distinct forms (e.g. imperativo). */
+    /**
+     * Distractors are ranked hardest-first (docs/MOBILE_APP_SPEC.md §9): the same verb's *own*
+     * form in a different tense but the *same person* is the closest lexical neighbor — it shares
+     * the verb's stem and differs only in the ending a learner actually needs to know (e.g. for
+     * "eu ___" (fazer, presente) = "faço", offering "fiz"/"fazia"/"farei" rather than "fazes"/
+     * "faz"). Falls back to other persons of the same verb+tense (still same-verb, still
+     * plausible), then finally to other verbs' forms of the same tense/person — only reached when
+     * a verb+tense genuinely lacks enough distinct forms (e.g. imperativo has no "eu" form).
+     */
     private fun buildOptions(item: VerbQuizItem): List<String> {
+        val sameVerbPerson = allItems
+            .filter { it.verb == item.verb && it.personIndex == item.personIndex && it.answer != item.answer }
+            .map { it.answer }
+            .distinct()
+            .shuffled()
+
         val sameVerbTense = allItems
             .filter { it.verb == item.verb && it.tense == item.tense && it.answer != item.answer }
             .map { it.answer }
             .distinct()
             .shuffled()
-            .take(DISTRACTOR_COUNT)
 
-        val distractors = if (sameVerbTense.size == DISTRACTOR_COUNT) {
-            sameVerbTense
-        } else {
-            val needed = DISTRACTOR_COUNT - sameVerbTense.size
-            val fallback = allItems
-                .filter { it.tense == item.tense && it.answer != item.answer && it.answer !in sameVerbTense }
-                .map { it.answer }
-                .distinct()
-                .shuffled()
-                .take(needed)
-            sameVerbTense + fallback
-        }
+        val fallback = allItems
+            .filter { it.tense == item.tense && it.answer != item.answer }
+            .map { it.answer }
+            .distinct()
+            .shuffled()
+
+        val distractors = (sameVerbPerson + sameVerbTense + fallback)
+            .distinct()
+            .take(DISTRACTOR_COUNT)
 
         return (distractors + item.answer).distinct().shuffled()
     }

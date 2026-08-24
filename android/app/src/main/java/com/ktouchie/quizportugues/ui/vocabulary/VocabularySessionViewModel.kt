@@ -9,6 +9,7 @@ import com.ktouchie.quizportugues.content.VocabularyQuizItem
 import com.ktouchie.quizportugues.content.answersMatch
 import com.ktouchie.quizportugues.content.cefrLevelOf
 import com.ktouchie.quizportugues.content.loadVocabularyEntries
+import com.ktouchie.quizportugues.content.stringSimilarity
 import com.ktouchie.quizportugues.content.unlockedTiers
 import com.ktouchie.quizportugues.content.vocabularyQuizItems
 import com.ktouchie.quizportugues.data.AppDatabase
@@ -37,7 +38,6 @@ sealed interface SessionUiState {
 
     data class InProgress(
         val question: VocabQuestion,
-        val questionNumber: Int,
         val totalQuestions: Int,
         val correctCount: Int,
         val errorCount: Int,
@@ -137,7 +137,6 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
         }
         _uiState.value = SessionUiState.InProgress(
             question = buildQuestion(item),
-            questionNumber = totalQuestions - pool.size + 1,
             totalQuestions = totalQuestions,
             correctCount = correctCount,
             errorCount = errorCount,
@@ -148,18 +147,30 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
         val modality = if (isReadyForTyping(records[item.id])) QuestionModality.TYPED else QuestionModality.MULTIPLE_CHOICE
         if (modality == QuestionModality.TYPED) return VocabQuestion(item, modality)
 
-        val sameCategoryDistractors = allItems
-            .filter { it.category == item.category && it.id != item.id }
-            .shuffled()
-            .take(DISTRACTOR_COUNT)
-        val distractors = if (sameCategoryDistractors.size == DISTRACTOR_COUNT) {
-            sameCategoryDistractors
-        } else {
-            // Category too small — fall back to any other item in the module.
-            allItems.filter { it.id != item.id }.shuffled().take(DISTRACTOR_COUNT)
-        }
-        val options = (distractors.map { it.english } + item.english).shuffled()
+        val options = (confusableDistractors(item).map { it.english } + item.english).shuffled()
         return VocabQuestion(item, modality, options)
+    }
+
+    /**
+     * Distractors are picked for genuine confusability, not random-from-category
+     * (docs/MOBILE_APP_SPEC.md §9): each candidate is scored by the higher of two spelling
+     * similarities against the correct item's Portuguese word — same-language look-alikes (e.g.
+     * "irmã" as a distractor for "irmão") via [candidate.portuguese], and false-friend-style
+     * cross-language look-alikes (e.g. "constipation" as a distractor for "constipação", which
+     * actually means "a cold" in EP) via [candidate.english]. The top-scoring
+     * [CONFUSABLE_SHORTLIST_SIZE] candidates are shuffled and sampled from, so a given word
+     * doesn't show the identical distractor set on every attempt.
+     */
+    private fun confusableDistractors(item: VocabularyQuizItem): List<VocabularyQuizItem> {
+        val ranked = allItems
+            .filter { it.id != item.id }
+            .sortedByDescending { candidate ->
+                maxOf(
+                    stringSimilarity(item.portuguese, candidate.portuguese),
+                    stringSimilarity(item.portuguese, candidate.english),
+                )
+            }
+        return ranked.take(CONFUSABLE_SHORTLIST_SIZE).shuffled().take(DISTRACTOR_COUNT)
     }
 
     fun onAnswerGiven(answer: String) {
@@ -232,5 +243,6 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
     companion object {
         const val QUICK_PRACTICE_CAP = 12
         private const val DISTRACTOR_COUNT = 3
+        private const val CONFUSABLE_SHORTLIST_SIZE = 8
     }
 }

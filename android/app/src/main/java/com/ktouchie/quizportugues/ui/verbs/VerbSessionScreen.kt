@@ -89,13 +89,18 @@ private fun InProgressContent(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
+        // Reflects items permanently cleared (correctCount), not which question is on screen —
+        // a wrong answer requeues the item rather than advancing the pool, so counting "current
+        // question number" would both overstate progress before it's earned and never move on a
+        // miss. Only reaches totalQuestions/totalQuestions once the last item is answered
+        // correctly, right before the session actually finishes.
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             GradientProgressBar(
-                progress = state.questionNumber.toFloat() / state.totalQuestions,
+                progress = state.correctCount.toFloat() / state.totalQuestions,
                 modifier = Modifier.weight(1f).height(10.dp),
             )
             Text(
-                text = "${state.questionNumber}/${state.totalQuestions}",
+                text = "${state.correctCount}/${state.totalQuestions}",
                 style = MaterialTheme.typography.labelLarge,
                 color = ExtendedTheme.colors.textWarm,
             )
