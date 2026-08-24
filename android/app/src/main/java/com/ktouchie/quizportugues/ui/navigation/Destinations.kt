@@ -29,3 +29,17 @@ sealed class Destination(val route: String) {
 
 const val MODULE_VERBS = "verbs"
 const val MODULE_VOCABULARY = "vocabulary"
+
+/** Display name shown on Home's module cards and each Module Home screen's title. */
+fun moduleDisplayName(moduleId: String): String = when (moduleId) {
+    MODULE_VERBS -> "Conjugação de Verbos"
+    MODULE_VOCABULARY -> "Vocabulário"
+    else -> moduleId
+}
+
+/** Emoji used as the module's icon on Home's module cards. */
+fun moduleIcon(moduleId: String): String = when (moduleId) {
+    MODULE_VERBS -> "🗣️"
+    MODULE_VOCABULARY -> "📚"
+    else -> "📘"
+}
