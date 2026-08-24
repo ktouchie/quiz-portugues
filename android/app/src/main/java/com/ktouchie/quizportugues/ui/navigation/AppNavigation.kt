@@ -44,6 +44,9 @@ fun AppNavigation() {
                 onOpenAdvancedSetup = {
                     navController.navigate(Destination.Setup.route(moduleId))
                 },
+                onBackToHome = {
+                    navController.popBackStack(Destination.Home.route, inclusive = false)
+                },
             )
         }
 
