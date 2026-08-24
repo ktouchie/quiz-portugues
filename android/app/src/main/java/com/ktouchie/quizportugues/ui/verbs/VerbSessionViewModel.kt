@@ -3,14 +3,21 @@ package com.ktouchie.quizportugues.ui.verbs
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.ktouchie.quizportugues.content.CefrLevel
+import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.VerbQuizItem
 import com.ktouchie.quizportugues.content.answersMatch
+import com.ktouchie.quizportugues.content.cefrLevelOf
 import com.ktouchie.quizportugues.content.getVerbHint
 import com.ktouchie.quizportugues.content.loadVerbEntries
+import com.ktouchie.quizportugues.content.unlockedTiers
 import com.ktouchie.quizportugues.content.verbQuizItems
 import com.ktouchie.quizportugues.data.AppDatabase
 import com.ktouchie.quizportugues.data.GamificationRepository
 import com.ktouchie.quizportugues.data.SrsRepository
+import com.ktouchie.quizportugues.srs.SrsRecord
+import com.ktouchie.quizportugues.srs.isReadyForTyping
+import com.ktouchie.quizportugues.srs.sm2
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +31,9 @@ sealed interface VerbSessionUiState {
 
     data class InProgress(
         val item: VerbQuizItem,
+        val modality: QuestionModality,
+        /** Shuffled answer options; only populated when [modality] is [QuestionModality.MULTIPLE_CHOICE]. */
+        val options: List<String> = emptyList(),
         val questionNumber: Int,
         val totalQuestions: Int,
         val correctCount: Int,
@@ -42,9 +52,15 @@ sealed interface VerbSessionUiState {
 
 /**
  * Drives a Quick Practice session for the Verb Conjugation module — same pool/due/interleave/
- * retry-in-pool design as [com.ktouchie.quizportugues.ui.vocabulary.VocabularySessionViewModel],
- * but typed-answer input compared via [answersMatch] instead of multiple choice, and wrong
- * answers surface a grammar hint + example sentence (docs/MOBILE_APP_SPEC.md §9).
+ * retry-in-pool design as [com.ktouchie.quizportugues.ui.vocabulary.VocabularySessionViewModel].
+ *
+ * Two gates decide what a session looks like (docs/MOBILE_APP_SPEC.md §9):
+ *  - **Content breadth**: [unlockedTiers] restricts item selection to CEFR tiers the user has
+ *    earned access to, favoring the newest unlocked ("frontier") tier so it crosses its own
+ *    unlock threshold rather than always being crowded out by earlier, better-known tiers.
+ *  - **Input modality**: each selected item independently renders multiple-choice or typed,
+ *    decided by [isReadyForTyping] on that item's own SRS record — not a fixed per-module choice.
+ *    A wrong typed answer demotes the item back to multiple-choice for free (see Production.kt).
  */
 class VerbSessionViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -61,6 +77,7 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
     val uiState: StateFlow<VerbSessionUiState> = _uiState.asStateFlow()
 
     private var allItems: List<VerbQuizItem> = emptyList()
+    private var records: Map<String, SrsRecord> = emptyMap()
     private val pool = ArrayDeque<VerbQuizItem>()
     private var totalQuestions = 0
     private var correctCount = 0
@@ -78,11 +95,22 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
 
     private suspend fun startSession() {
         val now = System.currentTimeMillis()
-        val dueIds = srsRepository.getDueItemIds(MODULE_VERBS, now).toSet()
-        val due = allItems.filter { it.id in dueIds }.shuffled()
+        records = srsRepository.getAllRecords(MODULE_VERBS)
+
+        val itemsByLevel: Map<CefrLevel, List<String>> = allItems.groupBy({ cefrLevelOf(it) }, { it.id })
+        val unlocked = unlockedTiers(itemsByLevel, records)
+        val eligible = allItems.filter { cefrLevelOf(it) in unlocked }
+
+        val dueIds = records.filterValues { it.nextReview in 1..now }.keys
+        val due = eligible.filter { it.id in dueIds }.shuffled()
         val capped = due.take(QUICK_PRACTICE_CAP)
+
         val fillerNeeded = (QUICK_PRACTICE_CAP - capped.size).coerceAtLeast(0)
-        val filler = allItems.filterNot { it.id in dueIds }.shuffled().take(fillerNeeded)
+        val notDue = eligible.filterNot { it.id in dueIds }
+        val frontier = unlocked.maxByOrNull { it.ordinal }
+        val frontierFirst = notDue.filter { cefrLevelOf(it) == frontier }.shuffled()
+        val restNotDue = notDue.filterNot { cefrLevelOf(it) == frontier }.shuffled()
+        val filler = (frontierFirst + restNotDue).take(fillerNeeded)
 
         pool.clear()
         pool.addAll((capped + filler).shuffled())
@@ -101,8 +129,11 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
             finishSession()
             return
         }
+        val modality = if (isReadyForTyping(records[item.id])) QuestionModality.TYPED else QuestionModality.MULTIPLE_CHOICE
         _uiState.value = VerbSessionUiState.InProgress(
             item = item,
+            modality = modality,
+            options = if (modality == QuestionModality.MULTIPLE_CHOICE) buildOptions(item) else emptyList(),
             questionNumber = totalQuestions - pool.size + 1,
             totalQuestions = totalQuestions,
             correctCount = correctCount,
@@ -110,21 +141,58 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
         )
     }
 
-    fun onAnswerSubmitted(typedAnswer: String) {
+    /** Distractors are other persons' forms of the same (verb, tense) where possible — the
+     *  classic wrong-conjugation confusion — falling back to other verbs' forms of the same
+     *  tense/person when a verb+tense doesn't have enough distinct forms (e.g. imperativo). */
+    private fun buildOptions(item: VerbQuizItem): List<String> {
+        val sameVerbTense = allItems
+            .filter { it.verb == item.verb && it.tense == item.tense && it.answer != item.answer }
+            .map { it.answer }
+            .distinct()
+            .shuffled()
+            .take(DISTRACTOR_COUNT)
+
+        val distractors = if (sameVerbTense.size == DISTRACTOR_COUNT) {
+            sameVerbTense
+        } else {
+            val needed = DISTRACTOR_COUNT - sameVerbTense.size
+            val fallback = allItems
+                .filter { it.tense == item.tense && it.answer != item.answer && it.answer !in sameVerbTense }
+                .map { it.answer }
+                .distinct()
+                .shuffled()
+                .take(needed)
+            sameVerbTense + fallback
+        }
+
+        return (distractors + item.answer).distinct().shuffled()
+    }
+
+    fun onAnswerGiven(answer: String) {
         val state = _uiState.value as? VerbSessionUiState.InProgress ?: return
         if (state.feedback != null) return // already answered this question, awaiting "continue"
-        if (typedAnswer.isBlank()) return
+        if (state.modality == QuestionModality.TYPED && answer.isBlank()) return
 
         val item = state.item
-        val wasCorrect = answersMatch(typedAnswer, item.answer)
+        val wasCorrect = when (state.modality) {
+            QuestionModality.TYPED -> answersMatch(answer, item.answer)
+            QuestionModality.MULTIPLE_CHOICE -> answer == item.answer
+        }
         val quality = when {
             wasCorrect && mistakeCounts.containsKey(item.id) -> 2
             wasCorrect -> 4
             else -> 0
         }
 
+        // Computed locally (not awaited from the repository) so the next question's modality
+        // decision — including an immediate requeue of this same item after a wrong answer —
+        // never races the Room write; recordAnswer() persists the identical result since sm2()
+        // is a pure function of (record, quality, now).
+        val now = System.currentTimeMillis()
+        val updatedRecord = sm2(records[item.id] ?: SrsRecord(), quality, now)
+        records = records + (item.id to updatedRecord)
         viewModelScope.launch {
-            srsRepository.recordAnswer(item.id, MODULE_VERBS, quality)
+            srsRepository.recordAnswer(item.id, MODULE_VERBS, quality, now)
         }
 
         if (wasCorrect) {
@@ -179,5 +247,6 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
 
     companion object {
         const val QUICK_PRACTICE_CAP = 12
+        private const val DISTRACTOR_COUNT = 3
     }
 }

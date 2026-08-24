@@ -3,20 +3,32 @@ package com.ktouchie.quizportugues.ui.vocabulary
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.ktouchie.quizportugues.content.CefrLevel
+import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.VocabularyQuizItem
+import com.ktouchie.quizportugues.content.answersMatch
+import com.ktouchie.quizportugues.content.cefrLevelOf
 import com.ktouchie.quizportugues.content.loadVocabularyEntries
+import com.ktouchie.quizportugues.content.unlockedTiers
 import com.ktouchie.quizportugues.content.vocabularyQuizItems
 import com.ktouchie.quizportugues.data.AppDatabase
 import com.ktouchie.quizportugues.data.GamificationRepository
 import com.ktouchie.quizportugues.data.SrsRepository
+import com.ktouchie.quizportugues.srs.SrsRecord
+import com.ktouchie.quizportugues.srs.isReadyForTyping
+import com.ktouchie.quizportugues.srs.sm2
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/** One multiple-choice question: the item being tested plus its shuffled answer options. */
-data class VocabQuestion(val item: VocabularyQuizItem, val options: List<String>)
+/** One question: the item being tested, its modality, and (for multiple-choice) shuffled options. */
+data class VocabQuestion(
+    val item: VocabularyQuizItem,
+    val modality: QuestionModality,
+    val options: List<String> = emptyList(),
+)
 
 data class AnswerFeedback(val wasCorrect: Boolean, val correctAnswer: String)
 
@@ -47,6 +59,11 @@ sealed interface SessionUiState {
  * wrong answer keeps the item in the pool (reinserted at a random later position) rather than
  * dropping it — mirrors `quiz_base.js`'s retry-in-pool behavior.
  *
+ * Content breadth and input modality are gated the same way as
+ * [com.ktouchie.quizportugues.ui.verbs.VerbSessionViewModel] (docs/MOBILE_APP_SPEC.md §9):
+ * selection is restricted to unlocked CEFR tiers (favoring the newest unlocked tier), and each
+ * item independently renders multiple-choice or typed based on its own typing readiness.
+ *
  * No dependency-injection framework is set up yet (deliberately, to avoid scope creep before
  * there's a second consumer that would justify one) — [AndroidViewModel] gives just enough
  * [Application] context to build [AppDatabase] directly.
@@ -66,6 +83,7 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
     val uiState: StateFlow<SessionUiState> = _uiState.asStateFlow()
 
     private var allItems: List<VocabularyQuizItem> = emptyList()
+    private var records: Map<String, SrsRecord> = emptyMap()
     private val pool = ArrayDeque<VocabularyQuizItem>()
     private var totalQuestions = 0
     private var correctCount = 0
@@ -83,11 +101,22 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
 
     private suspend fun startSession() {
         val now = System.currentTimeMillis()
-        val dueIds = srsRepository.getDueItemIds(MODULE_VOCABULARY, now).toSet()
-        val due = allItems.filter { it.id in dueIds }.shuffled()
+        records = srsRepository.getAllRecords(MODULE_VOCABULARY)
+
+        val itemsByLevel: Map<CefrLevel, List<String>> = allItems.groupBy({ cefrLevelOf(it) }, { it.id })
+        val unlocked = unlockedTiers(itemsByLevel, records)
+        val eligible = allItems.filter { cefrLevelOf(it) in unlocked }
+
+        val dueIds = records.filterValues { it.nextReview in 1..now }.keys
+        val due = eligible.filter { it.id in dueIds }.shuffled()
         val capped = due.take(QUICK_PRACTICE_CAP)
+
         val fillerNeeded = (QUICK_PRACTICE_CAP - capped.size).coerceAtLeast(0)
-        val filler = allItems.filterNot { it.id in dueIds }.shuffled().take(fillerNeeded)
+        val notDue = eligible.filterNot { it.id in dueIds }
+        val frontier = unlocked.maxByOrNull { it.ordinal }
+        val frontierFirst = notDue.filter { cefrLevelOf(it) == frontier }.shuffled()
+        val restNotDue = notDue.filterNot { cefrLevelOf(it) == frontier }.shuffled()
+        val filler = (frontierFirst + restNotDue).take(fillerNeeded)
 
         pool.clear()
         pool.addAll((capped + filler).shuffled())
@@ -116,6 +145,9 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
     }
 
     private fun buildQuestion(item: VocabularyQuizItem): VocabQuestion {
+        val modality = if (isReadyForTyping(records[item.id])) QuestionModality.TYPED else QuestionModality.MULTIPLE_CHOICE
+        if (modality == QuestionModality.TYPED) return VocabQuestion(item, modality)
+
         val sameCategoryDistractors = allItems
             .filter { it.category == item.category && it.id != item.id }
             .shuffled()
@@ -127,23 +159,31 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
             allItems.filter { it.id != item.id }.shuffled().take(DISTRACTOR_COUNT)
         }
         val options = (distractors.map { it.english } + item.english).shuffled()
-        return VocabQuestion(item, options)
+        return VocabQuestion(item, modality, options)
     }
 
-    fun onAnswerSelected(selected: String) {
+    fun onAnswerGiven(answer: String) {
         val state = _uiState.value as? SessionUiState.InProgress ?: return
         if (state.feedback != null) return // already answered this question, awaiting "continue"
 
         val item = state.question.item
-        val wasCorrect = selected == item.english
+        val wasCorrect = when (state.question.modality) {
+            QuestionModality.TYPED -> answersMatch(answer, item.english)
+            QuestionModality.MULTIPLE_CHOICE -> answer == item.english
+        }
         val quality = when {
             wasCorrect && mistakeCounts.containsKey(item.id) -> 2 // correct after a mistake
             wasCorrect -> 4 // correct on the first try
             else -> 0
         }
 
+        // Computed locally so the next question's modality decision never races the Room write —
+        // see the matching comment in VerbSessionViewModel.
+        val now = System.currentTimeMillis()
+        val updatedRecord = sm2(records[item.id] ?: SrsRecord(), quality, now)
+        records = records + (item.id to updatedRecord)
         viewModelScope.launch {
-            srsRepository.recordAnswer(item.id, MODULE_VOCABULARY, quality)
+            srsRepository.recordAnswer(item.id, MODULE_VOCABULARY, quality, now)
         }
 
         if (wasCorrect) {
