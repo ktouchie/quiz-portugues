@@ -102,6 +102,12 @@ in `docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label 
   crossing `srs/Production.kt`'s `isReadyForTyping()` bar — deliberately a different, stricter
   check than gamification's loose "mastered" count. No custom accent-bar keyboard; typed input
   relies on the device keyboard's own accent long-press.
+- **Visual theme intentionally diverges from the web app** (spec §11): "Direction A — Warm
+  Encourager" (cream palette, warm amber gradient accent alongside the existing blue, big
+  soft-rounded cards), chosen by the product owner from 3 mockup directions drafted as a Claude
+  Design canvas. `ui/theme/Color.kt`'s tokens are no longer a 1:1 port of `styles.css`; shared
+  warm-styled building blocks live in `ui/common/` (`ModuleCard`, `StatChip`, `PromptCard`,
+  `AccuracyRing`, `MilestoneBanner`, `WarmGradientButton`, `GradientProgressBar`).
 - Build: `./gradlew lint test` for CI-equivalent checks; `./gradlew assembleDebug` for an
   installable APK. Requires the Android SDK — not available in this sandbox, so changes here
   can't be build-verified locally; rely on careful review plus the Android CI workflow.

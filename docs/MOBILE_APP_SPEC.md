@@ -215,8 +215,10 @@ to both modules — Vocabulary items graduate to typed recall the same way Verb 
 - Wrong-answer feedback keeps the current pattern: show the grammar hint / correct answer in place,
   item stays in the session pool (per `quiz_base.js`'s existing retry-in-pool behavior), user taps
   to continue.
-- Results screen: time, accuracy %, top mistakes list, "Practice mistakes" retry button — same
-  shape as today's, laid out for a phone screen.
+- Results screen: time, accuracy %, top mistakes list — laid out for a phone screen. The web app's
+  "Praticar erros" retry button is **not yet implemented** here (§13) — both session ViewModels
+  track per-item mistake counts for the mistakes list, but neither exposes a way to re-launch a
+  session scoped to just those items yet.
 
 ## 10. Gamification
 
@@ -231,9 +233,33 @@ on the feedback state. No sound design, no XP/combo meter, no confetti — those
 
 ## 11. Theming
 
-Port the dark/light theme from `styles.css`'s CSS custom properties into a Compose Material 3
-theme (`ColorScheme`) with equivalent token values, respecting the OS-level light/dark setting by
-default (mirroring the current `initTheme` behavior from `common.js`).
+**Superseded.** The theme originally ported the web app's `styles.css` tokens 1:1 into a Compose
+Material 3 `ColorScheme`. After using that shipped v1 build, the product owner asked for a real
+visual redesign: three mockup directions were drafted (a Claude Design canvas — Home, a
+multiple-choice question, a typed question, and Results, in each direction), and **"Direction A —
+Warm Encourager"** was chosen: a cream/toast palette, big soft-rounded cards, and a warm amber
+gradient accent alongside the existing blue, aimed at a more encouraging, celebratory, low-pressure
+feel than the original bare Material defaults.
+
+- `ui/theme/Color.kt` — new light/dark token sets (`LightBg`/`DarkBg` etc.) plus a warm-gradient
+  accent pair (`*WarmAccentStart`/`*WarmAccentEnd`) with no equivalent in the web app's palette.
+  This is a **deliberate, permanent divergence** from `styles.css` — the Android app's visual
+  identity is now its own, not required to track the web app's tokens going forward. `correct`/
+  `incorrect` semantics and the blue accent's role as the primary-action color carry over
+  unchanged; background, surface, border, text, and the warm accent do not.
+- `ui/theme/Theme.kt` — large corner-radius `Shapes` (22-28dp, well above Material 3 defaults) and
+  bolder headline/title/label typography, matching the mockup's shape language.
+- `ui/common/`: shared warm-styled building blocks used across Home, both module homes, both
+  session screens, and both results screens — `ModuleCard` (icon, due count, mastery progress bar,
+  one tap target for the whole card), `StatChip`, `PromptCard`, `MultipleChoiceOptions` (lettered
+  badge options, the correct one highlighted once answered), `TypedAnswerInput`, `WarmGradientButton`,
+  `GradientProgressBar`, `AccuracyRing` (a custom-drawn donut on the results screens), and
+  `MilestoneBanner`.
+- Dark mode gets its own warm-dark palette (not just an inverted light palette) — a warm near-black
+  background/surface rather than the previous cool `#0F1117`/`#1A1D27`, keeping the same amber
+  accent since it already reads well on a dark ground.
+- Dynamic color (Android 12+) is still deliberately not offered — the palette is a chosen brand
+  identity now, not meant to shift with wallpaper.
 
 ## 12. Testing & CI
 
@@ -279,6 +305,9 @@ on the product owner's phone within a few minutes, every time.
 ## 13. Out of scope for v1 — backlog
 
 Recorded here so they aren't lost, not because they're unimportant:
+
+- "Praticar erros" retry button on the results screens (§9) — re-launch a session scoped to just
+  the current session's mistakes, mirroring the web app's retry-mistakes flow.
 
 - iOS, if ever revisited — would need a decision on native Swift vs. a cross-platform rewrite,
   since the Android app is not built on a cross-platform framework.
@@ -335,6 +364,7 @@ Committed ahead of this spec, since they affect data both apps will share:
 | Backend/sync | None — local only (Room) | Product owner |
 | Input model | Mastery-gated per item: multiple-choice until an item is typing-ready (§9), then typed; no custom accent bar, relies on the device keyboard's own accent long-press | Product owner, after using the shipped v1 modules |
 | Content progression | CEFR tiers (A1–C2), sequential unlock at 80% "seen" per tier, Android-only enrichment layer over the shared content JSON | Product owner |
+| Visual direction | "Direction A — Warm Encourager" (cream palette, warm amber gradient accent, big soft-rounded cards), chosen from 3 mockup directions | Product owner, from a Claude Design canvas |
 | Monetization | None | Product owner |
 | Notifications | None in v1 | Product owner |
 | Repo structure | Monorepo, `android/` directory, no shared code package (content JSON + conventions only) | Product owner + engineering review, revised for the Kotlin pivot |
