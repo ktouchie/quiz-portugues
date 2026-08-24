@@ -26,7 +26,11 @@ class AppNavigationTest {
 
         composeTestRule.onNodeWithText("Vocabulário").performClick()
 
-        composeTestRule.onNodeWithText(MODULE_VOCABULARY).assertExists()
+        // ModuleHomeScreen shows the display name ("Vocabulário"), not the raw module id
+        // ("vocabulary") — asserting the button used to get here still exists, now as this
+        // screen's title, plus its own "Prática Rápida" CTA, confirms real navigation happened
+        // rather than the same Home screen just still being on top.
+        composeTestRule.onNodeWithText("Prática Rápida").assertExists()
     }
 
     @Test
@@ -41,5 +45,21 @@ class AppNavigationTest {
         composeTestRule.onNodeWithText("Avançado").performClick()
 
         composeTestRule.onNodeWithText("Setup ($MODULE_VERBS)").assertExists()
+    }
+
+    @Test
+    fun tappingInicioOnModuleHomeReturnsToHome() {
+        composeTestRule.setContent {
+            QuizPortuguesTheme {
+                AppNavigation()
+            }
+        }
+
+        composeTestRule.onNodeWithText("Conjugação de Verbos").performClick()
+        composeTestRule.onNodeWithText("Início").performClick()
+
+        // Home-only content (the greeting) confirms we're actually back, not just that the
+        // ModuleHomeScreen's "Início" row itself still renders.
+        composeTestRule.onNodeWithText("Olá! 👋").assertExists()
     }
 }
