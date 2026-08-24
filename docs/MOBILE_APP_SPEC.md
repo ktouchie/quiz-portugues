@@ -14,10 +14,23 @@ only, no iOS. This revision reflects that pivot throughout.
 - Port the concept of the existing static web quiz app (`/`) to a native Android app, reusing what
   the software-engineering review found genuinely portable — the SM-2 spaced-repetition algorithm,
   gamification rules, and the JSON content itself — while rebuilding the UI natively.
-- Ship a real, finished v1 rather than a partial port of all seven modules — depth over breadth.
+- Build out a **fully-developed app covering all seven web quiz modules**, not a permanent
+  Verb+Vocabulary-only subset. "Starting with Verb Conjugation and Vocabulary" (the original v1
+  framing) meant sequencing, not final scope — Verb Conjugation and Vocabulary shipped first
+  because they proved out the architecture (mastery-gated CEFR tiers, MC-until-typing-ready input,
+  the warm theme, shared UI components); the remaining five modules (Gender & Plural,
+  Ser/Estar/Ficar, Contractions, Subjunctive, Indirect Speech — epics #51–#55) reuse that same
+  architecture rather than re-deriving it.
+- **Release to the Google Play Store is explicitly deferred** until the full seven-module app is
+  built and the product owner has tested it through several rounds from their phone — not simply
+  low-priority backlog, but a deliberate ordering: don't spend effort on release-prep polish
+  (signed release build, store listing, icon/splash) for an app that isn't finished yet. See
+  "Release timing" in the Decision log.
 - The product owner develops and validates this app entirely from their phone, with no desktop/
   laptop in the loop. Every push to `main` must produce an installable APK reachable from the
   phone with nothing more than a browser — this drives the CI design in §12.
+- Where a technique proves out well on Android (smarter multiple-choice distractors, mastery-gated
+  content pacing), evaluate porting it back to the web app too — see §15.
 
 ## 2. Non-goals for v1
 
@@ -29,9 +42,10 @@ only, no iOS. This revision reflects that pivot throughout.
 - No push/local notifications.
 - No social or competitive features (leaderboards, friends, sharing).
 - No listening/speaking/pronunciation practice.
-- No modules beyond Verb Conjugation and Vocabulary (the other five — gender & plural,
-  ser/estar/ficar, contractions, subjunctive, indirect speech — are backlog, not cut).
 - No guided/gated CEFR curriculum path — module and content selection stays free-choice, as today.
+- No Play Store submission until all seven modules are built and tested (see §1) — the signed
+  release build, store listing, and icon/splash assets (epic #12) stay parked, not worked on, until
+  then.
 
 ## 3. Tech stack
 
@@ -83,18 +97,37 @@ see §7.
 This is a structural addition, not a rewrite of the web app's behavior: `script.js`,
 `vocabulary_quiz.js`, `srs.js`, and `gamification.js` are untouched by this work.
 
-## 5. Content scope (v1)
+## 5. Content scope
 
-Two modules only:
+All seven web quiz modules, built in this order:
 
-1. **Verb Conjugation** — all 26 verbs currently in `verbs.json` with a populated conjugation
-   table (the ~25 additional entries that only carry `participios_passados` are out of scope for
-   the quiz itself; see §14).
-2. **Vocabulary** — all 31 categories / ~548 words in `vocabulary.json`.
+1. **Verb Conjugation** (shipped) — all 26 verbs currently in `verbs.json` with a populated
+   conjugation table (the ~25 additional entries that only carry `participios_passados` are out of
+   scope for the quiz itself; see §14).
+2. **Vocabulary** (shipped) — all 31 categories / ~548 words in `vocabulary.json`.
+3. **Gender & Plural** (#51) — `gender_quiz.json`, 4 categories / 53 words / 102 quiz items
+   (`{masculine, feminine, plural, english}`). Web question pattern: "Qual é o feminino/plural de
+   {masculine word}?", free-text answer. Each word yields up to 2 items (feminine, when it exists;
+   plural, always).
+4. **Ser/Estar/Ficar** (#52) — `ser_estar_ficar.json`, 4 categories / 38 items (`{sentence, answer,
+   hint, english}`). Fill-in-the-blank sentence, free-text answer is the correctly conjugated
+   ser/estar/ficar form.
+5. **Contractions** (#53) — `contractions.json`, 8 categories / 39 items (`{parts: [prep, article],
+   answer, example, english, hint}`). Free-text answer is the contracted preposition+article form.
+6. **Subjunctive** (#54) — `subjunctive_quiz.json`, 6 categories / 38 items (`{prompt, answer,
+   trigger, hint, english}`). Free-text answer is the conjugated conjuntivo form; `trigger` names
+   the grammatical trigger governing the mood.
+7. **Indirect Speech** (#55) — `indirect_speech.json`, 20 items, flat list, no categories
+   (`{direct, context, verb_direct, answer, rule, indirect_full, english, hint}`). Free-text answer
+   is the tense-backshifted verb form.
 
 No content re-authoring is required beyond the fixes already applied (see the "Content fixes
 applied" section below) — the existing JSON is reused as-is, bundled into the Android app as
-assets and parsed at runtime into the typed models described in §6.1.
+assets and parsed at runtime into the typed models described in §6.1. Modules 3–7 all follow the
+same "prompt → free-text answer, with a hint" shape Verb Conjugation already established, so they
+reuse that module's Kotlin architecture (mastery-gated CEFR tiers, MC-until-typing-ready, shared
+`ui/common/` components) directly rather than needing new UI patterns — see each epic (#51–#55) for
+the per-module MC-distractor strategy, which is the one piece that's genuinely module-specific.
 
 ## 6. Data model & persistence
 
@@ -352,8 +385,6 @@ Recorded here so they aren't lost, not because they're unimportant:
   are out of the mobile Verb Conjugation module's scope entirely (§14).
 - iOS, if ever revisited — would need a decision on native Swift vs. a cross-platform rewrite,
   since the Android app is not built on a cross-platform framework.
-- Remaining 5 quiz modules (gender & plural, ser/estar/ficar, contractions, subjunctive, indirect
-  speech), ported using the same Kotlin/Compose patterns established by verbs/vocabulary.
 - Local notifications (daily due-item digest + streak-at-risk reminder) — flagged by the game-dev
   review as the highest-leverage retention feature not in v1.
 - Full "game feel" polish: sound design, in-session combo/XP display, richer animations.
@@ -382,6 +413,36 @@ From the language-accuracy review, out of scope for the Verb/Vocabulary v1 app b
 - Gendered vocabulary pairs (occupations, family terms) are inconsistently paired in
   `vocabulary.json`.
 
+## 15. Porting Android improvements back to the web app
+
+The Android build has diverged from the web app in a few ways that turned out to be genuine
+improvements rather than just platform-native UI — worth evaluating for the web app too, "where
+applicable":
+
+- **Not portable as-is: the visual redesign (§11).** Direction A ("Warm Encourager") was a
+  deliberate, permanent divergence from `styles.css`, not a shared design system — porting it to
+  the web app would be a separate, from-scratch design decision, not a mechanical port.
+- **Already true on web, nothing to port:** the "Praticar erros" retry-mistakes button exists in
+  the web app's result screen already (see CLAUDE.md's quiz-mechanics summary); the web app's
+  progress bar (`quiz_base.js`'s `_updateProgressBar()`) is driven by `correctCount`/`errorCount`
+  against the full pool, not a "current question index" — it doesn't have the off-by-one bug the
+  Android build had before #20's fix, so no equivalent fix is needed there.
+- **Genuinely portable, but a significant behavior change to a live app — needs explicit
+  sign-off before implementation, not a silent port:**
+  - **Mastery-gated CEFR content pacing (§9).** The web app's Verb Conjugation module currently
+    exposes an "adaptive difficulty" filter (beginner/intermediate/advanced, user-selected) rather
+    than the Android app's automatic, per-item CEFR-tier unlock. Porting the automatic pacing model
+    to web would change how every returning web user's practice session is composed.
+  - **Multiple-choice with smart distractors (§9).** The web app is typed-answer-only today, for
+    every module — it has no MC mode at all. Introducing one (even optionally) is a new feature,
+    not a port of an existing one; the Levenshtein-based (`StringSimilarity.kt`) and
+    verb-same-person-different-tense distractor-ranking approaches would still be the right
+    starting point for it once scoped.
+  - Both of these are real candidates once the Android app's full seven-module build is further
+    along — they're recorded here so the idea isn't lost, but implementing them on the live web app
+    is its own scoped follow-up (new GitHub issue(s), product-owner sign-off on the resulting UX
+    change) rather than something to fold into mobile module work.
+
 ## Content fixes already applied (pre-mobile-port cleanup)
 
 Committed ahead of this spec, since they affect data both apps will share:
@@ -401,7 +462,8 @@ Committed ahead of this spec, since they affect data both apps will share:
 |---|---|---|
 | Platform | Native Android (Kotlin + Jetpack Compose) | Product owner (pivoted from React Native/Expo) |
 | Target OS | Android only — no iOS | Product owner |
-| v1 module scope | Verb Conjugation + Vocabulary | Product owner |
+| Module scope | All seven web quiz modules — Verb Conjugation and Vocabulary shipped first to prove out the architecture, the remaining five (#51–#55) build out the same way. "Starting with" the first two never meant excluding the rest. | Product owner |
+| Release timing | Play Store release (signed build, store listing, icon/splash — epic #12) explicitly deferred until the full seven-module app is built and tested through several rounds from the phone | Product owner |
 | Backend/sync | None — local only (Room) | Product owner |
 | Input model | Mastery-gated per item: multiple-choice until an item is typing-ready (§9), then typed; no custom accent bar, relies on the device keyboard's own accent long-press | Product owner, after using the shipped v1 modules |
 | Content progression | CEFR tiers (A1–C2), sequential unlock at 80% "seen" per tier, Android-only enrichment layer over the shared content JSON | Product owner |

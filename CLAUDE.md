@@ -83,8 +83,14 @@ All quizzes share `QuizBase`:
 ## Android App (`android/`)
 
 A native Android app (Kotlin + Jetpack Compose, no cross-platform framework) is being built
-alongside the web app, starting with the Verb Conjugation and Vocabulary modules only. Full design
-in `docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label on GitHub issues.
+alongside the web app, targeting all seven web quiz modules. Verb Conjugation and Vocabulary
+shipped first to prove out the architecture (mastery-gated CEFR tiers, MC-until-typing-ready input,
+the warm theme, shared UI components); the remaining five — Gender & Plural, Ser/Estar/Ficar,
+Contractions, Subjunctive, Indirect Speech (GitHub epics #51–#55) — reuse that same architecture.
+Release to the Google Play Store is explicitly deferred until the full app is built and tested
+through several rounds from the phone — release-prep work (signed build, store listing, icon/splash
+assets, epic #12) is intentionally parked until then. Full design in `docs/MOBILE_APP_SPEC.md`;
+implementation tracked via the `mobile-app` label on GitHub issues.
 
 - Standard Gradle project: `android/app/src/main/java/com/ktouchie/quizportugues/`, with `srs/`,
   `gamification/`, `data/` (Room), `content/`, and `ui/` sub-packages as they're added.
