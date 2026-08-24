@@ -238,10 +238,15 @@ to both modules — Vocabulary items graduate to typed recall the same way Verb 
 - Wrong-answer feedback keeps the current pattern: show the grammar hint / correct answer in place,
   item stays in the session pool (per `quiz_base.js`'s existing retry-in-pool behavior), user taps
   to continue.
-- Results screen: time, accuracy %, top mistakes list — laid out for a phone screen. The web app's
-  "Praticar erros" retry button is **not yet implemented** here (§13) — both session ViewModels
-  track per-item mistake counts for the mistakes list, but neither exposes a way to re-launch a
-  session scoped to just those items yet.
+- Results screen: time, accuracy %, top mistakes list, and (when the round had any mistakes) a
+  "Praticar erros" button — laid out for a phone screen. `onRetryMistakes()` re-launches a session
+  scoped to just that round's mistaken items, bypassing the normal due/tier filtering entirely
+  (these items were just shown a moment ago, so they're already known-eligible). This is
+  deliberately a separate path from the SRS due-date system: SM-2 always schedules an item's next
+  review at least a day out, even a "correct after a mistake" (quality 2 — see §7), so checking
+  Home right after a session with mistakes will show nothing due today no matter what happened in
+  that round; "Praticar erros" is the actual same-day answer to "let me redo what I got wrong",
+  without perturbing the SRS long-term schedule that "Nada por rever" is honestly reporting.
 
 ## 10. Gamification
 
@@ -328,9 +333,6 @@ on the product owner's phone within a few minutes, every time.
 ## 13. Out of scope for v1 — backlog
 
 Recorded here so they aren't lost, not because they're unimportant:
-
-- "Praticar erros" retry button on the results screens (§9) — re-launch a session scoped to just
-  the current session's mistakes, mirroring the web app's retry-mistakes flow.
 
 - iOS, if ever revisited — would need a decision on native Swift vs. a cross-platform rewrite,
   since the Android app is not built on a cross-platform framework.

@@ -228,6 +228,31 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
         showNextQuestion()
     }
 
+    /**
+     * Re-launches a session scoped to just the items the last round got wrong, bypassing the
+     * due/tier filtering `startSession()` applies — these items were already shown and eligible
+     * a moment ago, and the point is immediate practice, not waiting for SM-2's next-day-or-later
+     * due date (a wrong or corrected-after-mistake answer always schedules its next review at
+     * least a day out, by design — see srs/Srs.kt — so "Nada por rever" right after a session
+     * with mistakes is expected, not a bug; this button is the actual answer to "let me redo what
+     * I got wrong now").
+     */
+    fun onRetryMistakes() {
+        val mistakeIds = mistakeCounts.keys.toSet()
+        if (mistakeIds.isEmpty()) return
+        val mistakeItems = allItems.filter { it.id in mistakeIds }
+
+        pool.clear()
+        pool.addAll(mistakeItems.shuffled())
+        totalQuestions = pool.size
+        correctCount = 0
+        errorCount = 0
+        mistakeCounts.clear()
+        startedAt = System.currentTimeMillis()
+
+        showNextQuestion()
+    }
+
     private fun finishSession() {
         viewModelScope.launch {
             gamificationRepository.recordScoreIfBest(MODULE_VERBS, correctCount)

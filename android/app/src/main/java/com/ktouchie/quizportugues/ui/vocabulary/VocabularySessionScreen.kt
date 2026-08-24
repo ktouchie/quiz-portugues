@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,7 +59,11 @@ fun VocabularySessionScreen(
             onAnswerGiven = viewModel::onAnswerGiven,
             onContinue = viewModel::onContinue,
         )
-        is SessionUiState.Finished -> ResultsContent(state = s, onDone = onDone)
+        is SessionUiState.Finished -> ResultsContent(
+            state = s,
+            onDone = onDone,
+            onRetryMistakes = viewModel::onRetryMistakes,
+        )
     }
 }
 
@@ -152,7 +158,11 @@ private fun InProgressContent(
 }
 
 @Composable
-private fun ResultsContent(state: SessionUiState.Finished, onDone: () -> Unit) {
+private fun ResultsContent(
+    state: SessionUiState.Finished,
+    onDone: () -> Unit,
+    onRetryMistakes: () -> Unit,
+) {
     val total = state.correctCount + state.errorCount
     val accuracyPct = if (total > 0) (state.correctCount * 100) / total else 0
     val elapsedSeconds = state.elapsedMillis / 1000
@@ -194,8 +204,20 @@ private fun ResultsContent(state: SessionUiState.Finished, onDone: () -> Unit) {
             }
         }
 
-        Button(onClick = onDone, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
-            Text("Concluído")
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+            if (state.topMistakes.isNotEmpty()) {
+                OutlinedButton(
+                    onClick = onRetryMistakes,
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = ExtendedTheme.colors.textWarm),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text("Praticar erros")
+                }
+            }
+            Button(onClick = onDone, modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.large) {
+                Text("Concluído")
+            }
         }
     }
 }
