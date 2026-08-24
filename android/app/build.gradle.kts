@@ -21,6 +21,26 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        getByName("debug") {
+            // A fixed, committed debug key (standard debug-key credentials — not sensitive; this
+            // is the conventional throwaway signing identity every AGP project would otherwise
+            // auto-generate locally). Without this, AGP falls back to ~/.android/debug.keystore,
+            // freshly auto-generated per machine — on GitHub Actions' ephemeral runners that means
+            // a NEW, differently-signed key on every single CI run, so the rolling pre-release APK
+            // (android-ci.yml) could never be installed over a previous install: Android refuses
+            // to update an app whose new APK isn't signed by the same key as what's already on the
+            // device ("package conflicts with an existing package"). Pinning this file makes every
+            // build from CI (and from any dev machine) share one identity, so updates install
+            // cleanly. One-time cost: anyone with an install from before this file existed needs
+            // to uninstall once — its key won't match this one either.
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
