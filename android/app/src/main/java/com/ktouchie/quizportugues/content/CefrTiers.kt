@@ -136,6 +136,19 @@ val GENDER_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
     "Outros adjetivos e nomes" to B1,
 )
 
+/**
+ * ser_estar_ficar.json's 4 categories, ordered by how early Portuguese courses tackle each
+ * ser/estar distinction: identity/profession (ser) and temporary state (estar) are core A2
+ * material; picking correctly between all three verbs for location, and ficar's "become"/result
+ * sense, are the genuinely harder discrimination the module is really testing, so B1.
+ */
+val SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "Profissões e identidade (ser)" to A2,
+    "Estado temporário (estar)" to A2,
+    "Localização de pessoas/coisas (estar vs ser vs ficar)" to B1,
+    "Resultado e mudança de estado (ficar)" to B1,
+)
+
 fun verbCefrLevel(verb: String): CefrLevel =
     VERB_CEFR_LEVEL[verb] ?: error("No CEFR level assigned for verb \"$verb\" — add it to VERB_CEFR_LEVEL")
 
@@ -150,6 +163,10 @@ fun genderCategoryCefrLevel(category: String): CefrLevel =
     GENDER_CATEGORY_CEFR_LEVEL[category]
         ?: error("No CEFR level assigned for gender category \"$category\" — add it to GENDER_CATEGORY_CEFR_LEVEL")
 
+fun serEstarFicarCategoryCefrLevel(category: String): CefrLevel =
+    SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL[category]
+        ?: error("No CEFR level assigned for ser/estar/ficar category \"$category\" — add it to SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL")
+
 /** The harder of the verb's own level and the tense's level — see [TENSE_CEFR_LEVEL]. */
 fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
     val verbLevel = verbCefrLevel(item.verb)
@@ -160,3 +177,5 @@ fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
 fun cefrLevelOf(item: VocabularyQuizItem): CefrLevel = vocabularyCategoryCefrLevel(item.category)
 
 fun cefrLevelOf(item: GenderQuizItem): CefrLevel = genderCategoryCefrLevel(item.category)
+
+fun cefrLevelOf(item: SerEstarFicarQuizItem): CefrLevel = serEstarFicarCategoryCefrLevel(item.category)

@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ktouchie.quizportugues.content.genderQuizItems
 import com.ktouchie.quizportugues.content.loadGenderEntries
+import com.ktouchie.quizportugues.content.loadSerEstarFicarEntries
 import com.ktouchie.quizportugues.content.loadVerbEntries
 import com.ktouchie.quizportugues.content.loadVocabularyEntries
+import com.ktouchie.quizportugues.content.serEstarFicarQuizItems
 import com.ktouchie.quizportugues.content.verbQuizItems
 import com.ktouchie.quizportugues.content.vocabularyQuizItems
 import com.ktouchie.quizportugues.data.AppDatabase
@@ -15,6 +17,7 @@ import com.ktouchie.quizportugues.data.SrsRepository
 import com.ktouchie.quizportugues.srs.SrsRecord
 import com.ktouchie.quizportugues.srs.isDue
 import com.ktouchie.quizportugues.ui.navigation.MODULE_GENDER
+import com.ktouchie.quizportugues.ui.navigation.MODULE_SER_ESTAR_FICAR
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +35,7 @@ data class HomeUiState(
     val verbProgress: ModuleProgress = ModuleProgress(),
     val vocabularyProgress: ModuleProgress = ModuleProgress(),
     val genderProgress: ModuleProgress = ModuleProgress(),
+    val serEstarFicarProgress: ModuleProgress = ModuleProgress(),
 )
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
@@ -57,9 +61,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             val verbItemIds = verbQuizItems(loadVerbEntries(application.assets)).map { it.id }
             val vocabItemIds = vocabularyQuizItems(loadVocabularyEntries(application.assets)).map { it.id }
             val genderItemIds = genderQuizItems(loadGenderEntries(application.assets)).map { it.id }
+            val serEstarFicarItemIds = serEstarFicarQuizItems(loadSerEstarFicarEntries(application.assets)).map { it.id }
             val verbRecords = srsRepository.getAllRecords(MODULE_VERBS)
             val vocabRecords = srsRepository.getAllRecords(MODULE_VOCABULARY)
             val genderRecords = srsRepository.getAllRecords(MODULE_GENDER)
+            val serEstarFicarRecords = srsRepository.getAllRecords(MODULE_SER_ESTAR_FICAR)
 
             _uiState.value = HomeUiState(
                 currentStreak = gamificationRepository.getStreak().currentStreak,
@@ -67,6 +73,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 verbProgress = moduleProgress(verbItemIds, verbRecords, now),
                 vocabularyProgress = moduleProgress(vocabItemIds, vocabRecords, now),
                 genderProgress = moduleProgress(genderItemIds, genderRecords, now),
+                serEstarFicarProgress = moduleProgress(serEstarFicarItemIds, serEstarFicarRecords, now),
             )
         }
     }

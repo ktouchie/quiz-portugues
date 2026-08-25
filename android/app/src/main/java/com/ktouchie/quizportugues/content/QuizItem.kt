@@ -42,6 +42,17 @@ data class GenderQuizItem(
     override val module: String get() = "gender"
 }
 
+data class SerEstarFicarQuizItem(
+    override val id: String,
+    val category: String,
+    val sentence: String,
+    val answer: String,
+    val hint: String?,
+    val english: String?,
+) : QuizItem {
+    override val module: String get() = "ser_estar_ficar"
+}
+
 /**
  * Stable content-item IDs — shared convention (docs/MOBILE_APP_SPEC.md §6.1).
  *
@@ -67,6 +78,11 @@ fun vocabularyItemId(category: String, portuguese: String, english: String): Str
  *  gender_quiz.json) — more stable against content reordering than the web app's index-based key. */
 fun genderItemId(category: String, masculine: String, label: String): String =
     "$category$ID_SEPARATOR$masculine$ID_SEPARATOR$label"
+
+/** Keyed on `sentence` (verified unique within each category in ser_estar_ficar.json) rather than
+ *  a list index — same rationale as [genderItemId]. */
+fun serEstarFicarItemId(category: String, sentence: String): String =
+    "$category$ID_SEPARATOR$sentence"
 
 /**
  * Flattens parsed [VerbEntry] data into individual quizzable conjugation items — one per
@@ -140,3 +156,16 @@ fun genderQuizItems(entries: List<GenderEntry>): List<GenderQuizItem> {
     }
     return items
 }
+
+/** Flattens parsed [SerEstarFicarEntry] data into quizzable items, one per sentence. */
+fun serEstarFicarQuizItems(entries: List<SerEstarFicarEntry>): List<SerEstarFicarQuizItem> =
+    entries.map { entry ->
+        SerEstarFicarQuizItem(
+            id = serEstarFicarItemId(entry.category, entry.sentence),
+            category = entry.category,
+            sentence = entry.sentence,
+            answer = entry.answer,
+            hint = entry.hint,
+            english = entry.english,
+        )
+    }

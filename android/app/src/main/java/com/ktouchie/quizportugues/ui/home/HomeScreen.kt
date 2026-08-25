@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ktouchie.quizportugues.ui.common.ModuleCard
 import com.ktouchie.quizportugues.ui.common.StatChip
 import com.ktouchie.quizportugues.ui.navigation.MODULE_GENDER
+import com.ktouchie.quizportugues.ui.navigation.MODULE_SER_ESTAR_FICAR
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 import com.ktouchie.quizportugues.ui.navigation.moduleDisplayName
@@ -100,6 +101,13 @@ fun HomeScreen(
                 dueCount = state.genderProgress.dueCount,
                 progressPct = state.genderProgress.seenPct,
                 onClick = { onOpenModule(MODULE_GENDER) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_SER_ESTAR_FICAR),
+                title = moduleDisplayName(MODULE_SER_ESTAR_FICAR),
+                dueCount = state.serEstarFicarProgress.dueCount,
+                progressPct = state.serEstarFicarProgress.seenPct,
+                onClick = { onOpenModule(MODULE_SER_ESTAR_FICAR) },
             )
         }
     }

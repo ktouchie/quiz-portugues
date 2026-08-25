@@ -39,6 +39,17 @@ private const val SAMPLE_GENDER_JSON = """
 }
 """
 
+private const val SAMPLE_SER_ESTAR_FICAR_JSON = """
+{
+  "Profissões e identidade (ser)": [
+    { "sentence": "A Joana ___ arquiteta.", "answer": "é", "hint": "Profissão permanente → ser", "english": "Joana is an architect." }
+  ],
+  "Resultado e mudança de estado (ficar)": [
+    { "sentence": "Ela ___ muito triste.", "answer": "ficou", "hint": "Mudança de estado → ficar", "english": "She became very sad." }
+  ]
+}
+"""
+
 class ContentTest {
 
     @Test
@@ -125,5 +136,30 @@ class ContentTest {
     @Test
     fun `gender item ids are stable and derived from category, masculine, label`() {
         assertEquals("Palavras em -ão|||campeão|||feminino", genderItemId("Palavras em -ão", "campeão", "feminino"))
+    }
+
+    @Test
+    fun `parseSerEstarFicarEntries flattens categories and keeps per-item hint and english`() {
+        val entries = parseSerEstarFicarEntries(SAMPLE_SER_ESTAR_FICAR_JSON)
+        assertEquals(2, entries.size)
+        val joana = entries.first { it.answer == "é" }
+        assertEquals("A Joana ___ arquiteta.", joana.sentence)
+        assertEquals("Profissão permanente → ser", joana.hint)
+        assertEquals("Joana is an architect.", joana.english)
+    }
+
+    @Test
+    fun `serEstarFicarQuizItems produces one item per sentence`() {
+        val items = serEstarFicarQuizItems(parseSerEstarFicarEntries(SAMPLE_SER_ESTAR_FICAR_JSON))
+        assertEquals(2, items.size)
+        assertTrue(items.any { it.answer == "ficou" && it.category == "Resultado e mudança de estado (ficar)" })
+    }
+
+    @Test
+    fun `ser estar ficar item ids are stable and derived from category and sentence`() {
+        assertEquals(
+            "Profissões e identidade (ser)|||A Joana ___ arquiteta.",
+            serEstarFicarItemId("Profissões e identidade (ser)", "A Joana ___ arquiteta."),
+        )
     }
 }

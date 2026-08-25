@@ -109,7 +109,7 @@ All seven web quiz modules, built in this order:
    (`{masculine, feminine, plural, english}`). Web question pattern: "Qual é o feminino/plural de
    {masculine word}?", free-text answer. Each word yields up to 2 items (feminine, when it exists;
    plural, always).
-4. **Ser/Estar/Ficar** (#52) — `ser_estar_ficar.json`, 4 categories / 38 items (`{sentence, answer,
+4. **Ser/Estar/Ficar** (shipped, #52) — `ser_estar_ficar.json`, 4 categories / 38 items (`{sentence, answer,
    hint, english}`). Fill-in-the-blank sentence, free-text answer is the correctly conjugated
    ser/estar/ficar form.
 5. **Contractions** (#53) — `contractions.json`, 8 categories / 39 items (`{parts: [prep, article],

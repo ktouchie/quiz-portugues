@@ -17,6 +17,8 @@ import com.ktouchie.quizportugues.ui.gender.GenderSessionScreen
 import com.ktouchie.quizportugues.ui.gender.GenderSetupScreen
 import com.ktouchie.quizportugues.ui.home.HomeScreen
 import com.ktouchie.quizportugues.ui.module.ModuleHomeScreen
+import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSessionScreen
+import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSetupScreen
 import com.ktouchie.quizportugues.ui.verbs.VerbSessionScreen
 import com.ktouchie.quizportugues.ui.verbs.VerbSetupScreen
 import com.ktouchie.quizportugues.ui.vocabulary.VocabularySessionScreen
@@ -83,6 +85,12 @@ fun AppNavigation() {
                         navController.navigate("module/$moduleId/session?$query")
                     },
                 )
+                MODULE_SER_ESTAR_FICAR -> SerEstarFicarSetupScreen(
+                    onStart = { categories ->
+                        val query = "categories=${Uri.encode(categories.joinToString(","))}"
+                        navController.navigate("module/$moduleId/session?$query")
+                    },
+                )
                 else -> PlaceholderScreen(label = "Setup ($moduleId)")
             }
         }
@@ -97,6 +105,7 @@ fun AppNavigation() {
                 MODULE_VOCABULARY -> VocabularySessionScreen(onDone = onDone)
                 MODULE_VERBS -> VerbSessionScreen(onDone = onDone)
                 MODULE_GENDER -> GenderSessionScreen(onDone = onDone)
+                MODULE_SER_ESTAR_FICAR -> SerEstarFicarSessionScreen(onDone = onDone)
                 else -> PlaceholderScreen(label = "Session ($moduleId)")
             }
         }
