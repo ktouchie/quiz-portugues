@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ktouchie.quizportugues.ui.common.ModuleCard
 import com.ktouchie.quizportugues.ui.common.StatChip
+import com.ktouchie.quizportugues.ui.navigation.MODULE_GENDER
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 import com.ktouchie.quizportugues.ui.navigation.moduleDisplayName
@@ -92,6 +93,13 @@ fun HomeScreen(
                 dueCount = state.vocabularyProgress.dueCount,
                 progressPct = state.vocabularyProgress.seenPct,
                 onClick = { onOpenModule(MODULE_VOCABULARY) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_GENDER),
+                title = moduleDisplayName(MODULE_GENDER),
+                dueCount = state.genderProgress.dueCount,
+                progressPct = state.genderProgress.seenPct,
+                onClick = { onOpenModule(MODULE_GENDER) },
             )
         }
     }

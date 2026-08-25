@@ -3,6 +3,8 @@ package com.ktouchie.quizportugues.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.ktouchie.quizportugues.content.genderQuizItems
+import com.ktouchie.quizportugues.content.loadGenderEntries
 import com.ktouchie.quizportugues.content.loadVerbEntries
 import com.ktouchie.quizportugues.content.loadVocabularyEntries
 import com.ktouchie.quizportugues.content.verbQuizItems
@@ -12,6 +14,7 @@ import com.ktouchie.quizportugues.data.GamificationRepository
 import com.ktouchie.quizportugues.data.SrsRepository
 import com.ktouchie.quizportugues.srs.SrsRecord
 import com.ktouchie.quizportugues.srs.isDue
+import com.ktouchie.quizportugues.ui.navigation.MODULE_GENDER
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +31,7 @@ data class HomeUiState(
     val totalMastered: Int = 0,
     val verbProgress: ModuleProgress = ModuleProgress(),
     val vocabularyProgress: ModuleProgress = ModuleProgress(),
+    val genderProgress: ModuleProgress = ModuleProgress(),
 )
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
@@ -52,14 +56,17 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             val verbItemIds = verbQuizItems(loadVerbEntries(application.assets)).map { it.id }
             val vocabItemIds = vocabularyQuizItems(loadVocabularyEntries(application.assets)).map { it.id }
+            val genderItemIds = genderQuizItems(loadGenderEntries(application.assets)).map { it.id }
             val verbRecords = srsRepository.getAllRecords(MODULE_VERBS)
             val vocabRecords = srsRepository.getAllRecords(MODULE_VOCABULARY)
+            val genderRecords = srsRepository.getAllRecords(MODULE_GENDER)
 
             _uiState.value = HomeUiState(
                 currentStreak = gamificationRepository.getStreak().currentStreak,
                 totalMastered = gamificationRepository.getTotalMastered(),
                 verbProgress = moduleProgress(verbItemIds, verbRecords, now),
                 vocabularyProgress = moduleProgress(vocabItemIds, vocabRecords, now),
+                genderProgress = moduleProgress(genderItemIds, genderRecords, now),
             )
         }
     }

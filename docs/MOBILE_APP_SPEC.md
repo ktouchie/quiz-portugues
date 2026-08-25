@@ -105,7 +105,7 @@ All seven web quiz modules, built in this order:
    conjugation table (the ~25 additional entries that only carry `participios_passados` are out of
    scope for the quiz itself; see §14).
 2. **Vocabulary** (shipped) — all 31 categories / ~548 words in `vocabulary.json`.
-3. **Gender & Plural** (#51) — `gender_quiz.json`, 4 categories / 53 words / 102 quiz items
+3. **Gender & Plural** (shipped, #51) — `gender_quiz.json`, 4 categories / 53 words / 102 quiz items
    (`{masculine, feminine, plural, english}`). Web question pattern: "Qual é o feminino/plural de
    {masculine word}?", free-text answer. Each word yields up to 2 items (feminine, when it exists;
    plural, always).

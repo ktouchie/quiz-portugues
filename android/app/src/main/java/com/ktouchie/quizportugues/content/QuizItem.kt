@@ -30,6 +30,18 @@ data class VocabularyQuizItem(
     override val module: String get() = "vocabulary"
 }
 
+/** [label] is "feminino" or "plural" — which form of [masculine] this item asks for. */
+data class GenderQuizItem(
+    override val id: String,
+    val category: String,
+    val masculine: String,
+    val english: String,
+    val label: String,
+    val answer: String,
+) : QuizItem {
+    override val module: String get() = "gender"
+}
+
 /**
  * Stable content-item IDs — shared convention (docs/MOBILE_APP_SPEC.md §6.1).
  *
@@ -50,6 +62,11 @@ fun verbItemId(verb: String, tense: String, personIndex: Int): String =
 
 fun vocabularyItemId(category: String, portuguese: String, english: String): String =
     "$category$ID_SEPARATOR$portuguese$ID_SEPARATOR$english"
+
+/** Keyed on `masculine` rather than a list index (verified unique within each category in
+ *  gender_quiz.json) — more stable against content reordering than the web app's index-based key. */
+fun genderItemId(category: String, masculine: String, label: String): String =
+    "$category$ID_SEPARATOR$masculine$ID_SEPARATOR$label"
 
 /**
  * Flattens parsed [VerbEntry] data into individual quizzable conjugation items — one per
@@ -93,3 +110,33 @@ fun vocabularyQuizItems(entries: List<VocabularyEntry>): List<VocabularyQuizItem
             english = entry.english,
         )
     }
+
+/**
+ * Flattens parsed [GenderEntry] data into quizzable items — one per (word, "feminino"|"plural")
+ * combination that has a non-null form. Mirrors `gender_quiz.js`'s `getSelectedItems()`: every
+ * word yields a "plural" item; only words with a non-null `feminine` also yield a "feminino" item.
+ */
+fun genderQuizItems(entries: List<GenderEntry>): List<GenderQuizItem> {
+    val items = mutableListOf<GenderQuizItem>()
+    for (entry in entries) {
+        if (entry.feminine != null) {
+            items += GenderQuizItem(
+                id = genderItemId(entry.category, entry.masculine, "feminino"),
+                category = entry.category,
+                masculine = entry.masculine,
+                english = entry.english,
+                label = "feminino",
+                answer = entry.feminine,
+            )
+        }
+        items += GenderQuizItem(
+            id = genderItemId(entry.category, entry.masculine, "plural"),
+            category = entry.category,
+            masculine = entry.masculine,
+            english = entry.english,
+            label = "plural",
+            answer = entry.plural,
+        )
+    }
+    return items
+}

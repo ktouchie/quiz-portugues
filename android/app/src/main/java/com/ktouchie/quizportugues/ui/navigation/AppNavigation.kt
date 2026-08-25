@@ -13,6 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ktouchie.quizportugues.ui.gender.GenderSessionScreen
+import com.ktouchie.quizportugues.ui.gender.GenderSetupScreen
 import com.ktouchie.quizportugues.ui.home.HomeScreen
 import com.ktouchie.quizportugues.ui.module.ModuleHomeScreen
 import com.ktouchie.quizportugues.ui.verbs.VerbSessionScreen
@@ -75,6 +77,12 @@ fun AppNavigation() {
                         navController.navigate("module/$moduleId/session?$query")
                     },
                 )
+                MODULE_GENDER -> GenderSetupScreen(
+                    onStart = { categories ->
+                        val query = "categories=${Uri.encode(categories.joinToString(","))}"
+                        navController.navigate("module/$moduleId/session?$query")
+                    },
+                )
                 else -> PlaceholderScreen(label = "Setup ($moduleId)")
             }
         }
@@ -88,6 +96,7 @@ fun AppNavigation() {
             when (moduleId) {
                 MODULE_VOCABULARY -> VocabularySessionScreen(onDone = onDone)
                 MODULE_VERBS -> VerbSessionScreen(onDone = onDone)
+                MODULE_GENDER -> GenderSessionScreen(onDone = onDone)
                 else -> PlaceholderScreen(label = "Session ($moduleId)")
             }
         }

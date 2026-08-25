@@ -30,6 +30,15 @@ private const val SAMPLE_VOCAB_JSON = """
 }
 """
 
+private const val SAMPLE_GENDER_JSON = """
+{
+  "Palavras em -ão": [
+    { "masculine": "campeão", "feminine": "campeã", "plural": "campeões", "english": "champion" },
+    { "masculine": "mão", "feminine": null, "plural": "mãos", "english": "hand" }
+  ]
+}
+"""
+
 class ContentTest {
 
     @Test
@@ -94,5 +103,27 @@ class ContentTest {
         val items = verbQuizItems(parseVerbEntries(SAMPLE_VERBS_JSON))
         val imperativoComa = items.first { it.tense == "imperativo" && it.personIndex == 2 }
         assertNull(imperativoComa.exampleSentence)
+    }
+
+    @Test
+    fun `parseGenderEntries treats a null feminine field as no feminine form`() {
+        val entries = parseGenderEntries(SAMPLE_GENDER_JSON)
+        val mao = entries.first { it.masculine == "mão" }
+        assertNull(mao.feminine)
+        val campeao = entries.first { it.masculine == "campeão" }
+        assertEquals("campeã", campeao.feminine)
+    }
+
+    @Test
+    fun `genderQuizItems only emits a feminino item when feminine is non-null`() {
+        val items = genderQuizItems(parseGenderEntries(SAMPLE_GENDER_JSON))
+        assertEquals(3, items.size) // campeão: feminino + plural; mão: plural only
+        assertTrue(items.none { it.masculine == "mão" && it.label == "feminino" })
+        assertTrue(items.any { it.masculine == "mão" && it.label == "plural" && it.answer == "mãos" })
+    }
+
+    @Test
+    fun `gender item ids are stable and derived from category, masculine, label`() {
+        assertEquals("Palavras em -ão|||campeão|||feminino", genderItemId("Palavras em -ão", "campeão", "feminino"))
     }
 }

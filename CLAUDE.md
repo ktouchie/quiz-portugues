@@ -96,9 +96,9 @@ implementation tracked via the `mobile-app` label on GitHub issues.
   `gamification/`, `data/` (Room), `content/`, and `ui/` sub-packages as they're added.
 - **No shared code with the web app** — Kotlin can't consume the web app's JS. `srs.js` and
   `gamification.js` are the *behavioral reference* for the Kotlin ports, not shared modules. The
-  two things genuinely shared are the content JSON (`verbs.json`, `vocabulary.json` at the repo
-  root, bundled into the APK as assets) and the stable-content-ID convention documented in the
-  spec — both apps must derive identical IDs independently.
+  two things genuinely shared are the content JSON (`verbs.json`, `vocabulary.json`,
+  `gender_quiz.json` at the repo root, bundled into the APK as assets) and the stable-content-ID
+  convention documented in the spec — both apps must derive identical IDs independently.
 - Persistence: Room (SQLite) replacing the web app's `localStorage` keys — see spec §6.2 for the
   schema.
 - **Gameplay is mastery-gated, per item, not fixed per module** (spec §9): every verb and

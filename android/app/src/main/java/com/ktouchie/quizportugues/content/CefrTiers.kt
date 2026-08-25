@@ -122,6 +122,20 @@ val VOCABULARY_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
     // this doesn't block anything.
 )
 
+/**
+ * The four gender_quiz.json categories are grammatical noun/adjective patterns (irregular gender
+ * and plural formation rules), not a frequency-graded vocabulary set — so unlike
+ * [VOCABULARY_CATEGORY_CEFR_LEVEL], these levels reflect how early Portuguese courses typically
+ * introduce each pattern rather than word frequency: -or/-ão gender-plural patterns are commonly
+ * covered by A2, the -l adjective plural rule and the fully irregular pairs a bit later.
+ */
+val GENDER_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "Nomes em -or" to A2,
+    "Palavras em -ão" to A2,
+    "Adjetivos em -l" to B1,
+    "Outros adjetivos e nomes" to B1,
+)
+
 fun verbCefrLevel(verb: String): CefrLevel =
     VERB_CEFR_LEVEL[verb] ?: error("No CEFR level assigned for verb \"$verb\" — add it to VERB_CEFR_LEVEL")
 
@@ -132,6 +146,10 @@ fun vocabularyCategoryCefrLevel(category: String): CefrLevel =
     VOCABULARY_CATEGORY_CEFR_LEVEL[category]
         ?: error("No CEFR level assigned for vocabulary category \"$category\" — add it to VOCABULARY_CATEGORY_CEFR_LEVEL")
 
+fun genderCategoryCefrLevel(category: String): CefrLevel =
+    GENDER_CATEGORY_CEFR_LEVEL[category]
+        ?: error("No CEFR level assigned for gender category \"$category\" — add it to GENDER_CATEGORY_CEFR_LEVEL")
+
 /** The harder of the verb's own level and the tense's level — see [TENSE_CEFR_LEVEL]. */
 fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
     val verbLevel = verbCefrLevel(item.verb)
@@ -140,3 +158,5 @@ fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
 }
 
 fun cefrLevelOf(item: VocabularyQuizItem): CefrLevel = vocabularyCategoryCefrLevel(item.category)
+
+fun cefrLevelOf(item: GenderQuizItem): CefrLevel = genderCategoryCefrLevel(item.category)

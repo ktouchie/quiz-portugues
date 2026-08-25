@@ -35,11 +35,13 @@ sealed class Destination(val route: String) {
 
 const val MODULE_VERBS = "verbs"
 const val MODULE_VOCABULARY = "vocabulary"
+const val MODULE_GENDER = "gender"
 
 /** Display name shown on Home's module cards and each Module Home screen's title. */
 fun moduleDisplayName(moduleId: String): String = when (moduleId) {
     MODULE_VERBS -> "Conjugação de Verbos"
     MODULE_VOCABULARY -> "Vocabulário"
+    MODULE_GENDER -> "Género & Plural"
     else -> moduleId
 }
 
@@ -47,5 +49,6 @@ fun moduleDisplayName(moduleId: String): String = when (moduleId) {
 fun moduleIcon(moduleId: String): String = when (moduleId) {
     MODULE_VERBS -> "🗣️"
     MODULE_VOCABULARY -> "📚"
+    MODULE_GENDER -> "👫"
     else -> "📘"
 }

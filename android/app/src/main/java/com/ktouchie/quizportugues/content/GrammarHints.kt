@@ -54,3 +54,17 @@ fun getVerbHint(tense: String, personIndex: Int): String? = when (tense) {
 
 /** Mirrors config.js' TENSE_LABELS — display label for a tense key ("perfeito_composto" -> "perfeito composto"). */
 fun tenseLabel(tense: String): String = if (tense == "perfeito_composto") "perfeito composto" else tense
+
+/** Ported from grammar_hints.js's GENDER_HINTS — one hint per gender_quiz.json category. */
+private val GENDER_HINTS: Map<String, String> = mapOf(
+    "Nomes em -or" to "Nomes em -or formam o feminino em -ora (ex: trabalhador → trabalhadora) ou " +
+        "-triz (ex: ator → atriz) para profissões latinas.",
+    "Palavras em -ão" to "Palavras em -ão têm três padrões de plural: -ões (campeão → campeões), " +
+        "-ães (cão → cães), -ãos (irmão → irmãos).",
+    "Adjetivos em -l" to "Adjetivos em -l: o plural substitui -l por -is (ex: azul → azuis, " +
+        "difícil → difíceis, espanhol → espanhóis).",
+    "Outros adjetivos e nomes" to "Para estes adjetivos irregulares, memorize os pares: mau/má, " +
+        "bom/boa, feliz/feliz (invariável em género).",
+)
+
+fun getGenderHint(category: String): String? = GENDER_HINTS[category]
