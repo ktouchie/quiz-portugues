@@ -122,6 +122,49 @@ implementation tracked via the `mobile-app` label on GitHub issues.
 
 - After any major update (new module, feature, data change, architecture change), update both `CLAUDE.md` and `README.md` to reflect the current state before committing.
 
+## Context and task management
+
+GitHub Issues are the canonical source of truth for feature requirements,
+UX decisions, implementation requirements, bugs, and acceptance criteria.
+
+Do NOT rely on previous conversation history for project requirements.
+
+Before implementing or modifying a feature:
+1. Identify the relevant GitHub Issue(s).
+2. Read the issue and its comments.
+3. Read only the relevant source files needed for the current task.
+4. Treat the issue as authoritative over previous conversation discussion.
+
+When a requirement, UX decision, bug diagnosis, or implementation decision
+is established during conversation and is likely to matter later:
+- update the relevant GitHub Issue, or
+- create a new issue if appropriate.
+
+Do not repeatedly restate the entire project history in conversation.
+
+When a task is complete:
+- update the GitHub Issue with the final implementation state,
+- record important decisions and remaining work,
+- keep the issue concise and actionable.
+
+If previous conversation context conflicts with the GitHub Issue,
+stop and ask which should be authoritative.
+
+## Session discipline
+
+Keep the active context focused on the current task.
+
+Do not reread unrelated issues, files, logs, or previous conversation
+unless they are required for the current task.
+
+Prefer retrieving information from GitHub Issues and the codebase rather
+than relying on conversation history.
+
+When the current task is complete, be prepared for the next task to begin
+in a fresh context.
+
+Do not put detailed project history into CLAUDE.md. CLAUDE.md contains rules and stable facts, not the evolving state of individual features. Put evolving state in GitHub Issues.
+
 ## Deployment
 
 - **Main branch** auto-deploys to GitHub Pages via `.github/workflows/version-bump.yml`, which also auto-bumps the patch version in `version.txt` (skipped if `version.txt` was changed manually in the same push)
