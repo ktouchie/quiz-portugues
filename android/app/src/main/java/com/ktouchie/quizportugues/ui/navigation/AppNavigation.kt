@@ -21,6 +21,8 @@ import com.ktouchie.quizportugues.ui.home.HomeScreen
 import com.ktouchie.quizportugues.ui.module.ModuleHomeScreen
 import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSessionScreen
 import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSetupScreen
+import com.ktouchie.quizportugues.ui.subjunctive.SubjunctiveSessionScreen
+import com.ktouchie.quizportugues.ui.subjunctive.SubjunctiveSetupScreen
 import com.ktouchie.quizportugues.ui.verbs.VerbSessionScreen
 import com.ktouchie.quizportugues.ui.verbs.VerbSetupScreen
 import com.ktouchie.quizportugues.ui.vocabulary.VocabularySessionScreen
@@ -99,6 +101,12 @@ fun AppNavigation() {
                         navController.navigate("module/$moduleId/session?$query")
                     },
                 )
+                MODULE_SUBJUNCTIVE -> SubjunctiveSetupScreen(
+                    onStart = { categories ->
+                        val query = "categories=${Uri.encode(categories.joinToString(","))}"
+                        navController.navigate("module/$moduleId/session?$query")
+                    },
+                )
                 else -> PlaceholderScreen(label = "Setup ($moduleId)")
             }
         }
@@ -115,6 +123,7 @@ fun AppNavigation() {
                 MODULE_GENDER -> GenderSessionScreen(onDone = onDone)
                 MODULE_SER_ESTAR_FICAR -> SerEstarFicarSessionScreen(onDone = onDone)
                 MODULE_CONTRACTIONS -> ContractionsSessionScreen(onDone = onDone)
+                MODULE_SUBJUNCTIVE -> SubjunctiveSessionScreen(onDone = onDone)
                 else -> PlaceholderScreen(label = "Session ($moduleId)")
             }
         }

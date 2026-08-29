@@ -53,6 +53,19 @@ data class SerEstarFicarQuizItem(
     override val module: String get() = "ser_estar_ficar"
 }
 
+data class SubjunctiveQuizItem(
+    override val id: String,
+    val category: String,
+    val prompt: String,
+    val answer: String,
+    val trigger: String?,
+    val hint: String?,
+    val english: String?,
+    val infinitive: String?,
+) : QuizItem {
+    override val module: String get() = "subjunctive"
+}
+
 data class ContractionQuizItem(
     override val id: String,
     val category: String,
@@ -96,6 +109,11 @@ fun genderItemId(category: String, masculine: String, label: String): String =
  *  a list index — same rationale as [genderItemId]. */
 fun serEstarFicarItemId(category: String, sentence: String): String =
     "$category$ID_SEPARATOR$sentence"
+
+/** Keyed on `prompt` (verified unique within each category in subjunctive_quiz.json) rather than
+ *  a list index — same rationale as [genderItemId]. */
+fun subjunctiveItemId(category: String, prompt: String): String =
+    "$category$ID_SEPARATOR$prompt"
 
 /** Keyed on `prep`+`article` (verified unique within each category in contractions.json). */
 fun contractionItemId(category: String, prep: String, article: String): String =
@@ -184,6 +202,21 @@ fun serEstarFicarQuizItems(entries: List<SerEstarFicarEntry>): List<SerEstarFica
             answer = entry.answer,
             hint = entry.hint,
             english = entry.english,
+        )
+    }
+
+/** Flattens parsed [SubjunctiveEntry] data into quizzable items, one per prompt. */
+fun subjunctiveQuizItems(entries: List<SubjunctiveEntry>): List<SubjunctiveQuizItem> =
+    entries.map { entry ->
+        SubjunctiveQuizItem(
+            id = subjunctiveItemId(entry.category, entry.prompt),
+            category = entry.category,
+            prompt = entry.prompt,
+            answer = entry.answer,
+            trigger = entry.trigger,
+            hint = entry.hint,
+            english = entry.english,
+            infinitive = entry.infinitive,
         )
     }
 

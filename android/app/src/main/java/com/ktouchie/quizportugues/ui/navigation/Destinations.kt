@@ -38,6 +38,7 @@ const val MODULE_VOCABULARY = "vocabulary"
 const val MODULE_GENDER = "gender"
 const val MODULE_SER_ESTAR_FICAR = "ser_estar_ficar"
 const val MODULE_CONTRACTIONS = "contractions"
+const val MODULE_SUBJUNCTIVE = "subjunctive"
 
 /** Display name shown on Home's module cards and each Module Home screen's title. */
 fun moduleDisplayName(moduleId: String): String = when (moduleId) {
@@ -46,6 +47,7 @@ fun moduleDisplayName(moduleId: String): String = when (moduleId) {
     MODULE_GENDER -> "Género & Plural"
     MODULE_SER_ESTAR_FICAR -> "Ser, Estar & Ficar"
     MODULE_CONTRACTIONS -> "Contrações"
+    MODULE_SUBJUNCTIVE -> "Conjuntivo"
     else -> moduleId
 }
 
@@ -56,5 +58,6 @@ fun moduleIcon(moduleId: String): String = when (moduleId) {
     MODULE_GENDER -> "👫"
     MODULE_SER_ESTAR_FICAR -> "🧩"
     MODULE_CONTRACTIONS -> "🔗"
+    MODULE_SUBJUNCTIVE -> "🌀"
     else -> "📘"
 }

@@ -25,6 +25,7 @@ import com.ktouchie.quizportugues.ui.common.StatChip
 import com.ktouchie.quizportugues.ui.navigation.MODULE_CONTRACTIONS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_GENDER
 import com.ktouchie.quizportugues.ui.navigation.MODULE_SER_ESTAR_FICAR
+import com.ktouchie.quizportugues.ui.navigation.MODULE_SUBJUNCTIVE
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 import com.ktouchie.quizportugues.ui.navigation.moduleDisplayName
@@ -116,6 +117,13 @@ fun HomeScreen(
                 dueCount = state.contractionsProgress.dueCount,
                 progressPct = state.contractionsProgress.seenPct,
                 onClick = { onOpenModule(MODULE_CONTRACTIONS) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_SUBJUNCTIVE),
+                title = moduleDisplayName(MODULE_SUBJUNCTIVE),
+                dueCount = state.subjunctiveProgress.dueCount,
+                progressPct = state.subjunctiveProgress.seenPct,
+                onClick = { onOpenModule(MODULE_SUBJUNCTIVE) },
             )
         }
     }

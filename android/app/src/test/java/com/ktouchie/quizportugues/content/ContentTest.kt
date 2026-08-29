@@ -61,6 +61,17 @@ private const val SAMPLE_CONTRACTIONS_JSON = """
 }
 """
 
+private const val SAMPLE_SUBJUNCTIVE_JSON = """
+{
+  "Expressões de vontade e desejo": [
+    { "prompt": "Quero que ele ___ (vir) mais cedo.", "answer": "venha", "trigger": "querer que", "hint": "querer que + conjuntivo presente", "english": "I want him to come earlier." }
+  ],
+  "Conjuntivo imperfeito (após expressões de passado)": [
+    { "prompt": "Queria que tu ___ (vir) comigo.", "answer": "viesses", "trigger": "querer (passado) que", "hint": "querer no imperfeito → conjuntivo imperfeito: vir → viesses", "english": "I wanted you to come with me." }
+  ]
+}
+"""
+
 class ContentTest {
 
     @Test
@@ -195,5 +206,37 @@ class ContentTest {
     @Test
     fun `contraction item ids are stable and derived from category, prep, article`() {
         assertEquals("de + artigo definido|||de|||o", contractionItemId("de + artigo definido", "de", "o"))
+    }
+
+    @Test
+    fun `extractSubjunctiveInfinitive pulls the parenthesized verb out of the prompt`() {
+        assertEquals("vir", extractSubjunctiveInfinitive("Quero que ele ___ (vir) mais cedo."))
+        assertNull(extractSubjunctiveInfinitive("No parentheses here."))
+    }
+
+    @Test
+    fun `parseSubjunctiveEntries flattens categories and keeps trigger, hint, english, infinitive`() {
+        val entries = parseSubjunctiveEntries(SAMPLE_SUBJUNCTIVE_JSON)
+        assertEquals(2, entries.size)
+        val venha = entries.first { it.answer == "venha" }
+        assertEquals("querer que", venha.trigger)
+        assertEquals("querer que + conjuntivo presente", venha.hint)
+        assertEquals("I want him to come earlier.", venha.english)
+        assertEquals("vir", venha.infinitive)
+    }
+
+    @Test
+    fun `subjunctiveQuizItems produces one item per prompt`() {
+        val items = subjunctiveQuizItems(parseSubjunctiveEntries(SAMPLE_SUBJUNCTIVE_JSON))
+        assertEquals(2, items.size)
+        assertTrue(items.any { it.answer == "viesses" && it.category == "Conjuntivo imperfeito (após expressões de passado)" })
+    }
+
+    @Test
+    fun `subjunctive item ids are stable and derived from category and prompt`() {
+        assertEquals(
+            "Expressões de vontade e desejo|||Quero que ele ___ (vir) mais cedo.",
+            subjunctiveItemId("Expressões de vontade e desejo", "Quero que ele ___ (vir) mais cedo."),
+        )
     }
 }

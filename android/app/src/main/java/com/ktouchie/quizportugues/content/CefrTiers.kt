@@ -167,6 +167,23 @@ val CONTRACTIONS_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
     "a + demonstrativo" to B2,
 )
 
+/**
+ * subjunctive_quiz.json's 6 categories, per GitHub #54: subjunctive content as a whole skews
+ * higher than the other modules (the mood itself isn't introduced until at least B1 in most EP
+ * courses), so nothing here is tagged A1/A2. Simple will/desire and emotion triggers (the most
+ * commonly taught conjuntivo presente uses) are B1; doubt/impersonal-necessity triggers and the
+ * temporal/conditional conjunctions (conjuntivo pessoal, an EP-specific construction) are B2; the
+ * conjuntivo imperfeito category — a distinct, more advanced verb form entirely — is C1.
+ */
+val SUBJUNCTIVE_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "Expressões de vontade e desejo" to B1,
+    "Expressões de emoção e sentimento" to B1,
+    "Expressões de dúvida e incerteza" to B2,
+    "Expressões impessoais de necessidade e obrigação" to B2,
+    "Conjunções temporais e condicionais" to B2,
+    "Conjuntivo imperfeito (após expressões de passado)" to C1,
+)
+
 fun verbCefrLevel(verb: String): CefrLevel =
     VERB_CEFR_LEVEL[verb] ?: error("No CEFR level assigned for verb \"$verb\" — add it to VERB_CEFR_LEVEL")
 
@@ -185,6 +202,10 @@ fun serEstarFicarCategoryCefrLevel(category: String): CefrLevel =
     SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL[category]
         ?: error("No CEFR level assigned for ser/estar/ficar category \"$category\" — add it to SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL")
 
+fun subjunctiveCategoryCefrLevel(category: String): CefrLevel =
+    SUBJUNCTIVE_CATEGORY_CEFR_LEVEL[category]
+        ?: error("No CEFR level assigned for subjunctive category \"$category\" — add it to SUBJUNCTIVE_CATEGORY_CEFR_LEVEL")
+
 fun contractionsCategoryCefrLevel(category: String): CefrLevel =
     CONTRACTIONS_CATEGORY_CEFR_LEVEL[category]
         ?: error("No CEFR level assigned for contractions category \"$category\" — add it to CONTRACTIONS_CATEGORY_CEFR_LEVEL")
@@ -201,5 +222,7 @@ fun cefrLevelOf(item: VocabularyQuizItem): CefrLevel = vocabularyCategoryCefrLev
 fun cefrLevelOf(item: GenderQuizItem): CefrLevel = genderCategoryCefrLevel(item.category)
 
 fun cefrLevelOf(item: SerEstarFicarQuizItem): CefrLevel = serEstarFicarCategoryCefrLevel(item.category)
+
+fun cefrLevelOf(item: SubjunctiveQuizItem): CefrLevel = subjunctiveCategoryCefrLevel(item.category)
 
 fun cefrLevelOf(item: ContractionQuizItem): CefrLevel = contractionsCategoryCefrLevel(item.category)
