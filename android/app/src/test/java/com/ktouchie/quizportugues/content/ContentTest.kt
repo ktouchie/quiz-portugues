@@ -50,6 +50,17 @@ private const val SAMPLE_SER_ESTAR_FICAR_JSON = """
 }
 """
 
+private const val SAMPLE_CONTRACTIONS_JSON = """
+{
+  "de + artigo definido": [
+    { "parts": ["de", "o"], "answer": "do", "example": "O livro é do professor.", "english": "The book belongs to the teacher.", "hint": "de + o = do" }
+  ],
+  "a + demonstrativo": [
+    { "parts": ["a", "aquele"], "answer": "àquele", "example": "Refiro-me àquele senhor.", "english": "I am referring to that gentleman.", "hint": "a + aquele = àquele" }
+  ]
+}
+"""
+
 class ContentTest {
 
     @Test
@@ -161,5 +172,28 @@ class ContentTest {
             "Profissões e identidade (ser)|||A Joana ___ arquiteta.",
             serEstarFicarItemId("Profissões e identidade (ser)", "A Joana ___ arquiteta."),
         )
+    }
+
+    @Test
+    fun `parseContractionEntries splits parts into prep and article`() {
+        val entries = parseContractionEntries(SAMPLE_CONTRACTIONS_JSON)
+        assertEquals(2, entries.size)
+        val do_ = entries.first { it.answer == "do" }
+        assertEquals("de", do_.prep)
+        assertEquals("o", do_.article)
+        assertEquals("O livro é do professor.", do_.example)
+        assertEquals("de + o = do", do_.hint)
+    }
+
+    @Test
+    fun `contractionQuizItems produces one item per entry`() {
+        val items = contractionQuizItems(parseContractionEntries(SAMPLE_CONTRACTIONS_JSON))
+        assertEquals(2, items.size)
+        assertTrue(items.any { it.answer == "àquele" && it.category == "a + demonstrativo" })
+    }
+
+    @Test
+    fun `contraction item ids are stable and derived from category, prep, article`() {
+        assertEquals("de + artigo definido|||de|||o", contractionItemId("de + artigo definido", "de", "o"))
     }
 }

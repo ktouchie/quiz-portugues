@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ktouchie.quizportugues.ui.common.ModuleCard
 import com.ktouchie.quizportugues.ui.common.StatChip
+import com.ktouchie.quizportugues.ui.navigation.MODULE_CONTRACTIONS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_GENDER
 import com.ktouchie.quizportugues.ui.navigation.MODULE_SER_ESTAR_FICAR
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
@@ -108,6 +109,13 @@ fun HomeScreen(
                 dueCount = state.serEstarFicarProgress.dueCount,
                 progressPct = state.serEstarFicarProgress.seenPct,
                 onClick = { onOpenModule(MODULE_SER_ESTAR_FICAR) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_CONTRACTIONS),
+                title = moduleDisplayName(MODULE_CONTRACTIONS),
+                dueCount = state.contractionsProgress.dueCount,
+                progressPct = state.contractionsProgress.seenPct,
+                onClick = { onOpenModule(MODULE_CONTRACTIONS) },
             )
         }
     }

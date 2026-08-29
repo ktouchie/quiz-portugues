@@ -112,7 +112,7 @@ All seven web quiz modules, built in this order:
 4. **Ser/Estar/Ficar** (shipped, #52) — `ser_estar_ficar.json`, 4 categories / 38 items (`{sentence, answer,
    hint, english}`). Fill-in-the-blank sentence, free-text answer is the correctly conjugated
    ser/estar/ficar form.
-5. **Contractions** (#53) — `contractions.json`, 8 categories / 39 items (`{parts: [prep, article],
+5. **Contractions** (shipped, #53) — `contractions.json`, 8 categories / 39 items (`{parts: [prep, article],
    answer, example, english, hint}`). Free-text answer is the contracted preposition+article form.
 6. **Subjunctive** (#54) — `subjunctive_quiz.json`, 6 categories / 38 items (`{prompt, answer,
    trigger, hint, english}`). Free-text answer is the conjugated conjuntivo form; `trigger` names

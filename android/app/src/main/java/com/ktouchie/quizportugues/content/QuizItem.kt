@@ -53,6 +53,19 @@ data class SerEstarFicarQuizItem(
     override val module: String get() = "ser_estar_ficar"
 }
 
+data class ContractionQuizItem(
+    override val id: String,
+    val category: String,
+    val prep: String,
+    val article: String,
+    val answer: String,
+    val example: String?,
+    val english: String?,
+    val hint: String?,
+) : QuizItem {
+    override val module: String get() = "contractions"
+}
+
 /**
  * Stable content-item IDs — shared convention (docs/MOBILE_APP_SPEC.md §6.1).
  *
@@ -83,6 +96,10 @@ fun genderItemId(category: String, masculine: String, label: String): String =
  *  a list index — same rationale as [genderItemId]. */
 fun serEstarFicarItemId(category: String, sentence: String): String =
     "$category$ID_SEPARATOR$sentence"
+
+/** Keyed on `prep`+`article` (verified unique within each category in contractions.json). */
+fun contractionItemId(category: String, prep: String, article: String): String =
+    "$category$ID_SEPARATOR$prep$ID_SEPARATOR$article"
 
 /**
  * Flattens parsed [VerbEntry] data into individual quizzable conjugation items — one per
@@ -167,5 +184,20 @@ fun serEstarFicarQuizItems(entries: List<SerEstarFicarEntry>): List<SerEstarFica
             answer = entry.answer,
             hint = entry.hint,
             english = entry.english,
+        )
+    }
+
+/** Flattens parsed [ContractionEntry] data into quizzable items, one per prep+article pair. */
+fun contractionQuizItems(entries: List<ContractionEntry>): List<ContractionQuizItem> =
+    entries.map { entry ->
+        ContractionQuizItem(
+            id = contractionItemId(entry.category, entry.prep, entry.article),
+            category = entry.category,
+            prep = entry.prep,
+            article = entry.article,
+            answer = entry.answer,
+            example = entry.example,
+            english = entry.english,
+            hint = entry.hint,
         )
     }

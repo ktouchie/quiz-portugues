@@ -69,6 +69,16 @@ class CefrTiersTest {
     }
 
     @Test
+    fun `every contractions category has a CEFR level assigned`() {
+        val rawJson = File(repoRoot, "contractions.json").readText()
+        val categories = parseContractionEntries(rawJson).map { it.category }.toSet()
+        assertTrue("contractions.json not found or empty at $repoRoot", categories.isNotEmpty())
+
+        val untagged = categories - CONTRACTIONS_CATEGORY_CEFR_LEVEL.keys
+        assertTrue("Contractions categories missing a CEFR level: $untagged", untagged.isEmpty())
+    }
+
+    @Test
     fun `an A1 verb in an advanced tense is gated by the tense, not the verb`() {
         // "falar" is A1, but conjuntivo is B1 — the combined item must not be treated as A1, or a
         // first-ever session could surface it before futuro/condicional/conjuntivo unlock.

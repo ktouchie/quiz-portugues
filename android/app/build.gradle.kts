@@ -85,7 +85,7 @@ ksp {
 // copies (see .gitignore).
 val copyContentJson by tasks.registering(Copy::class) {
     from(rootProject.projectDir.parentFile) {
-        include("verbs.json", "vocabulary.json", "gender_quiz.json", "ser_estar_ficar.json")
+        include("verbs.json", "vocabulary.json", "gender_quiz.json", "ser_estar_ficar.json", "contractions.json")
     }
     into("src/main/assets")
 }

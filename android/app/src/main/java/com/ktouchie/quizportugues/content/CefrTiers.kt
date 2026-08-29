@@ -149,6 +149,24 @@ val SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
     "Resultado e mudança de estado (ficar)" to B1,
 )
 
+/**
+ * contractions.json's 8 categories, ordered by how early Portuguese courses introduce each
+ * preposition+article/demonstrative combination: definite-article contractions with the most
+ * common prepositions (de/em/a) are core A1 material; indefinite-article and the less frequent
+ * "por" combination follow at A2; demonstrative contractions require knowing demonstrative
+ * pronouns first, so B1/B2.
+ */
+val CONTRACTIONS_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "de + artigo definido" to A1,
+    "em + artigo definido" to A1,
+    "a + artigo definido" to A1,
+    "por + artigo definido" to A2,
+    "em + artigo indefinido" to A2,
+    "de + demonstrativo" to B1,
+    "em + demonstrativo" to B1,
+    "a + demonstrativo" to B2,
+)
+
 fun verbCefrLevel(verb: String): CefrLevel =
     VERB_CEFR_LEVEL[verb] ?: error("No CEFR level assigned for verb \"$verb\" — add it to VERB_CEFR_LEVEL")
 
@@ -167,6 +185,10 @@ fun serEstarFicarCategoryCefrLevel(category: String): CefrLevel =
     SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL[category]
         ?: error("No CEFR level assigned for ser/estar/ficar category \"$category\" — add it to SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL")
 
+fun contractionsCategoryCefrLevel(category: String): CefrLevel =
+    CONTRACTIONS_CATEGORY_CEFR_LEVEL[category]
+        ?: error("No CEFR level assigned for contractions category \"$category\" — add it to CONTRACTIONS_CATEGORY_CEFR_LEVEL")
+
 /** The harder of the verb's own level and the tense's level — see [TENSE_CEFR_LEVEL]. */
 fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
     val verbLevel = verbCefrLevel(item.verb)
@@ -179,3 +201,5 @@ fun cefrLevelOf(item: VocabularyQuizItem): CefrLevel = vocabularyCategoryCefrLev
 fun cefrLevelOf(item: GenderQuizItem): CefrLevel = genderCategoryCefrLevel(item.category)
 
 fun cefrLevelOf(item: SerEstarFicarQuizItem): CefrLevel = serEstarFicarCategoryCefrLevel(item.category)
+
+fun cefrLevelOf(item: ContractionQuizItem): CefrLevel = contractionsCategoryCefrLevel(item.category)
