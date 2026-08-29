@@ -39,6 +39,7 @@ const val MODULE_GENDER = "gender"
 const val MODULE_SER_ESTAR_FICAR = "ser_estar_ficar"
 const val MODULE_CONTRACTIONS = "contractions"
 const val MODULE_SUBJUNCTIVE = "subjunctive"
+const val MODULE_INDIRECT_SPEECH = "indirect_speech"
 
 /** Display name shown on Home's module cards and each Module Home screen's title. */
 fun moduleDisplayName(moduleId: String): String = when (moduleId) {
@@ -48,6 +49,7 @@ fun moduleDisplayName(moduleId: String): String = when (moduleId) {
     MODULE_SER_ESTAR_FICAR -> "Ser, Estar & Ficar"
     MODULE_CONTRACTIONS -> "Contrações"
     MODULE_SUBJUNCTIVE -> "Conjuntivo"
+    MODULE_INDIRECT_SPEECH -> "Discurso Indireto"
     else -> moduleId
 }
 
@@ -59,5 +61,6 @@ fun moduleIcon(moduleId: String): String = when (moduleId) {
     MODULE_SER_ESTAR_FICAR -> "🧩"
     MODULE_CONTRACTIONS -> "🔗"
     MODULE_SUBJUNCTIVE -> "🌀"
+    MODULE_INDIRECT_SPEECH -> "💬"
     else -> "📘"
 }

@@ -18,6 +18,8 @@ import com.ktouchie.quizportugues.ui.contractions.ContractionsSetupScreen
 import com.ktouchie.quizportugues.ui.gender.GenderSessionScreen
 import com.ktouchie.quizportugues.ui.gender.GenderSetupScreen
 import com.ktouchie.quizportugues.ui.home.HomeScreen
+import com.ktouchie.quizportugues.ui.indirectspeech.IndirectSpeechSessionScreen
+import com.ktouchie.quizportugues.ui.indirectspeech.IndirectSpeechSetupScreen
 import com.ktouchie.quizportugues.ui.module.ModuleHomeScreen
 import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSessionScreen
 import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSetupScreen
@@ -107,6 +109,12 @@ fun AppNavigation() {
                         navController.navigate("module/$moduleId/session?$query")
                     },
                 )
+                // No category picker — indirect_speech.json has no categories. "categories=all"
+                // is a sentinel IndirectSpeechSessionViewModel reads only as an "advanced mode"
+                // flag, reusing the existing nav arg rather than adding a new one.
+                MODULE_INDIRECT_SPEECH -> IndirectSpeechSetupScreen(
+                    onStart = { navController.navigate("module/$moduleId/session?categories=all") },
+                )
                 else -> PlaceholderScreen(label = "Setup ($moduleId)")
             }
         }
@@ -124,6 +132,7 @@ fun AppNavigation() {
                 MODULE_SER_ESTAR_FICAR -> SerEstarFicarSessionScreen(onDone = onDone)
                 MODULE_CONTRACTIONS -> ContractionsSessionScreen(onDone = onDone)
                 MODULE_SUBJUNCTIVE -> SubjunctiveSessionScreen(onDone = onDone)
+                MODULE_INDIRECT_SPEECH -> IndirectSpeechSessionScreen(onDone = onDone)
                 else -> PlaceholderScreen(label = "Session ($moduleId)")
             }
         }

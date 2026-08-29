@@ -225,4 +225,12 @@ fun cefrLevelOf(item: SerEstarFicarQuizItem): CefrLevel = serEstarFicarCategoryC
 
 fun cefrLevelOf(item: SubjunctiveQuizItem): CefrLevel = subjunctiveCategoryCefrLevel(item.category)
 
+/**
+ * indirect_speech.json has no categories to tag (a flat 20-item list) — per GitHub #55's own
+ * guidance not to over-engineer tiering for a module this small, every item gets the same fixed
+ * level rather than a per-category map like the other modules. B1: tense-backshift rules are
+ * intermediate grammar, on par with the simpler subjunctive triggers.
+ */
+fun cefrLevelOf(item: IndirectSpeechQuizItem): CefrLevel = B1
+
 fun cefrLevelOf(item: ContractionQuizItem): CefrLevel = contractionsCategoryCefrLevel(item.category)

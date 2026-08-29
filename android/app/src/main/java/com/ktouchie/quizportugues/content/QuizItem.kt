@@ -66,6 +66,20 @@ data class SubjunctiveQuizItem(
     override val module: String get() = "subjunctive"
 }
 
+/** No `category` field — indirect_speech.json is a flat list, unlike every other module. */
+data class IndirectSpeechQuizItem(
+    override val id: String,
+    val direct: String,
+    val context: String,
+    val verbDirect: String,
+    val answer: String,
+    val rule: String,
+    val indirectFull: String?,
+    val english: String?,
+) : QuizItem {
+    override val module: String get() = "indirect_speech"
+}
+
 data class ContractionQuizItem(
     override val id: String,
     val category: String,
@@ -114,6 +128,10 @@ fun serEstarFicarItemId(category: String, sentence: String): String =
  *  a list index — same rationale as [genderItemId]. */
 fun subjunctiveItemId(category: String, prompt: String): String =
     "$category$ID_SEPARATOR$prompt"
+
+/** Keyed on `direct` (verified unique across all of indirect_speech.json's flat item list) —
+ *  there's no category to combine it with, unlike every other module's id function. */
+fun indirectSpeechItemId(direct: String): String = direct
 
 /** Keyed on `prep`+`article` (verified unique within each category in contractions.json). */
 fun contractionItemId(category: String, prep: String, article: String): String =
@@ -217,6 +235,21 @@ fun subjunctiveQuizItems(entries: List<SubjunctiveEntry>): List<SubjunctiveQuizI
             hint = entry.hint,
             english = entry.english,
             infinitive = entry.infinitive,
+        )
+    }
+
+/** Flattens parsed [IndirectSpeechEntry] data into quizzable items, one per entry. */
+fun indirectSpeechQuizItems(entries: List<IndirectSpeechEntry>): List<IndirectSpeechQuizItem> =
+    entries.map { entry ->
+        IndirectSpeechQuizItem(
+            id = indirectSpeechItemId(entry.direct),
+            direct = entry.direct,
+            context = entry.context,
+            verbDirect = entry.verbDirect,
+            answer = entry.answer,
+            rule = entry.rule,
+            indirectFull = entry.indirectFull,
+            english = entry.english,
         )
     }
 

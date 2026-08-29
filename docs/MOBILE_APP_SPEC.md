@@ -117,7 +117,7 @@ All seven web quiz modules, built in this order:
 6. **Subjunctive** (shipped, #54) — `subjunctive_quiz.json`, 6 categories / 38 items (`{prompt, answer,
    trigger, hint, english}`). Free-text answer is the conjugated conjuntivo form; `trigger` names
    the grammatical trigger governing the mood.
-7. **Indirect Speech** (#55) — `indirect_speech.json`, 20 items, flat list, no categories
+7. **Indirect Speech** (shipped, #55) — `indirect_speech.json`, 20 items, flat list, no categories
    (`{direct, context, verb_direct, answer, rule, indirect_full, english, hint}`). Free-text answer
    is the tense-backshifted verb form.
 

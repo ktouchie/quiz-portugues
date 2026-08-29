@@ -72,6 +72,13 @@ private const val SAMPLE_SUBJUNCTIVE_JSON = """
 }
 """
 
+private const val SAMPLE_INDIRECT_SPEECH_JSON = """
+[
+  { "direct": "«Estou cansada.»", "context": "Ela disse:", "verb_direct": "estou", "answer": "estava", "rule": "presente → imperfeito", "indirect_full": "Ela disse que estava cansada.", "english": "She said that she was tired.", "hint": "unused by the web app's own getHint()" },
+  { "direct": "«Já comi.»", "context": "Ela contou que:", "verb_direct": "comi", "answer": "tinha comido", "rule": "pretérito → pretérito mais-que-perfeito composto", "indirect_full": null, "english": null, "hint": null }
+]
+"""
+
 class ContentTest {
 
     @Test
@@ -238,5 +245,46 @@ class ContentTest {
             "Expressões de vontade e desejo|||Quero que ele ___ (vir) mais cedo.",
             subjunctiveItemId("Expressões de vontade e desejo", "Quero que ele ___ (vir) mais cedo."),
         )
+    }
+
+    @Test
+    fun `parseIndirectSpeechEntries parses the flat array with no category grouping`() {
+        val entries = parseIndirectSpeechEntries(SAMPLE_INDIRECT_SPEECH_JSON)
+        assertEquals(2, entries.size)
+        val estava = entries.first { it.answer == "estava" }
+        assertEquals("«Estou cansada.»", estava.direct)
+        assertEquals("Ela disse:", estava.context)
+        assertEquals("estou", estava.verbDirect)
+        assertEquals("presente → imperfeito", estava.rule)
+        assertEquals("Ela disse que estava cansada.", estava.indirectFull)
+        assertEquals("She said that she was tired.", estava.english)
+    }
+
+    @Test
+    fun `parseIndirectSpeechEntries treats null indirect_full and english as absent`() {
+        val comi = parseIndirectSpeechEntries(SAMPLE_INDIRECT_SPEECH_JSON).first { it.answer == "tinha comido" }
+        assertNull(comi.indirectFull)
+        assertNull(comi.english)
+    }
+
+    @Test
+    fun `indirectSpeechQuizItems produces one item per entry`() {
+        val items = indirectSpeechQuizItems(parseIndirectSpeechEntries(SAMPLE_INDIRECT_SPEECH_JSON))
+        assertEquals(2, items.size)
+        assertTrue(items.any { it.verbDirect == "comi" && it.answer == "tinha comido" })
+    }
+
+    @Test
+    fun `indirect speech item ids are stable and derived from the direct sentence alone`() {
+        assertEquals("«Estou cansada.»", indirectSpeechItemId("«Estou cansada.»"))
+    }
+
+    @Test
+    fun `every direct sentence in the real indirect_speech json is unique`() {
+        val repoRoot = java.io.File("../..").canonicalFile
+        val rawJson = java.io.File(repoRoot, "indirect_speech.json").readText()
+        val directs = parseIndirectSpeechEntries(rawJson).map { it.direct }
+        assertTrue("indirect_speech.json not found or empty at $repoRoot", directs.isNotEmpty())
+        assertEquals(directs.size, directs.toSet().size)
     }
 }
