@@ -54,8 +54,14 @@ jobs:
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
+        # The uploaded artifact is only a handoff to deploy-pages below; the real durable copy is
+        # the commit just pushed to gh-pages. Keep it around only briefly to avoid needlessly
+        # consuming the account's Actions-artifact storage quota, and don't let a failed upload
+        # (e.g. while the account is over quota) skip the actual deploy step that follows.
+        continue-on-error: true
         with:
           path: .pages-storage
+          retention-days: 1
 
       - name: Deploy to GitHub Pages
         id: deployment
