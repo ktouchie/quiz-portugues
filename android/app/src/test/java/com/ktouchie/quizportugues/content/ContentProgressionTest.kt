@@ -50,12 +50,21 @@ class ContentProgressionTest {
     }
 
     @Test
-    fun `two checkpoints sharing a CEFR level unlock in rank order, not together`() {
-        // A1 mastered, and a2Presente (rank 0) also fully mastered — a2Preterito (rank 1) must
-        // stay locked even though it shares A2's CEFR level with a2Presente. This is the actual
-        // fix for "I don't get to master all verbs of one tense before moving onto others".
-        val records = masteredRecords("a1-1", "a1-2", "a1-3", "a1-4", "a1-5", "a2p-1", "a2p-2")
+    fun `mastering a1 opens the frontier checkpoint at a2, not every checkpoint sharing a2's level`() {
+        // A1 fully mastered, a2Presente NOT yet mastered — a2Preterito (rank 1, same A2 level as
+        // a2Presente) must stay locked: sharing a CEFR level is not enough to unlock together,
+        // only mastering the earlier-ranked checkpoint is. This is the actual fix for "I don't get
+        // to master all verbs of one tense before moving onto others".
+        val records = masteredRecords("a1-1", "a1-2", "a1-3", "a1-4", "a1-5")
         assertEquals(setOf(a1, a2Presente), unlockedCheckpoints(itemsByCheckpoint, records))
+    }
+
+    @Test
+    fun `mastering a2Presente in turn opens a2Preterito as the new frontier`() {
+        // Once a2Presente (rank 0) is itself mastered too, progression moves on to a2Preterito
+        // (rank 1) — same cascade as moving to a brand new CEFR level, just within A2.
+        val records = masteredRecords("a1-1", "a1-2", "a1-3", "a1-4", "a1-5", "a2p-1", "a2p-2")
+        assertEquals(setOf(a1, a2Presente, a2Preterito), unlockedCheckpoints(itemsByCheckpoint, records))
     }
 
     @Test

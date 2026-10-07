@@ -223,31 +223,45 @@ broaden which content is in play as the learner shows they've got the current se
 ask for typed recall once an individual item is genuinely well-known — not as a blanket property of
 "being a verb question."
 
-**Content breadth — CEFR-ordered checkpoints.** Every verb, every conjugation *tense*, and every
-category across all seven modules carries a hand-assigned CEFR level (A1–C2), defined Android-side
-in `content/CefrTiers.kt` — an enrichment layer over the existing content JSON, not a change to it,
-so `verbs.json`/`vocabulary.json`/etc. and the web app's `difficulty` field/adaptive-difficulty
-filter are untouched. A verb conjugation item's effective level is the *harder* of its verb's level
-and its tense's level (`TENSE_CEFR_LEVEL`, e.g. presente = A1, futuro/condicional/conjuntivo = B1,
-infinitivo pessoal = C1) — verb frequency and tense complexity are independent axes, so an A1 verb
-like "falar" still has its conjuntivo/mais-que-perfeito forms gated behind B1/B2 rather than opening
-up on day one just because the verb itself is elementary. (An earlier version of this only tagged
-the verb, not the tense — a real bug caught after the first Quick Practice session surfaced
-subjunctive/pluperfect forms of basic verbs to a brand-new learner.)
+**Content breadth — CEFR-ordered checkpoints.** Every conjugation *tense* and every category across
+all seven modules carries a hand-assigned CEFR level (A1–C2), defined Android-side in
+`content/CefrTiers.kt` — an enrichment layer over the existing content JSON, not a change to it, so
+`verbs.json`/`vocabulary.json`/etc. and the web app's `difficulty` field/adaptive-difficulty filter
+are untouched. A verb conjugation item's effective level is the *harder* of its verb's level and its
+tense's level (`TENSE_CEFR_LEVEL`, e.g. presente = A1, futuro/condicional/conjuntivo = B1,
+infinitivo pessoal = C1) — but every verb is now tagged A1 (product owner decision, after manual
+testing: all 26 verbs should be known in presente before any other tense opens at all, rather than
+verb frequency gating breadth the way tense complexity does), so this formula always resolves to
+the tense's own level in practice. (An earlier version both tagged verbs non-uniformly *and* only
+tagged the verb, not the tense, for gating — a real bug caught after the first Quick Practice
+session surfaced subjunctive/pluperfect forms of basic verbs to a brand-new learner. The per-tense
+gating stays; the per-verb gating was removed per the policy above.) Verb difficulty isn't thrown
+away, though — it decides the *order within presente itself* (see the checkpoint description next).
 
 Progression opens in **checkpoints**, not whole CEFR levels at once (`content/ContentProgression.kt`'s
 `Checkpoint`/`unlockedCheckpoints()`) — product feedback after using the shipped v1 tiering: a
-single CEFR level groups multiple tenses/categories together (e.g. A2 covers both an A1 verb's
-pretérito/imperfeito/imperativo *and* a new A2 verb's presente), so opening the whole level at once
+single CEFR level groups multiple tenses/categories together, so opening the whole level at once
 meant jumping between several unrelated tenses before mastering any one of them. A checkpoint is one
 tense (Verb Conjugation) or one category (every other module) at one effective CEFR level; within a
 shared level, checkpoints unlock one at a time in a fixed rank order (each tense/category's position
-in its `CefrTiers.kt` map, already ordered by how early Portuguese courses introduce it). The first
-checkpoint is always unlocked; each next one unlocks once ≥80% of the *current* checkpoint's items
-have crossed `isReadyForTyping()` (§7's typing-readiness bar — "mastered", not merely "seen", is
-what earns the next slice of content). An empty checkpoint (no content assigned yet, e.g.
-vocabulary's unused C1/C2 levels) unlocks automatically rather than permanently blocking everything
-after it — CEFR levels are a growth path for content the app doesn't fully populate yet, not a
+in its `CefrTiers.kt` map, already ordered by how early Portuguese courses introduce it).
+
+presente is a special case, further split into three checkpoints instead of being one — every
+verb's effective level collapses onto presente's A1 now that per-verb CEFR levels are gone, so
+without subdividing it, all 26 verbs' presente forms would merge into a single checkpoint, too
+coarse to actually sequence by difficulty. `checkpointOf`'s presente-only wave logic reuses each
+item's own `regular`/`difficulty` content fields rather than a second hand-maintained list: wave 0
+is the regular -ar/-er/-ir model verbs (`regular == true`: comer/falar/partir), wave 1 is the small
+set of common irregulars (`difficulty == BEGINNER`, irregular: ser/estar/ir/ter), wave 2 is
+everything else (INTERMEDIATE/ADVANCED), introduced gradually. Every other tense stays one
+checkpoint each, as before.
+
+The first checkpoint is always unlocked; each next one unlocks once ≥80% of the *current*
+checkpoint's items have crossed `isReadyForTyping()` (§7's typing-readiness bar — "mastered", not
+merely "seen", is what earns the next slice of content). An empty checkpoint (no content assigned
+yet, e.g. vocabulary's unused C1/C2 levels) unlocks automatically rather than permanently blocking
+everything after it — CEFR levels are a growth path for content the app doesn't fully populate yet,
+not a
 requirement that it does.
 
 **Input modality — typing readiness.** Independently of content breadth, each item that's actually
@@ -481,6 +495,7 @@ Committed ahead of this spec, since they affect data both apps will share:
 | Backend/sync | None — local only (Room) | Product owner |
 | Input model | Mastery-gated per item: multiple-choice until an item is typing-ready (§9), then typed; no custom accent bar, relies on the device keyboard's own accent long-press | Product owner, after using the shipped v1 modules |
 | Content progression | CEFR-ordered checkpoints (one tense/category at a time, not a whole CEFR level at once), sequential unlock at 80% typing-ready "mastered" per checkpoint, Android-only enrichment layer over the shared content JSON | Product owner, after manual testing surfaced tense-jumping within a CEFR level |
+| Verb breadth | Every verb is A1 — all 26 learned in presente before any other tense opens at all; within presente, regular model verbs first, then common irregulars, then the rest (derived from each verb's own `regular`/`difficulty` fields) | Product owner, after manual testing found only 5 verbs in A1 |
 | Visual direction | "Direction A — Warm Encourager" (cream palette, warm amber gradient accent, big soft-rounded cards), chosen from 3 mockup directions | Product owner, from a Claude Design canvas |
 | Monetization | None | Product owner |
 | Notifications | None in v1 | Product owner |

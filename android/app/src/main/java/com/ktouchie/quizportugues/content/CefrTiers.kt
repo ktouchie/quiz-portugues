@@ -13,46 +13,22 @@ import com.ktouchie.quizportugues.content.CefrLevel.C2
  * enrichment layer, not a change to the shared verbs.json/vocabulary.json schema, so the web app's
  * existing `difficulty` field and adaptive-difficulty filter are unaffected).
  *
- * These are hand-assigned, not derived from an official frequency list — grounded in the general
- * shape of published EP CEFR guidance (Instituto Camões course levels; A1 = presente do
- * indicativo + concrete/high-frequency topics, A2 adds pretérito perfeito/imperfeito and everyday
- * concrete vocabulary, B1/B2 add less-frequent verbs and more abstract topics) but approximate.
- * Expected to be revisited as content grows — every verb and category MUST appear here, so a new
- * entry that's missing a tag fails loudly via [verbCefrLevel]/[vocabularyCategoryCefrLevel]
- * instead of silently defaulting into a tier.
+ * Every verb is A1 (product owner decision, after manual testing): all 26 verbs' presente forms
+ * are learned before any other tense, not staged by verb frequency/difficulty across CEFR levels
+ * the way [TENSE_CEFR_LEVEL] stages tenses. Verb difficulty still matters, but as the *within-A1*
+ * ordering of presente itself — see [checkpointOf]'s presente-specific wave logic below, which
+ * reuses each verb's own `regular`/`difficulty` content fields instead of a second hand-maintained
+ * map. Every verb and category MUST still appear here, so a new entry that's missing a tag fails
+ * loudly via [verbCefrLevel]/[vocabularyCategoryCefrLevel] instead of silently defaulting into a
+ * tier.
  */
 val VERB_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
-    // A1 — the handful of verbs every absolute-beginner course teaches first.
-    "ser" to A1,
-    "estar" to A1,
-    "ter" to A1,
-    "ir" to A1,
-    "falar" to A1,
-    // A2 — still core/high-frequency, next wave.
-    "comer" to A2,
-    "fazer" to A2,
-    "ver" to A2,
-    "saber" to A2,
-    "poder" to A2,
-    "querer" to A2,
-    "partir" to A2,
-    // B1
-    "dar" to B1,
-    "dizer" to B1,
-    "dormir" to B1,
-    "ler" to B1,
-    "ouvir" to B1,
-    "sair" to B1,
-    "pedir" to B1,
-    // B2 — less frequent / semantically narrower.
-    "conseguir" to B2,
-    "descer" to B2,
-    "perder" to B2,
-    "preferir" to B2,
-    // C1/C2 — thin on purpose today; the most irregular, least-frequent verbs in the current set.
-    "pôr" to C1,
-    "trazer" to C1,
-    "vir" to C2,
+    "ser" to A1, "estar" to A1, "ter" to A1, "ir" to A1, "falar" to A1,
+    "comer" to A1, "fazer" to A1, "ver" to A1, "saber" to A1, "poder" to A1,
+    "querer" to A1, "partir" to A1, "dar" to A1, "dizer" to A1, "dormir" to A1,
+    "ler" to A1, "ouvir" to A1, "sair" to A1, "pedir" to A1, "conseguir" to A1,
+    "descer" to A1, "perder" to A1, "preferir" to A1, "pôr" to A1, "trazer" to A1,
+    "vir" to A1,
 )
 
 /**
@@ -210,7 +186,9 @@ fun contractionsCategoryCefrLevel(category: String): CefrLevel =
     CONTRACTIONS_CATEGORY_CEFR_LEVEL[category]
         ?: error("No CEFR level assigned for contractions category \"$category\" — add it to CONTRACTIONS_CATEGORY_CEFR_LEVEL")
 
-/** The harder of the verb's own level and the tense's level — see [TENSE_CEFR_LEVEL]. */
+/** The harder of the verb's own level and the tense's level — see [TENSE_CEFR_LEVEL]. Every verb
+ *  is A1 today, so in practice this always resolves to the tense's own level; the `max` is kept
+ *  so a future re-introduction of per-verb levels doesn't need this formula rewritten. */
 fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
     val verbLevel = verbCefrLevel(item.verb)
     val tenseLevel = tenseCefrLevel(item.tense)
@@ -238,11 +216,10 @@ fun cefrLevelOf(item: ContractionQuizItem): CefrLevel = contractionsCategoryCefr
 // ── Checkpoints (docs/MOBILE_APP_SPEC.md §9) ────────────────────────────────────────────────
 //
 // A checkpoint's rank breaks ties between checkpoints that land on the same effective CEFR level
-// — e.g. "presente" for a brand-new A2 verb and "pretérito" for an already-known A1 verb can both
-// be effective-level A2, but they're deliberately separate checkpoints so one unlocks before the
-// other rather than both opening at once. Rank is just each tense/category's position in its
-// CEFR map above (already ordered by how early Portuguese courses introduce it), computed once so
-// `checkpointOf` doesn't re-scan the map per item.
+// — e.g. the Vocabulary module's several A2-level categories are each a separate checkpoint, so
+// one unlocks before the next rather than all of A2 opening at once. Rank is just each tense/
+// category's position in its CEFR map above (already ordered by how early Portuguese courses
+// introduce it), computed once so `checkpointOf` doesn't re-scan the map per item.
 
 private val TENSE_RANK: Map<String, Int> = TENSE_CEFR_LEVEL.keys.withIndex().associate { (i, t) -> t to i }
 private val VOCABULARY_CATEGORY_RANK: Map<String, Int> =
@@ -256,11 +233,41 @@ private val CONTRACTIONS_CATEGORY_RANK: Map<String, Int> =
 private val SUBJUNCTIVE_CATEGORY_RANK: Map<String, Int> =
     SUBJUNCTIVE_CATEGORY_CEFR_LEVEL.keys.withIndex().associate { (i, c) -> c to i }
 
-/** Grouped by tense (docs/MOBILE_APP_SPEC.md §9): every verb's forms in a given tense are one
- *  checkpoint, so e.g. all A1 verbs' "presente" forms must be mastered before "pretérito"/
- *  "imperfeito"/"imperativo" (or a new verb's "presente") opens up. */
+/**
+ * presente is further divided into three waves (product owner decision, after manual testing:
+ * all 26 verbs should be known in presente before any other tense is introduced at all) —
+ * derived from each item's own `regular`/`difficulty` content fields rather than a second
+ * hand-maintained list, since `verbs.json` already carries exactly this grouping:
+ *  0. **Regular model verbs** (`regular == true`: comer/falar/partir) — the -er/-ar/-ir patterns
+ *     every other regular verb follows.
+ *  1. **Common irregulars** (`difficulty == BEGINNER`, irregular: ser/estar/ir/ter) — the small
+ *     set of highest-frequency irregular verbs every EP course front-loads.
+ *  2. **Remaining verbs** (`difficulty` INTERMEDIATE/ADVANCED) — introduced gradually, still
+ *     within presente, after waves 0 and 1 are mastered.
+ * Every other tense stays one checkpoint per tense, as before — this only subdivides presente
+ * because it's the one tense every verb's effective level now collapses into (see
+ * [VERB_CEFR_LEVEL]'s note): without subdividing it, all 26 verbs' presente forms would be a
+ * single checkpoint, which is too coarse to actually sequence "regular, then common irregulars,
+ * then the rest."
+ */
+private fun presenteWaveRank(item: VerbQuizItem): Int = when {
+    item.regular -> 0
+    item.difficulty == Difficulty.BEGINNER -> 1
+    else -> 2
+}
+
+private fun presenteWaveKey(item: VerbQuizItem): String = when (presenteWaveRank(item)) {
+    0 -> "presente:regular-model"
+    1 -> "presente:common-irregular"
+    else -> "presente:remaining"
+}
+
 fun checkpointOf(item: VerbQuizItem): Checkpoint =
-    Checkpoint(cefrLevelOf(item), TENSE_RANK.getValue(item.tense), item.tense)
+    if (item.tense == "presente") {
+        Checkpoint(cefrLevelOf(item), presenteWaveRank(item), presenteWaveKey(item))
+    } else {
+        Checkpoint(cefrLevelOf(item), TENSE_RANK.getValue(item.tense), item.tense)
+    }
 
 fun checkpointOf(item: VocabularyQuizItem): Checkpoint =
     Checkpoint(cefrLevelOf(item), VOCABULARY_CATEGORY_RANK.getValue(item.category), item.category)

@@ -97,44 +97,72 @@ class CefrTiersTest {
     }
 
     @Test
-    fun `an advanced verb in the simplest tense is gated by the verb, not the tense`() {
-        // "vir" is C2 even in presente, its simplest tense — a beginner still doesn't know "vir".
-        val item = verbItem(verb = "vir", tense = "presente")
-        assertEquals(CefrLevel.C2, cefrLevelOf(item))
+    fun `every verb is A1 — all 26 are learned in presente before any other tense`() {
+        // Product owner decision after manual testing: verb difficulty no longer gates content
+        // breadth at all — even "vir", the most irregular/infrequent verb in the set, is A1. The
+        // within-presente ordering (regular model verbs, then common irregulars, then the rest) is
+        // handled entirely by checkpointOf's wave logic below, not by a per-verb CEFR level.
+        val item = verbItem(verb = "vir", tense = "presente", regular = false, difficulty = Difficulty.ADVANCED)
+        assertEquals(CefrLevel.A1, cefrLevelOf(item))
     }
 
     @Test
     fun `two tenses sharing an effective CEFR level get distinct checkpoints`() {
-        // "falar" (A1) in pretérito and "comer" (A2) in presente both land on effective level A2
-        // (max of verb/tense), but they're different tenses — checkpointOf must keep them as
-        // separate checkpoints (different rank) so one tense is mastered before the other opens,
-        // not a single merged A2 bucket.
-        val falarPreterito = verbItem(verb = "falar", tense = "pretérito")
-        val comerPresente = verbItem(verb = "comer", tense = "presente")
-        val falarCheckpoint = checkpointOf(falarPreterito)
-        val comerCheckpoint = checkpointOf(comerPresente)
+        // pretérito and imperfeito are both A2 tenses (every verb is A1, so this is also their
+        // effective level) — checkpointOf must keep them as separate checkpoints (different rank)
+        // so one tense is mastered before the other opens, not a single merged A2 bucket.
+        val preterito = verbItem(verb = "falar", tense = "pretérito")
+        val imperfeito = verbItem(verb = "falar", tense = "imperfeito")
+        val preteritoCheckpoint = checkpointOf(preterito)
+        val imperfeitoCheckpoint = checkpointOf(imperfeito)
 
-        assertEquals(CefrLevel.A2, falarCheckpoint.level)
-        assertEquals(CefrLevel.A2, comerCheckpoint.level)
-        assertTrue("Same-level checkpoints for different tenses must not collide", falarCheckpoint != comerCheckpoint)
+        assertEquals(CefrLevel.A2, preteritoCheckpoint.level)
+        assertEquals(CefrLevel.A2, imperfeitoCheckpoint.level)
+        assertTrue("Same-level checkpoints for different tenses must not collide", preteritoCheckpoint != imperfeitoCheckpoint)
     }
 
     @Test
     fun `the same tense and effective level always produces the same checkpoint`() {
         val falarPreterito = verbItem(verb = "falar", tense = "pretérito")
-        val tiPreterito = verbItem(verb = "ter", tense = "pretérito") // "ter" is also A1
+        val tiPreterito = verbItem(verb = "ter", tense = "pretérito")
         assertEquals(checkpointOf(falarPreterito), checkpointOf(tiPreterito))
     }
 
-    private fun verbItem(verb: String, tense: String) = VerbQuizItem(
+    @Test
+    fun `presente splits into three waves — regular models, common irregulars, then the rest`() {
+        val regularModel = verbItem(verb = "comer", tense = "presente", regular = true, difficulty = Difficulty.BEGINNER)
+        val commonIrregular = verbItem(verb = "ser", tense = "presente", regular = false, difficulty = Difficulty.BEGINNER)
+        val remaining = verbItem(verb = "pôr", tense = "presente", regular = false, difficulty = Difficulty.ADVANCED)
+
+        val checkpoints = listOf(regularModel, commonIrregular, remaining).map { checkpointOf(it) }
+        assertEquals("All three waves stay within presente's A1 level", listOf(CefrLevel.A1, CefrLevel.A1, CefrLevel.A1), checkpoints.map { it.level })
+        assertEquals(listOf(0, 1, 2), checkpoints.map { it.rank })
+        assertEquals(3, checkpoints.toSet().size) // all distinct checkpoints
+    }
+
+    @Test
+    fun `within a wave, different verbs share the same presente checkpoint`() {
+        // Two regular-model verbs — must be the exact same checkpoint so they're practiced
+        // together, not gated behind each other.
+        val comer = verbItem(verb = "comer", tense = "presente", regular = true, difficulty = Difficulty.BEGINNER)
+        val partir = verbItem(verb = "partir", tense = "presente", regular = true, difficulty = Difficulty.BEGINNER)
+        assertEquals(checkpointOf(comer), checkpointOf(partir))
+    }
+
+    private fun verbItem(
+        verb: String,
+        tense: String,
+        regular: Boolean = true,
+        difficulty: Difficulty = Difficulty.BEGINNER,
+    ) = VerbQuizItem(
         id = verbItemId(verb, tense, 0),
         verb = verb,
         tense = tense,
         personIndex = 0,
         person = "eu",
         answer = "x",
-        regular = true,
-        difficulty = Difficulty.BEGINNER,
+        regular = regular,
+        difficulty = difficulty,
         english = "x",
         exampleSentence = null,
     )
