@@ -96,8 +96,9 @@ private fun InProgressContent(
                 "${tenseLabel(state.item.tense)} para ${state.item.person}:",
         )
 
-        // Keyed on the item id so the typed text resets when a new question appears.
-        key(state.item.id) {
+        // Keyed per question, not per item: a missed last item comes straight back with the same
+        // id, and the field must not still hold the wrong answer.
+        key(state.questionSerial) {
             AnswerInput(
                 enabled = state.feedback == null,
                 onSubmit = onAnswerSubmitted,

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { padZero, updateBestScore, startTimer, stopTimer } from '../common.js';
+import { padZero, updateBestScore, startTimer, stopTimer, addSelectAll, getCheckedValues } from '../common.js';
 
 describe('padZero', () => {
     it('pads single digit with leading zero', () => expect(padZero(5)).toBe('05'));
@@ -63,5 +63,14 @@ describe('timer', () => {
         startTimer(state); // restart
         vi.advanceTimersByTime(1000);
         expect(state.elapsedTime).toBe(3);
+    });
+});
+
+describe('getCheckedValues', () => {
+    it('returns the ticked boxes without the select-all box', () => {
+        document.body.innerHTML = '<div id="tenses"><input type="checkbox" value="presente" checked><input type="checkbox" value="futuro"></div>';
+        addSelectAll('tenses');
+        document.getElementById('tenses-select-all').checked = true;
+        expect(getCheckedValues('tenses')).toEqual(['presente']);
     });
 });

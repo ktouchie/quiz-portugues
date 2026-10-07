@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ktouchie.quizportugues.content.VocabularyQuizItem
 import com.ktouchie.quizportugues.content.loadVocabularyEntries
+import com.ktouchie.quizportugues.content.pickDistractors
 import com.ktouchie.quizportugues.content.vocabularyQuizItems
 import com.ktouchie.quizportugues.data.AppDatabase
 import com.ktouchie.quizportugues.data.GamificationRepository
@@ -116,18 +117,16 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
     }
 
     private fun buildQuestion(item: VocabularyQuizItem): VocabQuestion {
-        val sameCategoryDistractors = allItems
-            .filter { it.category == item.category && it.id != item.id }
-            .shuffled()
-            .take(DISTRACTOR_COUNT)
-        val distractors = if (sameCategoryDistractors.size == DISTRACTOR_COUNT) {
-            sameCategoryDistractors
-        } else {
-            // Category too small — fall back to any other item in the module.
-            allItems.filter { it.id != item.id }.shuffled().take(DISTRACTOR_COUNT)
-        }
-        val options = (distractors.map { it.english } + item.english).shuffled()
-        return VocabQuestion(item, options)
+        // Same category first, topped up from the rest of the module when the category is small.
+        val others = allItems.filter { it.id != item.id }
+        val distractors = pickDistractors(
+            correct = item.english,
+            pools = listOf(
+                others.filter { it.category == item.category }.map { it.english },
+                others.filter { it.category != item.category }.map { it.english },
+            ),
+        )
+        return VocabQuestion(item, (distractors + item.english).shuffled())
     }
 
     fun onAnswerSelected(selected: String) {
@@ -191,6 +190,5 @@ class VocabularySessionViewModel(application: Application) : AndroidViewModel(ap
 
     companion object {
         const val QUICK_PRACTICE_CAP = 12
-        private const val DISTRACTOR_COUNT = 3
     }
 }

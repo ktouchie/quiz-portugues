@@ -1,4 +1,4 @@
-import { addSelectAll } from './common.js';
+import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { buildOptions } from './practice.js';
@@ -30,9 +30,7 @@ export class VocabQuiz extends QuizBase {
     }
 
     getSelectedItems() {
-        const selectedCategories = Array.from(
-            document.querySelectorAll('#categories input:checked')
-        ).map(i => i.value);
+        const selectedCategories = getCheckedValues('categories');
 
         if (selectedCategories.length === 0) {
             alert('Por favor, selecione pelo menos uma categoria.');

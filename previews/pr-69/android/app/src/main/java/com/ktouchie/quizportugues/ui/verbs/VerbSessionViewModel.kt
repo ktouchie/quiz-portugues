@@ -24,6 +24,9 @@ sealed interface VerbSessionUiState {
 
     data class InProgress(
         val item: VerbQuizItem,
+        /** Increases with every question shown, even when a missed item comes straight back, so
+         *  the screen can reset the answer field per question rather than per item. */
+        val questionSerial: Int,
         val questionNumber: Int,
         val totalQuestions: Int,
         val correctCount: Int,
@@ -65,6 +68,7 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
     private var totalQuestions = 0
     private var correctCount = 0
     private var errorCount = 0
+    private var questionsShown = 0
     private val mistakeCounts = mutableMapOf<String, Int>() // item id -> times gotten wrong
     private var startedAt = 0L
 
@@ -101,8 +105,10 @@ class VerbSessionViewModel(application: Application) : AndroidViewModel(applicat
             finishSession()
             return
         }
+        questionsShown++
         _uiState.value = VerbSessionUiState.InProgress(
             item = item,
+            questionSerial = questionsShown,
             questionNumber = totalQuestions - pool.size + 1,
             totalQuestions = totalQuestions,
             correctCount = correctCount,

@@ -70,6 +70,17 @@ export function addSelectAll(containerId) {
     });
 }
 
+/**
+ * Values of the ticked checkboxes in a container, leaving out its "Selecionar tudo" box.
+ * @param {string} containerId
+ * @returns {string[]}
+ */
+export function getCheckedValues(containerId) {
+    return Array.from(
+        document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked:not(#${containerId}-select-all)`),
+    ).map(input => input.value);
+}
+
 export function updateBestScore(storageKey, score) {
     const prev = parseInt(localStorage.getItem(storageKey), 10);
     const isRecord = isNaN(prev) || score > prev;
