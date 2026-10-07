@@ -16,9 +16,9 @@ class DistractorsTest {
 
     @Test
     fun neverOffersTheSameTranslationTwice() {
-        // baixo and curto are both "short" in vocabulary.json's Adjetivos.
-        val picked = pickDistractors("tall", listOf(listOf("short", "short", "Short", "long")))
-        assertEquals(listOf("long", "short"), picked.map { it.lowercase() }.sorted())
+        // sete e meia and dezanove e trinta are both "seven thirty" in vocabulary.json.
+        val picked = pickDistractors("eight", listOf(listOf("seven thirty", "seven thirty", "Seven thirty", "nine")))
+        assertEquals(listOf("nine", "seven thirty"), picked.map { it.lowercase() }.sorted())
     }
 
     @Test

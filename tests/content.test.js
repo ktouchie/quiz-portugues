@@ -82,6 +82,28 @@ describe('vocabulary.json', () => {
         expect(all).not.toHaveProperty('bom aproveito');
         expect(all.madrugada).not.toMatch(/dusk/);
     });
+
+    it('never gives two different words the same English, except agreed interchangeable pairs', () => {
+        // Asked English → Portuguese, either word in an agreed pair is accepted. Any other clash
+        // needs a bracketed note to tell the words apart, like "short (height)" for baixo.
+        const interchangeable = [['dezanove e trinta', 'sete e meia']];
+        const byEnglish = {};
+        for (const words of Object.values(vocab)) {
+            for (const [pt, en] of Object.entries(words)) {
+                (byEnglish[en.trim().toLowerCase()] ??= new Set()).add(pt);
+            }
+        }
+        const clashes = Object.values(byEnglish).filter(words => words.size > 1).map(words => [...words].sort());
+        expect(clashes).toEqual(interchangeable);
+    });
+
+    it('tells baixo from curto and atrás from costas', () => {
+        const all = Object.assign({}, ...Object.values(vocab));
+        expect(all.baixo).toBe('short (height)');
+        expect(all.curto).toBe('short (length)');
+        expect(all['atrás']).toBe('behind');
+        expect(all.costas).toBe('back (body)');
+    });
 });
 
 describe('category-based content files', () => {

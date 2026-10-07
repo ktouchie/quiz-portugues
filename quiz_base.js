@@ -1,7 +1,7 @@
 import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore } from './common.js';
 import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems, isReadyForTyping } from './srs.js';
 import { updateStreak, checkMilestone, showMilestoneBanner } from './gamification.js';
-import { buildQuickPracticePool } from './practice.js';
+import { buildQuickPracticePool, answerMatches } from './practice.js';
 
 /**
  * @typedef {{ timerInterval: number|null, elapsedTime: number, timerDisplay: HTMLElement|null }} TimerState
@@ -90,6 +90,14 @@ export class QuizBase {
      * @returns {HTMLLIElement}
      */
     formatMistake(_key, _count, _index) { throw new Error('formatMistake() not implemented'); }
+
+    /**
+     * Optional: every answer that counts as right for the given key. Defaults to the one correct
+     * answer; vocabulary adds other words with the same meaning.
+     * @param {string} key
+     * @returns {string[]}
+     */
+    getAcceptedAnswers(key) { return [this.getCorrectAnswer(key)]; }
 
     /**
      * Optional: return a grammar hint string for the given key, or null.
@@ -262,9 +270,8 @@ export class QuizBase {
     /** @param {string} [chosen] - the tapped option; defaults to the typed answer */
     submitAnswer(chosen) {
         const raw = typeof chosen === 'string' ? chosen : document.getElementById('answer').value;
-        const userAnswer = raw.trim().toLowerCase().normalize('NFC');
         const correctAnswer = this.getCorrectAnswer(this.currentKey);
-        const isCorrect = userAnswer === correctAnswer.toLowerCase().normalize('NFC');
+        const isCorrect = this.getAcceptedAnswers(this.currentKey).some(answer => answerMatches(raw, answer));
 
         const feedbackEl = document.getElementById('feedback');
         feedbackEl.textContent = '';

@@ -9,8 +9,9 @@ const val DISTRACTOR_COUNT = 3
  * Picks up to [DISTRACTOR_COUNT] wrong options for a multiple-choice question, same rule as the
  * web app's `buildOptions` in practice.js: candidates from [pools] in order (each pool shuffled),
  * skipping any that read the same as the correct answer or as an option already picked, ignoring
- * case. Different words can share a translation (baixo and curto are both "short"), so without
- * this a question could show the same option twice, or the right answer as a "wrong" one.
+ * case. Different words can share a translation (sete e meia and dezanove e trinta are both
+ * "seven thirty"), so without this a question could show the same option twice, or the right
+ * answer as a "wrong" one.
  */
 fun pickDistractors(correct: String, pools: List<List<String>>, random: Random = Random.Default): List<String> {
     val seen = mutableSetOf(correct.normalised())

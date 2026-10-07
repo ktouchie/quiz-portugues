@@ -72,6 +72,20 @@ export function buildGatedQuickPracticePool(items, dueKeys, srsState, levelOf, c
 const normalise = (text) => text.trim().toLowerCase().normalize('NFC');
 
 /**
+ * Whether a typed answer matches the expected one, ignoring case, surrounding spaces and Unicode
+ * form. A bracketed note at the end of the expected answer is optional: it tells two words apart
+ * when they're the prompt ("short (height)" → baixo, "short (length)" → curto), but "short" alone
+ * is a right answer when translating either into English. Same rule as Android's answersMatch.
+ * @param {string} given
+ * @param {string} expected
+ * @returns {boolean}
+ */
+export function answerMatches(given, expected) {
+    const answer = normalise(given);
+    return answer === normalise(expected) || answer === normalise(expected.replace(/\s*\([^)]*\)\s*$/, ''));
+}
+
+/**
  * Builds the options for a multiple-choice question: the correct answer plus up to
  * DISTRACTOR_COUNT wrong answers, taken from `pools` in order (each pool shuffled), so the most
  * confusable candidates come first. Candidates that read the same as the correct answer or as

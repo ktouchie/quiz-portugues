@@ -29,4 +29,17 @@ class AnswerMatchingTest {
     fun `does not match a genuinely different answer`() {
         assertFalse(answersMatch("comi", "como"))
     }
+
+    @Test
+    fun `a bracketed note on the correct answer is optional`() {
+        assertTrue(answersMatch("short", "short (height)"))
+        assertTrue(answersMatch("Short (height)", "short (height)"))
+        assertTrue(answersMatch("class", "class (subject)"))
+    }
+
+    @Test
+    fun `a different bracketed note is still wrong`() {
+        assertFalse(answersMatch("short (length)", "short (height)"))
+        assertFalse(answersMatch("height", "short (height)"))
+    }
 }

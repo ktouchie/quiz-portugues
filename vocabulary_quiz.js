@@ -72,8 +72,10 @@ export class VocabQuiz extends QuizBase {
         const [, ptWord, enWord] = key.split('|||');
         const prompt = this.ENtoPT ? enWord : ptWord;
         const answerOf = (item) => (this.ENtoPT ? item.ptWord : item.enWord);
+        // Words with the same English are right answers too (see getAcceptedAnswers), so they're
+        // never offered as wrong options.
         const ranked = this.getAllItems()
-            .filter(item => item.key !== key)
+            .filter(item => item.key !== key && !sameMeaning(item.enWord, enWord))
             .map(item => ({
                 answer: answerOf(item),
                 score: Math.max(stringSimilarity(ptWord, item.ptWord), stringSimilarity(prompt, answerOf(item))),
@@ -113,6 +115,18 @@ export class VocabQuiz extends QuizBase {
         return this.ENtoPT ? ptWord : enWord;
     }
 
+    /**
+     * Asked English → Portuguese, any word with the same English is right: "seven thirty" is both
+     * sete e meia and dezanove e trinta. Words that only differ by a bracketed note, like
+     * "short (height)" and "short (length)", are different words.
+     */
+    getAcceptedAnswers(key) {
+        if (!this.ENtoPT) return [this.getCorrectAnswer(key)];
+        const [, ptWord, enWord] = key.split('|||');
+        const synonyms = this.getAllItems().filter(item => sameMeaning(item.enWord, enWord)).map(item => item.ptWord);
+        return [ptWord, ...synonyms.filter(word => word !== ptWord)];
+    }
+
     getLabel(key) {
         const [, ptWord, enWord] = key.split('|||');
         return `${ptWord} ↔ ${enWord}`;
@@ -133,6 +147,10 @@ export class VocabQuiz extends QuizBase {
         li.append(` (${count} erro${count > 1 ? 's' : ''})`);
         return li;
     }
+}
+
+function sameMeaning(a, b) {
+    return a.trim().toLowerCase() === b.trim().toLowerCase();
 }
 
 function _strong(parent, text) {

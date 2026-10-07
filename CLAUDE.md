@@ -49,7 +49,7 @@ npm run lint
 
 **Data files:**
 - `verbs.json` — `{ verbName: { regular, difficulty, tense: [...5 forms...], exemplos: { presente: [...], pretérito: [...] } } }` — 26 conjugation verbs; `difficulty`: `"beginner" | "intermediate" | "advanced"`; `exemplos` on 16 high-frequency verbs
-- `vocabulary.json` — `{ category: { portuguese: "english" } }`; 31 categories, ~548 words
+- `vocabulary.json` — `{ category: { portuguese: "english" } }`; 31 categories, ~548 words. Two different Portuguese words never share an English translation (a content test enforces it) — tell them apart with a trailing bracketed note, e.g. baixo `"short (height)"` / curto `"short (length)"`; the note is optional in typed English answers (`answerMatches` / Android `answersMatch`). The only agreed exception is sete e meia / dezanove e trinta ("seven thirty"): asked English → Portuguese, either is accepted and neither is offered as a wrong option for the other
 - `gender_quiz.json` — `{ category: [{ masculine, feminine, plural, english }] }`; 4 categories, 53 words, 102 quiz items
 - `ser_estar_ficar.json` — `{ category: [{ sentence, answer, hint, english }] }`; 4 categories, 38 items
 - `contractions.json` — `{ category: [{ parts: [prep, article], answer, example, english, hint }] }`; 8 categories, 39 items

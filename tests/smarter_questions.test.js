@@ -7,7 +7,7 @@ import {
     unlockedTiers, verbItemLevel, vocabularyCategoryLevel,
 } from '../cefr.js';
 import { TENSE_LABELS } from '../config.js';
-import { buildGatedQuickPracticePool, stringSimilarity, QUICK_PRACTICE_CAP } from '../practice.js';
+import { answerMatches, buildGatedQuickPracticePool, stringSimilarity, QUICK_PRACTICE_CAP } from '../practice.js';
 import { isReadyForTyping, sm2 } from '../srs.js';
 import { QuizBase } from '../quiz_base.js';
 import { VerbQuiz } from '../script.js';
@@ -289,5 +289,66 @@ describe('VocabQuiz options', () => {
         const categories = Object.values(quiz.itemData).map(i => i.category);
         expect(categories).toHaveLength(QUICK_PRACTICE_CAP);
         expect(categories.every(c => vocabularyCategoryLevel(c) === 'A1')).toBe(true);
+    });
+});
+
+describe('answers that share a meaning', () => {
+    const VOCAB = {
+        Adjetivos: { baixo: 'short (height)', curto: 'short (length)', alto: 'tall' },
+        'Horas do Dia': { 'sete e meia': 'seven thirty', 'dezanove e trinta': 'seven thirty', 'oito horas': 'eight o\'clock' },
+        Cores: { azul: 'blue', verde: 'green', preto: 'black' },
+    };
+
+    function makeVocab(ENtoPT) {
+        const quiz = new VocabQuiz();
+        quiz.data = VOCAB;
+        quiz.ENtoPT = ENtoPT;
+        return quiz;
+    }
+
+    it('makes a bracketed note optional in a typed answer', () => {
+        expect(answerMatches('short', 'short (height)')).toBe(true);
+        expect(answerMatches(' Short (Height) ', 'short (height)')).toBe(true);
+        expect(answerMatches('class', 'class (subject)')).toBe(true);
+        expect(answerMatches('short (length)', 'short (height)')).toBe(false);
+        expect(answerMatches('height', 'short (height)')).toBe(false);
+    });
+
+    it('accepts "short" for baixo and for curto when asked in English', () => {
+        const quiz = makeVocab(false);
+        expect(quiz.getAcceptedAnswers('Adjetivos|||baixo|||short (height)').some(a => answerMatches('short', a))).toBe(true);
+        expect(quiz.getAcceptedAnswers('Adjetivos|||curto|||short (length)').some(a => answerMatches('short', a))).toBe(true);
+    });
+
+    it('keeps baixo and curto apart when asked in Portuguese', () => {
+        const quiz = makeVocab(true);
+        expect(quiz.getAcceptedAnswers('Adjetivos|||baixo|||short (height)')).toEqual(['baixo']);
+    });
+
+    it('accepts either sete e meia or dezanove e trinta for "seven thirty"', () => {
+        const quiz = makeVocab(true);
+        expect(new Set(quiz.getAcceptedAnswers('Horas do Dia|||sete e meia|||seven thirty')))
+            .toEqual(new Set(['sete e meia', 'dezanove e trinta']));
+    });
+
+    it('never offers the other "seven thirty" as a wrong option', () => {
+        const quiz = makeVocab(true);
+        for (let run = 0; run < 20; run++) {
+            const options = quiz.getOptions('Horas do Dia|||sete e meia|||seven thirty');
+            expect(options).toContain('sete e meia');
+            expect(options).not.toContain('dezanove e trinta');
+        }
+    });
+
+    it('marks the other "seven thirty" right when it is typed', () => {
+        setupDOM();
+        vi.useFakeTimers();
+        const quiz = makeVocab(true);
+        quiz.timerState.timerDisplay = document.getElementById('timer-display');
+        quiz.srsState['Horas do Dia|||sete e meia|||seven thirty'] = { repetitions: 3, interval: 8, easeFactor: 2.5, nextReview: 0 };
+        quiz.startQuiz([{ key: 'Horas do Dia|||sete e meia|||seven thirty' }]);
+        quiz.submitAnswer('dezanove e trinta');
+        vi.useRealTimers();
+        expect(quiz.correctCount).toBe(1);
     });
 });
