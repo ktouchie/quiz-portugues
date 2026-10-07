@@ -2,7 +2,7 @@ import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { getGenderHint } from './grammar_hints.js';
 
-class GenderQuiz extends QuizBase {
+export class GenderQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.gender);
     }
