@@ -118,8 +118,8 @@ val VOCABULARY_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
     "Natureza" to B2,
     "Verbos" to B2,
     // No category is tagged C1/C2 yet — reserved for future vocabulary expansion (idiomatic and
-    // register-specific sets). ContentProgression.unlockedTiers() auto-unlocks an empty tier so
-    // this doesn't block anything.
+    // register-specific sets). ContentProgression.unlockedCheckpoints() auto-unlocks an empty
+    // checkpoint so this doesn't block anything.
 )
 
 /**
@@ -234,3 +234,49 @@ fun cefrLevelOf(item: SubjunctiveQuizItem): CefrLevel = subjunctiveCategoryCefrL
 fun cefrLevelOf(item: IndirectSpeechQuizItem): CefrLevel = B1
 
 fun cefrLevelOf(item: ContractionQuizItem): CefrLevel = contractionsCategoryCefrLevel(item.category)
+
+// ── Checkpoints (docs/MOBILE_APP_SPEC.md §9) ────────────────────────────────────────────────
+//
+// A checkpoint's rank breaks ties between checkpoints that land on the same effective CEFR level
+// — e.g. "presente" for a brand-new A2 verb and "pretérito" for an already-known A1 verb can both
+// be effective-level A2, but they're deliberately separate checkpoints so one unlocks before the
+// other rather than both opening at once. Rank is just each tense/category's position in its
+// CEFR map above (already ordered by how early Portuguese courses introduce it), computed once so
+// `checkpointOf` doesn't re-scan the map per item.
+
+private val TENSE_RANK: Map<String, Int> = TENSE_CEFR_LEVEL.keys.withIndex().associate { (i, t) -> t to i }
+private val VOCABULARY_CATEGORY_RANK: Map<String, Int> =
+    VOCABULARY_CATEGORY_CEFR_LEVEL.keys.withIndex().associate { (i, c) -> c to i }
+private val GENDER_CATEGORY_RANK: Map<String, Int> =
+    GENDER_CATEGORY_CEFR_LEVEL.keys.withIndex().associate { (i, c) -> c to i }
+private val SER_ESTAR_FICAR_CATEGORY_RANK: Map<String, Int> =
+    SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL.keys.withIndex().associate { (i, c) -> c to i }
+private val CONTRACTIONS_CATEGORY_RANK: Map<String, Int> =
+    CONTRACTIONS_CATEGORY_CEFR_LEVEL.keys.withIndex().associate { (i, c) -> c to i }
+private val SUBJUNCTIVE_CATEGORY_RANK: Map<String, Int> =
+    SUBJUNCTIVE_CATEGORY_CEFR_LEVEL.keys.withIndex().associate { (i, c) -> c to i }
+
+/** Grouped by tense (docs/MOBILE_APP_SPEC.md §9): every verb's forms in a given tense are one
+ *  checkpoint, so e.g. all A1 verbs' "presente" forms must be mastered before "pretérito"/
+ *  "imperfeito"/"imperativo" (or a new verb's "presente") opens up. */
+fun checkpointOf(item: VerbQuizItem): Checkpoint =
+    Checkpoint(cefrLevelOf(item), TENSE_RANK.getValue(item.tense), item.tense)
+
+fun checkpointOf(item: VocabularyQuizItem): Checkpoint =
+    Checkpoint(cefrLevelOf(item), VOCABULARY_CATEGORY_RANK.getValue(item.category), item.category)
+
+fun checkpointOf(item: GenderQuizItem): Checkpoint =
+    Checkpoint(cefrLevelOf(item), GENDER_CATEGORY_RANK.getValue(item.category), item.category)
+
+fun checkpointOf(item: SerEstarFicarQuizItem): Checkpoint =
+    Checkpoint(cefrLevelOf(item), SER_ESTAR_FICAR_CATEGORY_RANK.getValue(item.category), item.category)
+
+fun checkpointOf(item: ContractionQuizItem): Checkpoint =
+    Checkpoint(cefrLevelOf(item), CONTRACTIONS_CATEGORY_RANK.getValue(item.category), item.category)
+
+fun checkpointOf(item: SubjunctiveQuizItem): Checkpoint =
+    Checkpoint(cefrLevelOf(item), SUBJUNCTIVE_CATEGORY_RANK.getValue(item.category), item.category)
+
+/** No categories to sub-divide (see [cefrLevelOf]'s own note) — the whole module is one
+ *  checkpoint, same as it was one tier. */
+fun checkpointOf(item: IndirectSpeechQuizItem): Checkpoint = Checkpoint(cefrLevelOf(item), 0, "indirect_speech")

@@ -10,8 +10,8 @@ import org.junit.Test
  * module directory, android/app, as the working directory — two levels up is the repo root) —
  * not the AssetManager-based [loadVerbEntries]/[loadVocabularyEntries], which need a real Android
  * runtime. This is a coverage guard, not a content test: every verb the quiz actually uses and
- * every vocabulary category must have a CEFR tag, or [unlockedTiers] can't gate it — so adding
- * new content without tagging it here should fail CI, not silently fall through.
+ * every vocabulary category must have a CEFR tag, or [unlockedCheckpoints] can't gate it — so
+ * adding new content without tagging it here should fail CI, not silently fall through.
  */
 class CefrTiersTest {
 
@@ -101,6 +101,29 @@ class CefrTiersTest {
         // "vir" is C2 even in presente, its simplest tense — a beginner still doesn't know "vir".
         val item = verbItem(verb = "vir", tense = "presente")
         assertEquals(CefrLevel.C2, cefrLevelOf(item))
+    }
+
+    @Test
+    fun `two tenses sharing an effective CEFR level get distinct checkpoints`() {
+        // "falar" (A1) in pretérito and "comer" (A2) in presente both land on effective level A2
+        // (max of verb/tense), but they're different tenses — checkpointOf must keep them as
+        // separate checkpoints (different rank) so one tense is mastered before the other opens,
+        // not a single merged A2 bucket.
+        val falarPreterito = verbItem(verb = "falar", tense = "pretérito")
+        val comerPresente = verbItem(verb = "comer", tense = "presente")
+        val falarCheckpoint = checkpointOf(falarPreterito)
+        val comerCheckpoint = checkpointOf(comerPresente)
+
+        assertEquals(CefrLevel.A2, falarCheckpoint.level)
+        assertEquals(CefrLevel.A2, comerCheckpoint.level)
+        assertTrue("Same-level checkpoints for different tenses must not collide", falarCheckpoint != comerCheckpoint)
+    }
+
+    @Test
+    fun `the same tense and effective level always produces the same checkpoint`() {
+        val falarPreterito = verbItem(verb = "falar", tense = "pretérito")
+        val tiPreterito = verbItem(verb = "ter", tense = "pretérito") // "ter" is also A1
+        assertEquals(checkpointOf(falarPreterito), checkpointOf(tiPreterito))
     }
 
     private fun verbItem(verb: String, tense: String) = VerbQuizItem(

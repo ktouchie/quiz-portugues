@@ -223,23 +223,32 @@ broaden which content is in play as the learner shows they've got the current se
 ask for typed recall once an individual item is genuinely well-known — not as a blanket property of
 "being a verb question."
 
-**Content breadth — CEFR tiers.** Every verb, every conjugation *tense*, and every vocabulary
-category carries a hand-assigned CEFR level (A1–C2), defined Android-side in `content/CefrTiers.kt`
-— an enrichment layer over the existing content JSON, not a change to it, so
-`verbs.json`/`vocabulary.json` and the web app's `difficulty` field/adaptive-difficulty filter are
-untouched. A verb conjugation item's effective level is the *harder* of its verb's level and its
-tense's level (`TENSE_CEFR_LEVEL`, e.g. presente = A1, futuro/condicional/conjuntivo = B1,
+**Content breadth — CEFR-ordered checkpoints.** Every verb, every conjugation *tense*, and every
+category across all seven modules carries a hand-assigned CEFR level (A1–C2), defined Android-side
+in `content/CefrTiers.kt` — an enrichment layer over the existing content JSON, not a change to it,
+so `verbs.json`/`vocabulary.json`/etc. and the web app's `difficulty` field/adaptive-difficulty
+filter are untouched. A verb conjugation item's effective level is the *harder* of its verb's level
+and its tense's level (`TENSE_CEFR_LEVEL`, e.g. presente = A1, futuro/condicional/conjuntivo = B1,
 infinitivo pessoal = C1) — verb frequency and tense complexity are independent axes, so an A1 verb
 like "falar" still has its conjuntivo/mais-que-perfeito forms gated behind B1/B2 rather than opening
 up on day one just because the verb itself is elementary. (An earlier version of this only tagged
 the verb, not the tense — a real bug caught after the first Quick Practice session surfaced
-subjunctive/pluperfect forms of basic verbs to a brand-new learner.) `content/ContentProgression.kt`'s
-`unlockedTiers()` opens tiers sequentially: A1 is always unlocked, and each next tier unlocks once
-≥80% of the current tier's items have been reviewed correctly at least once (the same "seen" bar
-gamification's mastered-count uses). An empty tier (no content assigned yet, e.g. vocabulary's
-C1/C2 today) unlocks automatically rather than permanently blocking everything after it — the six
-levels are a growth path for content the app doesn't fully populate yet, not a requirement that it
-does.
+subjunctive/pluperfect forms of basic verbs to a brand-new learner.)
+
+Progression opens in **checkpoints**, not whole CEFR levels at once (`content/ContentProgression.kt`'s
+`Checkpoint`/`unlockedCheckpoints()`) — product feedback after using the shipped v1 tiering: a
+single CEFR level groups multiple tenses/categories together (e.g. A2 covers both an A1 verb's
+pretérito/imperfeito/imperativo *and* a new A2 verb's presente), so opening the whole level at once
+meant jumping between several unrelated tenses before mastering any one of them. A checkpoint is one
+tense (Verb Conjugation) or one category (every other module) at one effective CEFR level; within a
+shared level, checkpoints unlock one at a time in a fixed rank order (each tense/category's position
+in its `CefrTiers.kt` map, already ordered by how early Portuguese courses introduce it). The first
+checkpoint is always unlocked; each next one unlocks once ≥80% of the *current* checkpoint's items
+have crossed `isReadyForTyping()` (§7's typing-readiness bar — "mastered", not merely "seen", is
+what earns the next slice of content). An empty checkpoint (no content assigned yet, e.g.
+vocabulary's unused C1/C2 levels) unlocks automatically rather than permanently blocking everything
+after it — CEFR levels are a growth path for content the app doesn't fully populate yet, not a
+requirement that it does.
 
 **Input modality — typing readiness.** Independently of content breadth, each item that's actually
 in play renders multiple-choice or typed based on `isReadyForTyping()` (§7) on that item's own SRS
@@ -297,6 +306,11 @@ one-time celebratory banner, and the home screen shows streak + mastered count e
 **Game feel — minimal for v1** (per product decision): a haptic tick (Android `Vibrator`/
 `HapticFeedbackConstants`, correct vs. wrong distinguishable) plus a basic scale/color transition
 on the feedback state. No sound design, no XP/combo meter, no confetti — those are backlog (§13).
+
+**Settings — reset for testing.** A gear icon on Home opens a Settings screen with one action:
+wipe every Room table (SRS records, best scores, streak, milestones) via `clearAllTables()`, behind
+a confirmation dialog. This is the only way back to a genuinely from-scratch state while manually
+testing content progression repeatedly — short of uninstalling the app.
 
 ## 11. Theming
 
@@ -466,7 +480,7 @@ Committed ahead of this spec, since they affect data both apps will share:
 | Release timing | Play Store release (signed build, store listing, icon/splash — epic #12) explicitly deferred until the full seven-module app is built and tested through several rounds from the phone | Product owner |
 | Backend/sync | None — local only (Room) | Product owner |
 | Input model | Mastery-gated per item: multiple-choice until an item is typing-ready (§9), then typed; no custom accent bar, relies on the device keyboard's own accent long-press | Product owner, after using the shipped v1 modules |
-| Content progression | CEFR tiers (A1–C2), sequential unlock at 80% "seen" per tier, Android-only enrichment layer over the shared content JSON | Product owner |
+| Content progression | CEFR-ordered checkpoints (one tense/category at a time, not a whole CEFR level at once), sequential unlock at 80% typing-ready "mastered" per checkpoint, Android-only enrichment layer over the shared content JSON | Product owner, after manual testing surfaced tense-jumping within a CEFR level |
 | Visual direction | "Direction A — Warm Encourager" (cream palette, warm amber gradient accent, big soft-rounded cards), chosen from 3 mockup directions | Product owner, from a Claude Design canvas |
 | Monetization | None | Product owner |
 | Notifications | None in v1 | Product owner |
@@ -475,3 +489,4 @@ Committed ahead of this spec, since they affect data both apps will share:
 | Game-feel polish | Minimal (haptics + basic animation) | Product owner |
 | Session design | Quick Practice (capped, SRS-first, interleaved) default; Advanced full setup available | Product owner, synthesizing pedagogy + game-dev reviews |
 | CI pre-release builds | Every push to `main` builds a debug-signed APK as the final CI step, published to a rolling GitHub Release for phone-only installation | Product owner (develops entirely from phone, no desktop in the loop) |
+| Reset-for-testing | A Settings screen (gear icon on Home) wipes every Room table — the only way back to a from-scratch state without reinstalling | Product owner, to re-test content progression repeatedly |

@@ -4,15 +4,15 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.ktouchie.quizportugues.content.CefrLevel
+import com.ktouchie.quizportugues.content.Checkpoint
 import com.ktouchie.quizportugues.content.Difficulty
 import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.VerbQuizItem
 import com.ktouchie.quizportugues.content.answersMatch
-import com.ktouchie.quizportugues.content.cefrLevelOf
+import com.ktouchie.quizportugues.content.checkpointOf
 import com.ktouchie.quizportugues.content.getVerbHint
 import com.ktouchie.quizportugues.content.loadVerbEntries
-import com.ktouchie.quizportugues.content.unlockedTiers
+import com.ktouchie.quizportugues.content.unlockedCheckpoints
 import com.ktouchie.quizportugues.content.verbQuizItems
 import com.ktouchie.quizportugues.data.AppDatabase
 import com.ktouchie.quizportugues.data.GamificationRepository
@@ -56,9 +56,10 @@ sealed interface VerbSessionUiState {
  * retry-in-pool design as [com.ktouchie.quizportugues.ui.vocabulary.VocabularySessionViewModel].
  *
  * Two gates decide what a session looks like (docs/MOBILE_APP_SPEC.md §9):
- *  - **Content breadth**: [unlockedTiers] restricts item selection to CEFR tiers the user has
- *    earned access to, favoring the newest unlocked ("frontier") tier so it crosses its own
- *    unlock threshold rather than always being crowded out by earlier, better-known tiers.
+ *  - **Content breadth**: [unlockedCheckpoints] restricts item selection to checkpoints (tense +
+ *    CEFR level) the user has earned access to, favoring the newest unlocked ("frontier")
+ *    checkpoint so it crosses its own unlock threshold rather than always being crowded out by
+ *    earlier, better-known checkpoints.
  *  - **Input modality**: each selected item independently renders multiple-choice or typed,
  *    decided by [isReadyForTyping] on that item's own SRS record — not a fixed per-module choice.
  *    A wrong typed answer demotes the item back to multiple-choice for free (see Production.kt).
@@ -126,9 +127,9 @@ class VerbSessionViewModel(application: Application, savedStateHandle: SavedStat
     }
 
     private fun buildQuickPracticePool(now: Long): List<VerbQuizItem> {
-        val itemsByLevel: Map<CefrLevel, List<String>> = allItems.groupBy({ cefrLevelOf(it) }, { it.id })
-        val unlocked = unlockedTiers(itemsByLevel, records)
-        val eligible = allItems.filter { cefrLevelOf(it) in unlocked }
+        val itemsByCheckpoint: Map<Checkpoint, List<String>> = allItems.groupBy({ checkpointOf(it) }, { it.id })
+        val unlocked = unlockedCheckpoints(itemsByCheckpoint, records)
+        val eligible = allItems.filter { checkpointOf(it) in unlocked }
 
         val dueIds = records.filterValues { it.nextReview in 1..now }.keys
         val due = eligible.filter { it.id in dueIds }.shuffled()
@@ -136,9 +137,9 @@ class VerbSessionViewModel(application: Application, savedStateHandle: SavedStat
 
         val fillerNeeded = (QUICK_PRACTICE_CAP - capped.size).coerceAtLeast(0)
         val notDue = eligible.filterNot { it.id in dueIds }
-        val frontier = unlocked.maxByOrNull { it.ordinal }
-        val frontierFirst = notDue.filter { cefrLevelOf(it) == frontier }.shuffled()
-        val restNotDue = notDue.filterNot { cefrLevelOf(it) == frontier }.shuffled()
+        val frontier = unlocked.maxOrNull()
+        val frontierFirst = notDue.filter { checkpointOf(it) == frontier }.shuffled()
+        val restNotDue = notDue.filterNot { checkpointOf(it) == frontier }.shuffled()
         val filler = (frontierFirst + restNotDue).take(fillerNeeded)
 
         return capped + filler

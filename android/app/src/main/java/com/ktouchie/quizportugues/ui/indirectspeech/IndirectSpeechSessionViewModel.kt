@@ -4,14 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.ktouchie.quizportugues.content.CefrLevel
+import com.ktouchie.quizportugues.content.Checkpoint
 import com.ktouchie.quizportugues.content.IndirectSpeechQuizItem
 import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.answersMatch
-import com.ktouchie.quizportugues.content.cefrLevelOf
+import com.ktouchie.quizportugues.content.checkpointOf
 import com.ktouchie.quizportugues.content.indirectSpeechQuizItems
 import com.ktouchie.quizportugues.content.loadIndirectSpeechEntries
-import com.ktouchie.quizportugues.content.unlockedTiers
+import com.ktouchie.quizportugues.content.unlockedCheckpoints
 import com.ktouchie.quizportugues.data.AppDatabase
 import com.ktouchie.quizportugues.data.GamificationRepository
 import com.ktouchie.quizportugues.data.SrsRepository
@@ -112,9 +112,9 @@ class IndirectSpeechSessionViewModel(application: Application, savedStateHandle:
     }
 
     private fun buildQuickPracticePool(now: Long): List<IndirectSpeechQuizItem> {
-        val itemsByLevel: Map<CefrLevel, List<String>> = allItems.groupBy({ cefrLevelOf(it) }, { it.id })
-        val unlocked = unlockedTiers(itemsByLevel, records)
-        val eligible = allItems.filter { cefrLevelOf(it) in unlocked }
+        val itemsByCheckpoint: Map<Checkpoint, List<String>> = allItems.groupBy({ checkpointOf(it) }, { it.id })
+        val unlocked = unlockedCheckpoints(itemsByCheckpoint, records)
+        val eligible = allItems.filter { checkpointOf(it) in unlocked }
 
         val dueIds = records.filterValues { it.nextReview in 1..now }.keys
         val due = eligible.filter { it.id in dueIds }.shuffled()

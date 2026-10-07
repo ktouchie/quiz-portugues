@@ -4,16 +4,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.ktouchie.quizportugues.content.CefrLevel
+import com.ktouchie.quizportugues.content.Checkpoint
 import com.ktouchie.quizportugues.content.GenderQuizItem
 import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.answersMatch
-import com.ktouchie.quizportugues.content.cefrLevelOf
+import com.ktouchie.quizportugues.content.checkpointOf
 import com.ktouchie.quizportugues.content.genderQuizItems
 import com.ktouchie.quizportugues.content.getGenderHint
 import com.ktouchie.quizportugues.content.loadGenderEntries
 import com.ktouchie.quizportugues.content.stringSimilarity
-import com.ktouchie.quizportugues.content.unlockedTiers
+import com.ktouchie.quizportugues.content.unlockedCheckpoints
 import com.ktouchie.quizportugues.data.AppDatabase
 import com.ktouchie.quizportugues.data.GamificationRepository
 import com.ktouchie.quizportugues.data.SrsRepository
@@ -117,9 +117,9 @@ class GenderSessionViewModel(application: Application, savedStateHandle: SavedSt
     }
 
     private fun buildQuickPracticePool(now: Long): List<GenderQuizItem> {
-        val itemsByLevel: Map<CefrLevel, List<String>> = allItems.groupBy({ cefrLevelOf(it) }, { it.id })
-        val unlocked = unlockedTiers(itemsByLevel, records)
-        val eligible = allItems.filter { cefrLevelOf(it) in unlocked }
+        val itemsByCheckpoint: Map<Checkpoint, List<String>> = allItems.groupBy({ checkpointOf(it) }, { it.id })
+        val unlocked = unlockedCheckpoints(itemsByCheckpoint, records)
+        val eligible = allItems.filter { checkpointOf(it) in unlocked }
 
         val dueIds = records.filterValues { it.nextReview in 1..now }.keys
         val due = eligible.filter { it.id in dueIds }.shuffled()
@@ -127,9 +127,9 @@ class GenderSessionViewModel(application: Application, savedStateHandle: SavedSt
 
         val fillerNeeded = (QUICK_PRACTICE_CAP - capped.size).coerceAtLeast(0)
         val notDue = eligible.filterNot { it.id in dueIds }
-        val frontier = unlocked.maxByOrNull { it.ordinal }
-        val frontierFirst = notDue.filter { cefrLevelOf(it) == frontier }.shuffled()
-        val restNotDue = notDue.filterNot { cefrLevelOf(it) == frontier }.shuffled()
+        val frontier = unlocked.maxOrNull()
+        val frontierFirst = notDue.filter { checkpointOf(it) == frontier }.shuffled()
+        val restNotDue = notDue.filterNot { checkpointOf(it) == frontier }.shuffled()
         val filler = (frontierFirst + restNotDue).take(fillerNeeded)
 
         return capped + filler
