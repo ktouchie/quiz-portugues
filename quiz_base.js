@@ -1,6 +1,7 @@
 import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore } from './common.js';
 import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems } from './srs.js';
 import { updateStreak, checkMilestone, showMilestoneBanner } from './gamification.js';
+import { buildQuickPracticePool } from './practice.js';
 
 /**
  * @typedef {{ timerInterval: number|null, elapsedTime: number, timerDisplay: HTMLElement|null }} TimerState
@@ -40,6 +41,12 @@ export class QuizBase {
 
         /** @type {string[]|null} keys to use for retry-mistakes session */
         this.retryMistakeKeys = null;
+
+        /** True while running a Quick Practice session (started from the setup screen's button). */
+        this.quickPractice = false;
+
+        /** @type {string[]|null} options shown for the current question, or null when typed */
+        this.currentOptions = null;
 
         /** @type {TimerState} */
         this.timerState = { timerInterval: null, elapsedTime: 0, timerDisplay: null };
@@ -106,6 +113,19 @@ export class QuizBase {
      */
     getLabel(_key) { return _key; }
 
+    /**
+     * Optional: every item in the module, for Quick Practice. Return null to disable it.
+     * @returns {QuizItem[]|null}
+     */
+    getAllItems() { return null; }
+
+    /**
+     * Optional: answer options for a multiple-choice question, or null for a typed answer.
+     * @param {string} _key
+     * @returns {string[]|null}
+     */
+    getOptions(_key) { return null; }
+
     // ── Template hook ────────────────────────────────────────────────────────
 
     /** Override to build setup-screen UI (checkboxes, etc.) after data loads. */
@@ -134,7 +154,11 @@ export class QuizBase {
         this.setupUI();
         this._updateDueCount();
 
-        document.getElementById('start-quiz').addEventListener('click', () => this.startQuiz());
+        document.getElementById('start-quiz').addEventListener('click', () => {
+            this.quickPractice = false;
+            this.startQuiz();
+        });
+        document.getElementById('quick-practice')?.addEventListener('click', () => this.startQuickPractice());
         document.getElementById('submit-answer').addEventListener('click', () => this.submitAnswer());
         document.getElementById('next-question').addEventListener('click', () => this.nextQuestion());
         document.getElementById('restart').addEventListener('click', () => location.reload());
@@ -142,6 +166,8 @@ export class QuizBase {
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Enter') return;
             if (!this.isFeedbackDisplayed) {
+                // Multiple-choice questions are answered by tapping an option, not Enter.
+                if (this.currentOptions) return;
                 document.getElementById('submit-answer').click();
             } else {
                 document.getElementById('next-question').click();
@@ -149,9 +175,20 @@ export class QuizBase {
         });
     }
 
-    startQuiz() {
+    /** Starts a short session over the whole module: due items first, topped up to the cap. */
+    startQuickPractice() {
+        const all = this.getAllItems();
+        if (!all || all.length === 0) return;
+        this.quickPractice = true;
+        this.startQuiz(buildQuickPracticePool(all, new Set(getDueItems(this.srsState))));
+    }
+
+    /** @param {QuizItem[]|null} [explicitItems] - session items; defaults to the setup selection */
+    startQuiz(explicitItems = null) {
         let items;
-        if (this.retryMistakeKeys) {
+        if (explicitItems) {
+            items = explicitItems;
+        } else if (this.retryMistakeKeys) {
             const oldItemData = this.itemData;
             items = this.retryMistakeKeys.map(k => oldItemData[k]).filter(Boolean);
             this.retryMistakeKeys = null;
@@ -198,10 +235,15 @@ export class QuizBase {
         }
         this.isFeedbackDisplayed = false;
 
-        const randomIndex = Math.floor(Math.random() * this.itemsToPractice.length);
-        this.currentKey = this.itemsToPractice[randomIndex];
+        // A missed item stays in the pool, but never comes straight back while others remain:
+        // with multiple choice its answer was just shown.
+        const candidates = this.itemsToPractice.length > 1
+            ? this.itemsToPractice.filter(k => k !== this.currentKey)
+            : this.itemsToPractice;
+        this.currentKey = candidates[Math.floor(Math.random() * candidates.length)];
 
         this.renderQuestion(this.currentKey);
+        this._renderOptions(this.getOptions(this.currentKey));
 
         document.getElementById('answer').value = '';
         const feedbackEl = document.getElementById('feedback');
@@ -210,13 +252,15 @@ export class QuizBase {
         document.getElementById('answer-container').classList.remove('hidden');
         feedbackEl.classList.add('hidden');
         document.getElementById('next-question').classList.add('hidden');
-        document.getElementById('answer').focus();
+        if (!this.currentOptions) document.getElementById('answer').focus();
 
         resumeTimer(this.timerState);
     }
 
-    submitAnswer() {
-        const userAnswer = document.getElementById('answer').value.trim().toLowerCase().normalize('NFC');
+    /** @param {string} [chosen] - the tapped option; defaults to the typed answer */
+    submitAnswer(chosen) {
+        const raw = typeof chosen === 'string' ? chosen : document.getElementById('answer').value;
+        const userAnswer = raw.trim().toLowerCase().normalize('NFC');
         const correctAnswer = this.getCorrectAnswer(this.currentKey);
         const isCorrect = userAnswer === correctAnswer.toLowerCase().normalize('NFC');
 
@@ -335,6 +379,33 @@ export class QuizBase {
     }
 
     // ── Private helpers ──────────────────────────────────────────────────────
+
+    /**
+     * Shows tappable answer options instead of the text box when `options` is given.
+     * @param {string[]|null} options
+     */
+    _renderOptions(options) {
+        this.currentOptions = options && options.length > 0 ? options : null;
+        const container = document.getElementById('answer-container');
+        let list = document.getElementById('options');
+        if (!list) {
+            list = document.createElement('div');
+            list.id = 'options';
+            container.prepend(list);
+        }
+        list.textContent = '';
+        list.classList.toggle('hidden', !this.currentOptions);
+        document.getElementById('answer').classList.toggle('hidden', !!this.currentOptions);
+        document.getElementById('submit-answer').classList.toggle('hidden', !!this.currentOptions);
+        for (const option of this.currentOptions ?? []) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'option';
+            btn.textContent = option;
+            btn.addEventListener('click', () => this.submitAnswer(option));
+            list.appendChild(btn);
+        }
+    }
 
     _updateScoreDisplay() {
         const el = document.getElementById('score-display');

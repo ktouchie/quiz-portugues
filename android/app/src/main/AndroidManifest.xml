@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Haptic feedback on correct/wrong answers (ui/common/Haptics.kt) — not a "normal"
+         permission that's implicitly granted, so lint (correctly) requires it be declared. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

@@ -100,6 +100,34 @@ button:active {
     transform: translateY(0);
 }
 
+/* ── Quick Practice ───────────────────────────────────────── */
+#quick-practice {
+    display: block;
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+/* ── Multiple-choice options ──────────────────────────────── */
+#options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+button.option {
+    background-color: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-align: left;
+}
+
+button.option:hover {
+    background-color: var(--surface);
+    border-color: var(--accent);
+}
+
 /* ── Answer input ─────────────────────────────────────────── */
 #answer-container {
     display: flex;
