@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quiz do Conjuntivo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+<button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
+
+<div id="score-timer-container">
+    <div id="score-display">Corretas: 0 | Erros: 0</div>
+    <div id="timer-display">Tempo: 00:00</div>
+</div>
+
+<a href="index.html" id="back-link">← Menu</a>
+<h1>Quiz do Conjuntivo</h1>
+
+<div id="setup">
+    <p class="setup-hint">Conjugue o verbo indicado no conjuntivo correto. Identifique o gatilho que exige o conjuntivo e escreva a forma verbal adequada.</p>
+    <h2>Categorias</h2>
+    <div id="categories"></div>
+    <p id="srs-due-count" class="srs-due hidden"></p>
+    <button id="start-quiz">Iniciar Quiz</button>
+</div>
+
+<div id="quiz" class="hidden">
+    <p id="question"></p>
+    <div id="answer-container">
+        <input type="text" id="answer" autocomplete="off" placeholder="escreva a forma verbal">
+        <button id="submit-answer">Enviar</button>
+    </div>
+    <p class="keyboard-hint">Pressione Enter para enviar</p>
+    <div id="feedback-progress-container">
+        <p id="feedback" class="hidden"></p>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="progress-info">
+            <p id="progress-percentage"></p>
+            <p id="mastery-counter"></p>
+        </div>
+        <button id="next-question" class="hidden">Próxima</button>
+    </div>
+</div>
+
+<div id="result" class="hidden">
+    <h2>Parabéns! Completou todos os exercícios.</h2>
+    <p id="total-score"></p>
+    <p id="quiz-time"></p>
+    <p id="accuracy"></p>
+    <p id="best-score"></p>
+    <h3>Erros mais comuns</h3>
+    <ol id="top-mistakes"></ol>
+    <div id="result-buttons">
+        <button id="retry-mistakes" class="hidden">Praticar erros</button>
+        <button id="restart">Reiniciar Quiz</button>
+        <a href="index.html"><button>← Menu principal</button></a>
+    </div>
+</div>
+
+<div id="footer">
+    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
+        Compre-me um pastel de nata
+    </a>
+    <div id="version-container">
+        Version: <span id="version"></span>
+    </div>
+</div>
+
+<script type="module" src="subjunctive_quiz.js"></script>
+</body>
+</html>
