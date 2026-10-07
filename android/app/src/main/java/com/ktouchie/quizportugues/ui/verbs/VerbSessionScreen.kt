@@ -122,8 +122,9 @@ private fun InProgressContent(
             prompt = "${state.item.person} ___",
         )
 
-        // Keyed on the item id so input state resets when a new question appears.
-        key(state.item.id) {
+        // Keyed per question, not per item: a missed last item comes straight back with the same
+        // id, and the answer field must not still hold the wrong answer.
+        key(state.questionSerial) {
             when (state.modality) {
                 QuestionModality.TYPED -> TypedAnswerInput(
                     enabled = state.feedback == null,

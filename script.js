@@ -1,4 +1,4 @@
-import { addSelectAll } from './common.js';
+import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { PERSONS, TENSE_LABELS, STORAGE_KEYS } from './config.js';
 import { getVerbHint } from './grammar_hints.js';
@@ -80,9 +80,7 @@ export class VerbQuiz extends QuizBase {
     }
 
     getSelectedItems() {
-        this.selectedTenses = Array.from(
-            document.querySelectorAll('#tenses input:checked')
-        ).map(i => i.value);
+        this.selectedTenses = getCheckedValues('tenses');
 
         if (this.selectedTenses.length === 0) {
             alert('Por favor, selecione pelo menos um tempo verbal.');

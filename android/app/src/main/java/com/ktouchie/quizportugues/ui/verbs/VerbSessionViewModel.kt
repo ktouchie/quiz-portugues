@@ -12,6 +12,7 @@ import com.ktouchie.quizportugues.content.answersMatch
 import com.ktouchie.quizportugues.content.cefrLevelOf
 import com.ktouchie.quizportugues.content.getVerbHint
 import com.ktouchie.quizportugues.content.loadVerbEntries
+import com.ktouchie.quizportugues.content.pickDistractors
 import com.ktouchie.quizportugues.content.unlockedTiers
 import com.ktouchie.quizportugues.content.verbQuizItems
 import com.ktouchie.quizportugues.data.AppDatabase
@@ -33,6 +34,9 @@ sealed interface VerbSessionUiState {
 
     data class InProgress(
         val item: VerbQuizItem,
+        /** Increases with every question shown, even when a missed item comes straight back, so
+         *  the screen can reset the answer field per question rather than per item. */
+        val questionSerial: Int,
         val modality: QuestionModality,
         /** Shuffled answer options; only populated when [modality] is [QuestionModality.MULTIPLE_CHOICE]. */
         val options: List<String> = emptyList(),
@@ -97,6 +101,7 @@ class VerbSessionViewModel(application: Application, savedStateHandle: SavedStat
     private var totalQuestions = 0
     private var correctCount = 0
     private var errorCount = 0
+    private var questionsShown = 0
     private val mistakeCounts = mutableMapOf<String, Int>() // item id -> times gotten wrong
     private var startedAt = 0L
 
@@ -164,8 +169,10 @@ class VerbSessionViewModel(application: Application, savedStateHandle: SavedStat
             return
         }
         val modality = if (isReadyForTyping(records[item.id])) QuestionModality.TYPED else QuestionModality.MULTIPLE_CHOICE
+        questionsShown++
         _uiState.value = VerbSessionUiState.InProgress(
             item = item,
+            questionSerial = questionsShown,
             modality = modality,
             options = if (modality == QuestionModality.MULTIPLE_CHOICE) buildOptions(item) else emptyList(),
             totalQuestions = totalQuestions,
@@ -187,26 +194,17 @@ class VerbSessionViewModel(application: Application, savedStateHandle: SavedStat
         val sameVerbPerson = allItems
             .filter { it.verb == item.verb && it.personIndex == item.personIndex && it.answer != item.answer }
             .map { it.answer }
-            .distinct()
-            .shuffled()
 
         val sameVerbTense = allItems
             .filter { it.verb == item.verb && it.tense == item.tense && it.answer != item.answer }
             .map { it.answer }
-            .distinct()
-            .shuffled()
 
         val fallback = allItems
             .filter { it.tense == item.tense && it.answer != item.answer }
             .map { it.answer }
-            .distinct()
-            .shuffled()
 
-        val distractors = (sameVerbPerson + sameVerbTense + fallback)
-            .distinct()
-            .take(DISTRACTOR_COUNT)
-
-        return (distractors + item.answer).distinct().shuffled()
+        val distractors = pickDistractors(item.answer, listOf(sameVerbPerson, sameVerbTense, fallback))
+        return (distractors + item.answer).shuffled()
     }
 
     fun onAnswerGiven(answer: String) {
@@ -313,6 +311,5 @@ class VerbSessionViewModel(application: Application, savedStateHandle: SavedStat
 
     companion object {
         const val QUICK_PRACTICE_CAP = 12
-        private const val DISTRACTOR_COUNT = 3
     }
 }

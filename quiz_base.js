@@ -237,8 +237,12 @@ export class QuizBase {
         }
         this.isFeedbackDisplayed = false;
 
-        const randomIndex = Math.floor(Math.random() * this.itemsToPractice.length);
-        this.currentKey = this.itemsToPractice[randomIndex];
+        // A missed item stays in the pool, but never comes straight back while others remain:
+        // with multiple choice its answer was just shown.
+        const candidates = this.itemsToPractice.length > 1
+            ? this.itemsToPractice.filter(k => k !== this.currentKey)
+            : this.itemsToPractice;
+        this.currentKey = candidates[Math.floor(Math.random() * candidates.length)];
 
         this.renderQuestion(this.currentKey);
         this._renderOptions(isReadyForTyping(this.srsState[this.currentKey]) ? null : this.getOptions(this.currentKey));

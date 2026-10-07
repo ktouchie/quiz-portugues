@@ -217,3 +217,79 @@ describe('VerbQuiz Quick Practice', () => {
         expect(keys.some(k => k.startsWith('cultivar'))).toBe(false);
     });
 });
+
+describe('fixes from the PR #69 review', () => {
+    beforeEach(() => {
+        setupDOM();
+        localStorage.clear();
+        vi.useFakeTimers();
+    });
+    afterEach(() => vi.useRealTimers());
+
+    it('never asks a missed question again straight away while other items remain', () => {
+        const quiz = new McQuiz();
+        quiz.timerState.timerDisplay = document.getElementById('timer-display');
+        quiz.startQuickPractice();
+        for (let i = 0; i < 30; i++) {
+            const missed = quiz.currentKey;
+            quiz.submitAnswer('wrong 1');
+            quiz.nextQuestion();
+            expect(quiz.currentKey).not.toBe(missed);
+        }
+    });
+
+    it('asks the last item again when it is the only one left', () => {
+        const quiz = new McQuiz();
+        quiz.timerState.timerDisplay = document.getElementById('timer-display');
+        quiz.startQuiz([quiz.all[0]]);
+        quiz.submitAnswer('wrong 1');
+        quiz.nextQuestion();
+        expect(quiz.currentKey).toBe('k0');
+    });
+
+    it('ignores Enter on a multiple-choice question', async () => {
+        document.body.insertAdjacentHTML('beforeend', '<button id="start-quiz"></button><button id="restart"></button>');
+        const quiz = new McQuiz();
+        await quiz.init();
+        quiz.startQuickPractice();
+        document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter' }));
+        expect(quiz.correctCount + quiz.errorCount).toBe(0);
+    });
+
+    it('keeps Portuguese → English multiple choice when retrying Quick Practice mistakes', () => {
+        document.body.insertAdjacentHTML('beforeend', `
+            <p id="total-score"></p><p id="quiz-time"></p><p id="accuracy"></p><p id="best-score"></p>
+            <ol id="top-mistakes"></ol><button id="retry-mistakes" class="hidden"></button>`);
+        const quiz = new VocabQuiz();
+        quiz.data = VOCAB;
+        quiz.timerState.timerDisplay = document.getElementById('timer-display');
+        quiz.startQuickPractice();
+        quiz.submitAnswer('definitely wrong');
+        while (quiz.itemsToPractice.length > 0) {
+            quiz.nextQuestion();
+            quiz.submitAnswer(quiz.getCorrectAnswer(quiz.currentKey));
+        }
+        quiz.nextQuestion(); // ends the session
+        document.getElementById('retry-mistakes').click();
+        expect(quiz.totalNeeded).toBe(1);
+        expect(quiz.ENtoPT).toBe(false);
+        expect(quiz.currentOptions).toHaveLength(4);
+    });
+});
+
+describe('"Selecionar tudo" box', () => {
+    it('is not read as a category when starting a quiz', () => {
+        document.body.innerHTML = '<div id="categories"></div>';
+        const quiz = new VocabQuiz();
+        quiz.data = VOCAB;
+        quiz.setupUI();
+        document.body.insertAdjacentHTML('beforeend', `
+            <input type="radio" name="translation-direction" value="true" checked>`);
+        const selectAll = document.getElementById('categories-select-all');
+        selectAll.checked = true;
+        selectAll.dispatchEvent(new window.Event('change'));
+        const items = quiz.getSelectedItems();
+        expect(items).toHaveLength(7);
+        expect(items.every(i => i.category in VOCAB)).toBe(true);
+    });
+});

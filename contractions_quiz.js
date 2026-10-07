@@ -1,4 +1,4 @@
-import { addSelectAll } from './common.js';
+import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 
@@ -28,9 +28,7 @@ class ContractionsQuiz extends QuizBase {
     }
 
     getSelectedItems() {
-        const selected = Array.from(
-            document.querySelectorAll('#categories input:checked')
-        ).map(i => i.value);
+        const selected = getCheckedValues('categories');
 
         if (selected.length === 0) {
             alert('Por favor, selecione pelo menos uma categoria.');

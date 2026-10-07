@@ -10,6 +10,7 @@ import com.ktouchie.quizportugues.content.VocabularyQuizItem
 import com.ktouchie.quizportugues.content.answersMatch
 import com.ktouchie.quizportugues.content.cefrLevelOf
 import com.ktouchie.quizportugues.content.loadVocabularyEntries
+import com.ktouchie.quizportugues.content.pickDistractors
 import com.ktouchie.quizportugues.content.stringSimilarity
 import com.ktouchie.quizportugues.content.unlockedTiers
 import com.ktouchie.quizportugues.content.vocabularyQuizItems
@@ -39,6 +40,9 @@ sealed interface SessionUiState {
 
     data class InProgress(
         val question: VocabQuestion,
+        /** Increases with every question shown, even when a missed item comes straight back, so
+         *  the screen can reset the answer field per question rather than per item. */
+        val questionSerial: Int,
         val totalQuestions: Int,
         val correctCount: Int,
         val errorCount: Int,
@@ -99,6 +103,7 @@ class VocabularySessionViewModel(application: Application, savedStateHandle: Sav
     private var totalQuestions = 0
     private var correctCount = 0
     private var errorCount = 0
+    private var questionsShown = 0
     private val mistakeCounts = mutableMapOf<String, Int>() // item id -> times gotten wrong
     private var startedAt = 0L
 
@@ -163,8 +168,10 @@ class VocabularySessionViewModel(application: Application, savedStateHandle: Sav
             finishSession()
             return
         }
+        questionsShown++
         _uiState.value = SessionUiState.InProgress(
             question = buildQuestion(item),
+            questionSerial = questionsShown,
             totalQuestions = totalQuestions,
             correctCount = correctCount,
             errorCount = errorCount,
@@ -175,7 +182,7 @@ class VocabularySessionViewModel(application: Application, savedStateHandle: Sav
         val modality = if (isReadyForTyping(records[item.id])) QuestionModality.TYPED else QuestionModality.MULTIPLE_CHOICE
         if (modality == QuestionModality.TYPED) return VocabQuestion(item, modality)
 
-        val options = (confusableDistractors(item).map { it.english } + item.english).shuffled()
+        val options = (confusableDistractors(item) + item.english).shuffled()
         return VocabQuestion(item, modality, options)
     }
 
@@ -187,9 +194,10 @@ class VocabularySessionViewModel(application: Application, savedStateHandle: Sav
      * cross-language look-alikes (e.g. "constipation" as a distractor for "constipação", which
      * actually means "a cold" in EP) via [candidate.english]. The top-scoring
      * [CONFUSABLE_SHORTLIST_SIZE] candidates are shuffled and sampled from, so a given word
-     * doesn't show the identical distractor set on every attempt.
+     * doesn't show the identical distractor set on every attempt; [pickDistractors] skips repeated
+     * translations and tops up from the rest of the ranking if the shortlist runs short.
      */
-    private fun confusableDistractors(item: VocabularyQuizItem): List<VocabularyQuizItem> {
+    private fun confusableDistractors(item: VocabularyQuizItem): List<String> {
         val ranked = allItems
             .filter { it.id != item.id }
             .sortedByDescending { candidate ->
@@ -198,7 +206,11 @@ class VocabularySessionViewModel(application: Application, savedStateHandle: Sav
                     stringSimilarity(item.portuguese, candidate.english),
                 )
             }
-        return ranked.take(CONFUSABLE_SHORTLIST_SIZE).shuffled().take(DISTRACTOR_COUNT)
+            .map { it.english }
+        return pickDistractors(
+            item.english,
+            listOf(ranked.take(CONFUSABLE_SHORTLIST_SIZE), ranked.drop(CONFUSABLE_SHORTLIST_SIZE)),
+        )
     }
 
     fun onAnswerGiven(answer: String) {
@@ -292,7 +304,6 @@ class VocabularySessionViewModel(application: Application, savedStateHandle: Sav
 
     companion object {
         const val QUICK_PRACTICE_CAP = 12
-        private const val DISTRACTOR_COUNT = 3
         private const val CONFUSABLE_SHORTLIST_SIZE = 8
     }
 }
