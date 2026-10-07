@@ -226,8 +226,8 @@ Node), triggered **on every push to `main`**:
      — debug signing is sufficient for sideloading on a personal device with "install from unknown
      sources" enabled; this is deliberately separate from the signed release build in §13/epic
      "Release prep", which is for eventual Play Store submission).
-   - Publish the APK as the asset on a **rolling GitHub Release** (fixed tag, e.g.
-     `android-preview-latest`, marked as a pre-release, asset overwritten each run — via an action
+   - Publish the APK as the asset on a **rolling GitHub Release** ("Latest debug build", fixed tag
+     `latest-debug`, marked as a pre-release, asset overwritten each run — via an action
      like `softprops/action-gh-release` or `ncipollo/release-action` with `GITHUB_TOKEN`, no extra
      secrets needed). This gives a **stable, bookmarkable URL** the product owner can open on their
      phone at any time to download and install the newest build — no need to dig through Actions
