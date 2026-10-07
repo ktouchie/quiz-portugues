@@ -2,7 +2,7 @@ import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { getGenderHint } from './grammar_hints.js';
 
-class GenderQuiz extends QuizBase {
+export class GenderQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.gender);
     }
@@ -30,7 +30,7 @@ class GenderQuiz extends QuizBase {
                     key: `${category}|||${index}|||p`,
                     masculine: word.masculine,
                     english: word.english,
-                    label: 'plural masculino',
+                    label: 'plural',
                     answer: word.plural,
                 });
             });
