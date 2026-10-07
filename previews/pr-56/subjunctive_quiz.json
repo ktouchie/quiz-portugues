@@ -1,0 +1,52 @@
+{
+  "Expressões de vontade e desejo": [
+    { "prompt": "Quero que ele ___ (vir) mais cedo.", "answer": "venha", "trigger": "querer que", "hint": "querer que + conjuntivo presente", "english": "I want him to come earlier." },
+    { "prompt": "Ela deseja que nós ___ (ter) sucesso.", "answer": "tenhamos", "trigger": "desejar que", "hint": "desejar que + conjuntivo presente", "english": "She wishes us success." },
+    { "prompt": "Peço que tu ___ (ser) mais cuidadoso.", "answer": "sejas", "trigger": "pedir que", "hint": "pedir que + conjuntivo presente", "english": "I ask you to be more careful." },
+    { "prompt": "Ele quer que eu ___ (fazer) o relatório.", "answer": "faça", "trigger": "querer que", "hint": "querer que + conjuntivo presente; fazer → faça", "english": "He wants me to do the report." },
+    { "prompt": "Eles preferem que a reunião ___ (ser) amanhã.", "answer": "seja", "trigger": "preferir que", "hint": "preferir que + conjuntivo presente", "english": "They prefer the meeting to be tomorrow." },
+    { "prompt": "Espero que ela ___ (poder) vir.", "answer": "possa", "trigger": "esperar que", "hint": "esperar que + conjuntivo presente; poder → possa", "english": "I hope she can come." },
+    { "prompt": "Sugiro que vocês ___ (ler) o documento.", "answer": "leiam", "trigger": "sugerir que", "hint": "sugerir que + conjuntivo presente", "english": "I suggest you read the document." },
+    { "prompt": "Os pais querem que os filhos ___ (estudar).", "answer": "estudem", "trigger": "querer que", "hint": "querer que + conjuntivo presente", "english": "Parents want their children to study." }
+  ],
+  "Expressões de emoção e sentimento": [
+    { "prompt": "Fico contente que tu ___ (estar) bem.", "answer": "estejas", "trigger": "ficar contente que", "hint": "expressão de emoção + que + conjuntivo", "english": "I'm glad you are well." },
+    { "prompt": "É pena que ele não ___ (poder) ficar.", "answer": "possa", "trigger": "é pena que", "hint": "expressão impessoal de sentimento + conjuntivo", "english": "It's a pity he can't stay." },
+    { "prompt": "Tenho medo que eles ___ (chegar) atrasados.", "answer": "cheguem", "trigger": "ter medo que", "hint": "expressão de emoção negativa + conjuntivo", "english": "I'm afraid they will arrive late." },
+    { "prompt": "É uma pena que ela não ___ (saber) a resposta.", "answer": "saiba", "trigger": "é uma pena que", "hint": "expressão impessoal + conjuntivo; saber → saiba", "english": "It's a shame she doesn't know the answer." },
+    { "prompt": "Fico feliz que vocês ___ (ir) à festa.", "answer": "vão", "trigger": "ficar feliz que", "hint": "expressão de emoção + que + conjuntivo; ir → vão", "english": "I'm happy you are going to the party." },
+    { "prompt": "É triste que as crianças não ___ (brincar) mais.", "answer": "brinquem", "trigger": "é triste que", "hint": "expressão impessoal + conjuntivo", "english": "It's sad that children don't play more." }
+  ],
+  "Expressões de dúvida e incerteza": [
+    { "prompt": "Duvido que ele ___ (dizer) a verdade.", "answer": "diga", "trigger": "duvidar que", "hint": "duvidar que + conjuntivo; dizer → diga", "english": "I doubt he is telling the truth." },
+    { "prompt": "Não acredito que isso ___ (ser) verdade.", "answer": "seja", "trigger": "não acreditar que", "hint": "negação de crença + conjuntivo", "english": "I don't believe that's true." },
+    { "prompt": "É pouco provável que eles ___ (ganhar) o jogo.", "answer": "ganhem", "trigger": "é pouco provável que", "hint": "expressão de baixa probabilidade + conjuntivo", "english": "It's unlikely they'll win the match." },
+    { "prompt": "Não tenho a certeza de que ela ___ (vir).", "answer": "venha", "trigger": "não ter a certeza de que", "hint": "incerteza + conjuntivo; vir → venha", "english": "I'm not sure she will come." },
+    { "prompt": "É improvável que o projeto ___ (estar) pronto.", "answer": "esteja", "trigger": "é improvável que", "hint": "expressão de improvável + conjuntivo", "english": "It's unlikely the project will be ready." }
+  ],
+  "Expressões impessoais de necessidade e obrigação": [
+    { "prompt": "É preciso que tu ___ (trazer) os documentos.", "answer": "tragas", "trigger": "é preciso que", "hint": "é preciso que + conjuntivo; trazer → tragas", "english": "It is necessary for you to bring the documents." },
+    { "prompt": "É necessário que todos ___ (estar) presentes.", "answer": "estejam", "trigger": "é necessário que", "hint": "é necessário que + conjuntivo", "english": "It is necessary for everyone to be present." },
+    { "prompt": "É importante que ele ___ (saber) a verdade.", "answer": "saiba", "trigger": "é importante que", "hint": "é importante que + conjuntivo; saber → saiba", "english": "It is important that he knows the truth." },
+    { "prompt": "É fundamental que nós ___ (chegar) a tempo.", "answer": "cheguemos", "trigger": "é fundamental que", "hint": "é fundamental que + conjuntivo", "english": "It is essential that we arrive on time." },
+    { "prompt": "É bom que ela ___ (descansar) mais.", "answer": "descanse", "trigger": "é bom que", "hint": "é bom que + conjuntivo", "english": "It is good that she rests more." },
+    { "prompt": "Convém que tu ___ (falar) com o diretor.", "answer": "fales", "trigger": "convém que", "hint": "convém que + conjuntivo", "english": "It is advisable for you to speak with the director." }
+  ],
+  "Conjunções temporais e condicionais": [
+    { "prompt": "Avisa-me quando ___ (chegar) a casa.", "answer": "chegares", "trigger": "quando (futuro)", "hint": "quando + conjuntivo pessoal (EP futuro)", "english": "Let me know when you get home." },
+    { "prompt": "Fica aqui até que ele ___ (voltar).", "answer": "volte", "hint": "até que + conjuntivo presente", "trigger": "até que", "english": "Stay here until he returns." },
+    { "prompt": "Logo que ela ___ (terminar), pode sair.", "answer": "termine", "trigger": "logo que", "hint": "logo que + conjuntivo presente (ação futura)", "english": "As soon as she finishes, she can leave." },
+    { "prompt": "Embora ele ___ (estar) cansado, continuou a trabalhar.", "answer": "esteja", "trigger": "embora", "hint": "embora + conjuntivo presente (concessão)", "english": "Although he is tired, he kept working." },
+    { "prompt": "Antes que o comboio ___ (partir), compra o bilhete.", "answer": "parta", "trigger": "antes que", "hint": "antes que + conjuntivo presente", "english": "Before the train leaves, buy the ticket." },
+    { "prompt": "Caso ela ___ (precisar) de ajuda, ligo.", "answer": "precise", "trigger": "caso", "hint": "caso + conjuntivo presente (condição hipotética)", "english": "If she needs help, I'll call." },
+    { "prompt": "Desde que ___ (fazer) sol, vamos à praia.", "answer": "faça", "trigger": "desde que (condição)", "hint": "desde que (= desde que a condição se verifique) + conjuntivo", "english": "As long as it's sunny, we'll go to the beach." },
+    { "prompt": "Só sairei se ___ (acabar) o trabalho a tempo.", "answer": "acabar", "trigger": "se (futuro)", "hint": "se + conjuntivo futuro em EP (infinitivo pessoal / conjuntivo futuro coincidem em muitos verbos)", "english": "I'll only leave if I finish the work in time." }
+  ],
+  "Conjuntivo imperfeito (após expressões de passado)": [
+    { "prompt": "Queria que tu ___ (vir) comigo.", "answer": "viesses", "trigger": "querer (passado) que", "hint": "querer no imperfeito → conjuntivo imperfeito: vir → viesses", "english": "I wanted you to come with me." },
+    { "prompt": "Era preciso que ele ___ (fazer) mais esforço.", "answer": "fizesse", "trigger": "era preciso que", "hint": "expressão impessoal no passado → conjuntivo imperfeito; fazer → fizesse", "english": "It was necessary for him to try harder." },
+    { "prompt": "Preferia que nós ___ (ficar) em casa.", "answer": "ficássemos", "trigger": "preferir (passado) que", "hint": "preferir no imperfeito → conjuntivo imperfeito", "english": "I preferred that we stayed home." },
+    { "prompt": "Ela pediu que eu ___ (ser) discreto.", "answer": "fosse", "trigger": "pedir (passado) que", "hint": "pedir no pretérito → conjuntivo imperfeito; ser → fosse", "english": "She asked me to be discreet." },
+    { "prompt": "Não acreditava que isso ___ (acontecer).", "answer": "acontecesse", "trigger": "não acreditar (passado) que", "hint": "não acreditar no imperfeito → conjuntivo imperfeito", "english": "I didn't believe that would happen." }
+  ]
+}

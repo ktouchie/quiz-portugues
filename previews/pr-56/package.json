@@ -1,0 +1,20 @@
+{
+  "name": "quiz-dos-verbos",
+  "version": "1.0.0",
+  "description": "European Portuguese language learning quizzes",
+  "main": "script.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint ."
+  },
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^9.26.0",
+    "eslint": "^9.26.0",
+    "jsdom": "^26.1.0",
+    "lefthook": "^1.11.12",
+    "vitest": "^3.1.2"
+  }
+}
