@@ -72,6 +72,20 @@ class AppNavigationTest {
     }
 
     @Test
+    fun tappingTheGearIconOnHomeNavigatesToSettings() {
+        composeTestRule.setContent {
+            QuizPortuguesTheme {
+                AppNavigation()
+            }
+        }
+
+        composeTestRule.onNodeWithText("⚙️").performClick()
+
+        // SettingsScreen's own heading confirms real navigation, not just the gear re-rendering.
+        composeTestRule.onNodeWithText("Definições").assertExists()
+    }
+
+    @Test
     fun tappingInicioOnModuleHomeReturnsToHome() {
         composeTestRule.setContent {
             QuizPortuguesTheme {

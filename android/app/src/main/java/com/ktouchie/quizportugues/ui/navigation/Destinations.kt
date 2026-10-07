@@ -10,6 +10,8 @@ package com.ktouchie.quizportugues.ui.navigation
 sealed class Destination(val route: String) {
     data object Home : Destination("home")
 
+    data object Settings : Destination("settings")
+
     data object ModuleHome : Destination("module/{moduleId}") {
         fun route(moduleId: String) = "module/$moduleId"
     }

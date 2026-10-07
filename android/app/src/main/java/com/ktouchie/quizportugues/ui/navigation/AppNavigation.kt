@@ -23,6 +23,7 @@ import com.ktouchie.quizportugues.ui.indirectspeech.IndirectSpeechSetupScreen
 import com.ktouchie.quizportugues.ui.module.ModuleHomeScreen
 import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSessionScreen
 import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSetupScreen
+import com.ktouchie.quizportugues.ui.settings.SettingsScreen
 import com.ktouchie.quizportugues.ui.subjunctive.SubjunctiveSessionScreen
 import com.ktouchie.quizportugues.ui.subjunctive.SubjunctiveSetupScreen
 import com.ktouchie.quizportugues.ui.verbs.VerbSessionScreen
@@ -50,7 +51,14 @@ fun AppNavigation() {
                 onOpenModule = { moduleId ->
                     navController.navigate(Destination.ModuleHome.route(moduleId))
                 },
+                onOpenSettings = {
+                    navController.navigate(Destination.Settings.route)
+                },
             )
+        }
+
+        composable(Destination.Settings.route) {
+            SettingsScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Destination.ModuleHome.route, arguments = moduleIdArg) { backStackEntry ->

@@ -1,6 +1,7 @@
 package com.ktouchie.quizportugues.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import com.ktouchie.quizportugues.ui.theme.OnAccent
 @Composable
 fun HomeScreen(
     onOpenModule: (moduleId: String) -> Unit,
+    onOpenSettings: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,16 +66,28 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .background(ExtendedTheme.colors.warmGradient, MaterialTheme.shapes.extraLarge)
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
+            Row(
+                modifier = Modifier.align(Alignment.TopEnd),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                Box(
+                    modifier = Modifier
+                        .background(ExtendedTheme.colors.warmGradient, MaterialTheme.shapes.extraLarge)
+                        .padding(horizontal = 12.dp, vertical = 7.dp),
+                ) {
+                    Text(
+                        text = "🔥 ${state.currentStreak}",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = OnAccent,
+                    )
+                }
                 Text(
-                    text = "🔥 ${state.currentStreak}",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = OnAccent,
+                    text = "⚙️",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .clickable(onClick = onOpenSettings)
+                        .padding(4.dp),
                 )
             }
         }
