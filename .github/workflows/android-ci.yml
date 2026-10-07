@@ -1,0 +1,150 @@
+name: Android CI
+
+# Same release flow as FIREtracker:
+#  - Pull requests to main: lint, unit tests and a debug build, nothing published.
+#  - main: called by version-bump.yml right after it bumps version.txt, so the APK carries the same
+#    version number the website shows. Publishes the rolling "Latest debug build" pre-release.
+#  - vX.Y.Z tags: publishes a permanent versioned release. The tag must match version.txt.
+# Every APK is signed with the committed debug key (android/app/debug.keystore), so any build
+# installs over any other.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    tags: ["v*"]
+  workflow_call: {}
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    working-directory: android
+
+env:
+  # When called from version-bump.yml, github.sha is the commit *before* the version bump; check
+  # out the tip of main instead so the build includes the bumped version.txt.
+  CHECKOUT_REF: ${{ github.ref == 'refs/heads/main' && 'main' || '' }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CHECKOUT_REF }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          # The action's default asks for the legacy "tools" package, which Google no longer
+          # serves, and fails. AGP installs the SDK components it needs during the build itself.
+          packages: ""
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Lint
+        run: ./gradlew lint --stacktrace
+
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CHECKOUT_REF }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: ""
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Unit tests
+        # Debug variant only: room.schemaLocation isn't variant-scoped, so running the release
+        # variant's tests too races two KSP tasks writing the same schema file.
+        run: ./gradlew testDebugUnitTest --stacktrace
+      - name: Compile the instrumented UI tests
+        # They need an emulator to run, so CI doesn't run them, but they must at least compile.
+        run: ./gradlew assembleDebugAndroidTest --stacktrace
+
+  build:
+    needs: [lint, unit-test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # A newer main build supersedes an older one still running, so the rolling release can't be
+    # overwritten by a stale APK finishing late.
+    concurrency:
+      group: android-build-${{ github.ref }}
+      cancel-in-progress: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CHECKOUT_REF }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: ""
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Read version.txt and the commit being built
+        id: version
+        run: |
+          echo "value=$(tr -d '[:space:]' < ../version.txt)" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Check the tag matches version.txt
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          TAG: ${{ github.ref_name }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          if [[ "$TAG" != "v$VERSION" ]]; then
+            echo "::error::Tag $TAG doesn't match version.txt ($VERSION). Tag the commit whose version.txt is ${TAG#v}."
+            exit 1
+          fi
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Name the APK for the rolling pre-release
+        if: github.ref == 'refs/heads/main'
+        run: cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/quiz-portugues-debug.apk
+      - name: Move the latest-debug tag to the commit being built
+        # softprops/action-gh-release never moves an existing tag, so the release's source
+        # archives would otherwise stay on the first build's commit.
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git tag -f latest-debug
+          git push -f origin refs/tags/latest-debug
+      - name: Publish to the "Latest debug build" pre-release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-debug
+          name: Latest debug build
+          prerelease: true
+          # Never let this rolling build be mistaken for the latest real release.
+          make_latest: false
+          body: >
+            Version ${{ steps.version.outputs.value }}, built from main at
+            ${{ steps.version.outputs.sha }}. The same version the website shows.
+            Debug-signed: install directly over any previous build.
+          files: android/app/build/outputs/apk/debug/quiz-portugues-debug.apk
+
+      - name: Name the APK for the versioned release
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: cp app/build/outputs/apk/debug/app-debug.apk "app/build/outputs/apk/debug/QuizPortugues-${{ github.ref_name }}.apk"
+      - name: Publish a permanent versioned release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Quiz Português ${{ github.ref_name }}
+          prerelease: false
+          body: >
+            Debug-signed: install directly over any previous build. Same version as the website
+            at this release.
+          files: android/app/build/outputs/apk/debug/QuizPortugues-${{ github.ref_name }}.apk
