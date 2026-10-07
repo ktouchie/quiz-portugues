@@ -32,6 +32,13 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          # Google removed the legacy "tools" package from the SDK repository; the action's
+          # pinned v3 tag still defaults to requesting it, failing the whole step with "Warning:
+          # Failed to find package 'tools'" before the build even starts. Nothing here needs it —
+          # AGP auto-installs whatever platform/build-tools components it actually needs during
+          # the Gradle build itself, using the licenses this step already accepts.
+          packages: ''
       - uses: gradle/actions/setup-gradle@v4
       - name: Lint
         run: ./gradlew lint --stacktrace
@@ -45,6 +52,8 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: '' # see lint job's comment — the legacy "tools" package no longer exists
       - uses: gradle/actions/setup-gradle@v4
       - name: Unit tests
         # Scoped to the debug variant deliberately, not the blanket `test` task: `room.schemaLocation`
@@ -70,6 +79,8 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: '' # see lint job's comment — the legacy "tools" package no longer exists
       - uses: gradle/actions/setup-gradle@v4
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
