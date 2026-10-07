@@ -1,8 +1,9 @@
-import { addSelectAll } from './common.js';
+import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
+import { buildOptions } from './practice.js';
 
-class VocabQuiz extends QuizBase {
+export class VocabQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.vocab);
         this.ENtoPT = true;
@@ -29,9 +30,7 @@ class VocabQuiz extends QuizBase {
     }
 
     getSelectedItems() {
-        const selectedCategories = Array.from(
-            document.querySelectorAll('#categories input:checked')
-        ).map(i => i.value);
+        const selectedCategories = getCheckedValues('categories');
 
         if (selectedCategories.length === 0) {
             alert('Por favor, selecione pelo menos uma categoria.');
@@ -39,9 +38,30 @@ class VocabQuiz extends QuizBase {
         }
 
         this.ENtoPT = document.querySelector("input[name='translation-direction']:checked").value === 'true';
+        return this._itemsFor(selectedCategories);
+    }
 
+    getAllItems() {
+        return this._itemsFor(Object.keys(this.data));
+    }
+
+    /** Quick Practice asks Portuguese → English with multiple-choice options, as on Android. */
+    startQuickPractice() {
+        this.ENtoPT = false;
+        super.startQuickPractice();
+    }
+
+    getOptions(key) {
+        if (!this.quickPractice) return null;
+        const [category, , enWord] = key.split('|||');
+        const sameCategory = Object.values(this.data[category]);
+        const everything = Object.values(this.data).flatMap(words => Object.values(words));
+        return buildOptions(enWord, sameCategory, everything);
+    }
+
+    _itemsFor(categories) {
         const items = [];
-        for (const category of selectedCategories) {
+        for (const category of categories) {
             for (const ptWord of Object.keys(this.data[category])) {
                 const enWord = this.data[category][ptWord];
                 items.push({ key: `${category}|||${ptWord}|||${enWord}`, category, ptWord, enWord });
