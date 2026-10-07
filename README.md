@@ -73,6 +73,8 @@ npm test
 
 Pushing to `main` triggers a GitHub Actions workflow that bumps the patch version in `version.txt` and deploys to GitHub Pages. Pull requests get an automatic preview deployment with a link posted as a PR comment.
 
+The Android app shares the same version number. After each bump on `main`, CI builds the APK and publishes it to the rolling **Latest debug build** pre-release on GitHub. Pushing a `vX.Y.Z` tag (matching `version.txt`) publishes a permanent release with its APK.
+
 ## Android App (in progress)
 
-A native Android app (Kotlin + Jetpack Compose) is under development in `android/`, starting with the Verb Conjugation and Vocabulary modules. It reuses the same `verbs.json`/`vocabulary.json` content as the web app and reimplements the SM-2 spaced-repetition and gamification logic natively. See `docs/MOBILE_APP_SPEC.md` for the full design and the repo's issues for progress.
+A native Android app (Kotlin + Jetpack Compose) is under development in `android/`. The website is being turned into the web version of the app, with both rolled out together, PR by PR. It reuses the same `verbs.json`/`vocabulary.json` content as the web app and reimplements the SM-2 spaced-repetition and gamification logic natively. See `docs/MOBILE_APP_SPEC.md` for the full design and the repo's issues for progress.

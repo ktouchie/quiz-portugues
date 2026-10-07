@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ktouchie.quizportugues.BuildConfig
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 
@@ -32,5 +33,7 @@ fun HomeScreen(onOpenModule: (moduleId: String) -> Unit) {
         Button(onClick = { onOpenModule(MODULE_VOCABULARY) }) {
             Text("Vocabulário")
         }
+        // Same version number the website shows (both read the repo-root version.txt).
+        Text(text = "Versão ${BuildConfig.VERSION_NAME}")
     }
 }

@@ -122,3 +122,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # Builds and publishes the rolling Android pre-release from main *after* the bump, so the APK
+  # and the website always carry the same version number.
+  android:
+    needs: bump-version
+    permissions:
+      contents: write
+    uses: ./.github/workflows/android-ci.yml

@@ -160,3 +160,10 @@ describe('GenderQuiz', () => {
         expect(items[0].label).toBe('plural');
     });
 });
+
+describe('version.txt', () => {
+    it('is MAJOR.MINOR.PATCH with parts below 1000 (the Android build derives its version from it)', () => {
+        const version = readFileSync(join(cwd(), 'version.txt'), 'utf8').trim();
+        expect(version).toMatch(/^\d{1,3}\.\d{1,3}\.\d{1,3}$/);
+    });
+});

@@ -82,9 +82,10 @@ All quizzes share `QuizBase`:
 
 ## Android App (`android/`)
 
-A native Android app (Kotlin + Jetpack Compose, no cross-platform framework) is being built
-alongside the web app, starting with the Verb Conjugation and Vocabulary modules only. Full design
-in `docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label on GitHub issues.
+A native Android app (Kotlin + Jetpack Compose, no cross-platform framework). The website is the
+web version of the app — same look and features — so every PR ships the Android change *and* its
+web equivalent, with tests for both (rollout tracked in epic #59). Full design in
+`docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label on GitHub issues.
 
 - Standard Gradle project: `android/app/src/main/java/com/ktouchie/quizportugues/`, with `srs/`,
   `gamification/`, `data/` (Room), `content/`, and `ui/` sub-packages as they're added.
@@ -107,3 +108,16 @@ in `docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label 
 
 - **Main branch** auto-deploys to GitHub Pages via `.github/workflows/version-bump.yml`, which also auto-bumps the patch version in `version.txt` (skipped if `version.txt` was changed manually in the same push)
 - **PRs** get preview deployments at `previews/pr-{number}/` via `.github/workflows/pr-preview.yml`, which posts the URL as a PR comment
+
+## Versioning and Android releases
+
+- **One version number for both apps**: `version.txt`. The website shows it in its footer; the
+  Android build reads it for `versionName` and derives `versionCode` as
+  `major * 1_000_000 + minor * 1_000 + patch` (so keep minor/patch below 1000).
+- `.github/workflows/android-ci.yml`: lint, unit tests and a debug build on every PR to `main`.
+  `version-bump.yml` calls it after bumping `version.txt` on `main`, publishing the APK to the
+  rolling **"Latest debug build"** pre-release (`latest-debug` tag).
+- **Permanent releases**: push a `vX.Y.Z` tag on a commit whose `version.txt` is `X.Y.Z`; CI publishes
+  "Quiz Português vX.Y.Z" with its APK (fails if the tag and `version.txt` disagree).
+- Every APK is signed with the committed `android/app/debug.keystore`, so any build installs over any
+  other. Not the Play Store — that's deferred (epic #12).

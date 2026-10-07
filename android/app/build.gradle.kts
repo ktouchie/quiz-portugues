@@ -5,6 +5,16 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+// One version number for the website and the app: the repo-root version.txt, which the website
+// already shows and .github/workflows/version-bump.yml bumps on every merge to main.
+val appVersion: String = rootProject.projectDir.parentFile.resolve("version.txt").readText().trim()
+val appVersionCode: Int = appVersion.split(".").let { parts ->
+    require(parts.size == 3) { "version.txt must be MAJOR.MINOR.PATCH, was \"$appVersion\"" }
+    val (major, minor, patch) = parts.map { it.toInt() }
+    // Monotonic as long as minor/patch stay below 1000, so every new build installs as an update.
+    major * 1_000_000 + minor * 1_000 + patch
+}
+
 android {
     namespace = "com.ktouchie.quizportugues"
     // TODO: bump compileSdk/targetSdk to the latest stable release when building —
@@ -15,10 +25,22 @@ android {
         applicationId = "com.ktouchie.quizportugues"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = appVersionCode
+        versionName = appVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        getByName("debug") {
+            // Committed, standard debug-key credentials (not sensitive). Without this, AGP signs with
+            // a per-machine auto-generated key — a new one on every ephemeral CI runner — and Android
+            // refuses to install a build over one signed with a different key.
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {
@@ -42,6 +64,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
