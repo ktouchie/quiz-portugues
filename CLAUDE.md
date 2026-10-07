@@ -38,7 +38,8 @@ npm run lint
 
 **Shared:**
 - `common.js` — `initTheme`, `loadVersion`, `startTimer`, `stopTimer`, `resumeTimer`, `updateTimerDisplay`, `updateBestScore`, `addSelectAll`
-- `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, nextQuestion, submitAnswer, endQuiz), SRS integration, progress bar, retry-mistakes; abstract methods: `fetchData`, `getSelectedItems`, `renderQuestion`, `getCorrectAnswer`, `formatMistake`, `getLabel`
+- `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, startQuickPractice, nextQuestion, submitAnswer, endQuiz), SRS integration, progress bar, retry-mistakes; abstract methods: `fetchData`, `getSelectedItems`, `renderQuestion`, `getCorrectAnswer`, `formatMistake`, `getLabel`; optional hooks `getAllItems` (enables Quick Practice) and `getOptions` (multiple-choice instead of typed)
+- `practice.js` — pure helpers shared with the Android app's behaviour: `buildQuickPracticePool` (12 items, due first), `buildOptions` (correct answer + 3 distinct distractors), `shuffle`
 - `config.js` — `PERSONS`, `TENSE_LABELS`, `STORAGE_KEYS` (verbs, vocab, gender, serEstarFicar, contractions, subjunctive, indirectSpeech, theme)
 - `srs.js` — SM-2 spaced repetition: `loadSRSState`, `saveSRSState`, `getItemSRS`, `sm2`, `getDueItems`
 - `gamification.js` — `loadStreak`, `updateStreak`, `getTotalMastered`, `checkMilestone`, `showMilestoneBanner`, `loadGoal`, `saveGoal`, `getGoalProgress`
@@ -68,6 +69,8 @@ All quizzes share `QuizBase`:
 5. Score: `correctCount` / `errorCount` tracked independently; best score = max correctCount
 6. Result screen: time, accuracy %, top mistakes, "Praticar erros" retry button
 7. Streak updated on quiz completion; milestones checked
+
+**Quick Practice** (verbs, vocabulary): a "Prática Rápida" button on the setup screen starts a 12-item session over the whole module, due items first — same rule as the Android app. Vocabulary's Quick Practice asks Portuguese → English as multiple choice (wrong options from the same category); verbs stay typed.
 
 **Verb quiz extras:** adaptive difficulty filter (beginner/intermediate/advanced), interleaved mode (Fisher-Yates shuffle), example sentences for 16 high-frequency verbs.
 

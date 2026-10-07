@@ -5,7 +5,7 @@ import { getVerbHint } from './grammar_hints.js';
 
 const TENSE_KEYS = Object.keys(TENSE_LABELS);
 
-class VerbQuiz extends QuizBase {
+export class VerbQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.verbs);
         this.selectedTenses = [];
@@ -88,12 +88,20 @@ class VerbQuiz extends QuizBase {
 
         this.difficultyFilter = document.querySelector("input[name='difficulty']:checked")?.value ?? 'all';
         this.interleaved = document.getElementById('interleaved-mode')?.checked ?? false;
+        return this._itemsFor(this.selectedTenses, this.difficultyFilter);
+    }
 
+    /** Quick Practice draws from every conjugated form of every verb, as on Android. */
+    getAllItems() {
+        return this._itemsFor(TENSE_KEYS, 'all');
+    }
+
+    _itemsFor(tenses, difficultyFilter) {
         const items = [];
         const verbs = this.data;
         for (const verb in verbs) {
-            if (this.difficultyFilter !== 'all' && verbs[verb].difficulty !== this.difficultyFilter) continue;
-            for (const tense of this.selectedTenses) {
+            if (difficultyFilter !== 'all' && verbs[verb].difficulty !== difficultyFilter) continue;
+            for (const tense of tenses) {
                 if (tense === 'participios_passados' && verbs[verb].participios_passados) {
                     for (const aux of ['ter', 'ser', 'estar']) {
                         items.push({ key: `${verb}|||participios_passados|||${aux}`, verb, tense: 'participios_passados', aux });
@@ -111,8 +119,8 @@ class VerbQuiz extends QuizBase {
         return items;
     }
 
-    startQuiz() {
-        super.startQuiz();
+    startQuiz(explicitItems = null) {
+        super.startQuiz(explicitItems);
         if (this.interleaved && this.itemsToPractice.length > 0) {
             for (let i = this.itemsToPractice.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
