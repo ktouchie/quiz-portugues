@@ -63,6 +63,9 @@ jobs:
         # Debug variant only: room.schemaLocation isn't variant-scoped, so running the release
         # variant's tests too races two KSP tasks writing the same schema file.
         run: ./gradlew testDebugUnitTest --stacktrace
+      - name: Compile the instrumented UI tests
+        # They need an emulator to run, so CI doesn't run them, but they must at least compile.
+        run: ./gradlew assembleDebugAndroidTest --stacktrace
 
   build:
     needs: [lint, unit-test]
@@ -110,6 +113,13 @@ jobs:
       - name: Name the APK for the rolling pre-release
         if: github.ref == 'refs/heads/main'
         run: cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/quiz-portugues-debug.apk
+      - name: Move the latest-debug tag to the commit being built
+        # softprops/action-gh-release never moves an existing tag, so the release's source
+        # archives would otherwise stay on the first build's commit.
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git tag -f latest-debug
+          git push -f origin refs/tags/latest-debug
       - name: Publish to the "Latest debug build" pre-release
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
