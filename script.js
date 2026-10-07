@@ -44,12 +44,13 @@ export class VerbQuiz extends QuizBase {
         tensesDiv.appendChild(ppLabel);
 
         // Difficulty selector
-        const setup = document.getElementById('setup');
-        const dueSibling = document.getElementById('srs-due-count');
+        // Difficulty and interleaving go with the other Advanced options, above the start button.
+        const startButton = document.getElementById('start-quiz');
+        const advanced = startButton.parentNode;
 
         const diffH = document.createElement('h2');
         diffH.textContent = 'Nível de dificuldade';
-        setup.insertBefore(diffH, dueSibling);
+        advanced.insertBefore(diffH, startButton);
 
         const diffDiv = document.createElement('div');
         diffDiv.id = 'difficulty-selector';
@@ -66,7 +67,7 @@ export class VerbQuiz extends QuizBase {
             lbl.appendChild(document.createTextNode(' ' + label));
             diffDiv.appendChild(lbl);
         });
-        setup.insertBefore(diffDiv, dueSibling);
+        advanced.insertBefore(diffDiv, startButton);
 
         // Interleaved mode toggle
         const intLabel = document.createElement('label');
@@ -76,7 +77,7 @@ export class VerbQuiz extends QuizBase {
         intCb.id = 'interleaved-mode';
         intLabel.appendChild(intCb);
         intLabel.appendChild(document.createTextNode(' Modo intercalado (melhor para retenção)'));
-        setup.insertBefore(intLabel, dueSibling);
+        advanced.insertBefore(intLabel, startButton);
     }
 
     getSelectedItems() {

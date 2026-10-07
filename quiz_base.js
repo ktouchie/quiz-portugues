@@ -341,7 +341,10 @@ export class QuizBase {
             `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
         document.getElementById('quiz-time').textContent =
             `Tempo: ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        document.getElementById('accuracy').textContent = `Precisão: ${accuracyPct}%`;
+        const accuracyEl = document.getElementById('accuracy');
+        accuracyEl.textContent = `${accuracyPct}%`;
+        accuracyEl.setAttribute('aria-label', `Precisão: ${accuracyPct}%`);
+        accuracyEl.style.setProperty('--pct', String(accuracyPct)); // fills the ring
 
         updateBestScore(this.storageKey, this.correctCount);
 

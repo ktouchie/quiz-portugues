@@ -1,31 +1,44 @@
 /* ── Theme variables ──────────────────────────────────────── */
+/* "Warm Encourager", the same palette as the Android app (ui/theme/Color.kt): cream and toast
+   surfaces, a blue accent, and a warm amber gradient for the main calls to action. */
 :root {
-    --bg:         #f4f6fb;
-    --surface:    #ffffff;
-    --surface-2:  #eef0f7;
-    --border:     #d0d5e8;
+    --bg:         #fbf7f1;
+    --surface:    #fff9f0;
+    --surface-2:  #fff1dc;
+    --border:     #f3e6d2;
     --accent:     #4a7cf7;
     --accent-dim: #3a63cc;
+    --on-accent:  #ffffff;
+    --warm-start: #ffb25e;
+    --warm-end:   #ff8a3d;
+    --warm:       linear-gradient(135deg, var(--warm-start), var(--warm-end));
     --correct:    #1e9e6b;
     --incorrect:  #e03e52;
-    --text:       #1a1e2e;
-    --text-muted: #5a6382;
-    --shadow:     0 4px 24px rgba(0, 0, 0, 0.10);
-    --shadow-sm:  0 2px 8px  rgba(0, 0, 0, 0.07);
+    --text:       #3a2e1f;
+    --text-muted: #8a7a5f;
+    --text-warm:  #b8874a;
+    --radius-md:  16px;
+    --radius-lg:  22px;
+    --radius-xl:  28px;
+    --shadow:     0 6px 24px rgba(120, 80, 30, 0.10);
+    --shadow-sm:  0 2px 8px  rgba(120, 80, 30, 0.08);
 }
 
 [data-theme="dark"] {
-    --bg:         #0f1117;
-    --surface:    #1a1d27;
-    --surface-2:  #242736;
-    --border:     #2e3248;
+    --bg:         #1f1710;
+    --surface:    #2a2018;
+    --surface-2:  #3a2c1c;
+    --border:     #4a3826;
     --accent:     #7fc1ff;
     --accent-dim: #5e9bff;
+    /* The dark theme's light blue needs dark text to stay readable. */
+    --on-accent:  #1f1710;
     --correct:    #3ddc97;
     --incorrect:  #ff5c6c;
-    --text:       #e2e8f0;
-    --text-muted: #7b8ab8;
-    --shadow:     0 4px 24px rgba(0, 0, 0, 0.45);
+    --text:       #f5e9da;
+    --text-muted: #b8a88c;
+    --text-warm:  #ffc98c;
+    --shadow:     0 6px 24px rgba(0, 0, 0, 0.40);
     --shadow-sm:  0 2px 8px  rgba(0, 0, 0, 0.30);
 }
 
@@ -66,12 +79,18 @@ h3 {
 }
 
 /* ── Cards ────────────────────────────────────────────────── */
-#setup, #quiz, #result {
+#setup, #result {
     background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
     padding: 24px;
     box-shadow: var(--shadow);
+    margin-bottom: 16px;
+}
+
+/* During a question the parts sit straight on the page, as in the app: prompt card, options,
+   feedback panel. */
+#quiz {
     margin-bottom: 16px;
 }
 
@@ -79,14 +98,14 @@ h3 {
 button {
     font-family: inherit;
     font-size: 0.95rem;
-    font-weight: 600;
-    padding: 10px 22px;
+    font-weight: 700;
+    padding: 11px 22px;
     border: none;
-    border-radius: 99px;
+    border-radius: var(--radius-lg);
     background-color: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.15s, box-shadow 0.15s;
+    transition: background-color 0.2s, transform 0.15s, box-shadow 0.15s, filter 0.15s;
     box-shadow: var(--shadow-sm);
 }
 
@@ -100,32 +119,129 @@ button:active {
     transform: translateY(0);
 }
 
-/* ── Quick Practice ───────────────────────────────────────── */
+button:disabled {
+    cursor: default;
+    transform: none;
+}
+
+/* Main calls to action wear the warm gradient, like the app's WarmGradientButton. */
+#quick-practice, #start-quiz, #submit-answer {
+    background: var(--warm);
+    color: #fff;
+}
+
+#quick-practice:hover, #start-quiz:hover, #submit-answer:hover {
+    background: var(--warm);
+    filter: brightness(1.05);
+}
+
+/* Secondary actions: outlined in the warm text colour, like the app's OutlinedButton. */
+#retry-mistakes, #restart, .button-secondary {
+    background: transparent;
+    color: var(--text-warm);
+    border: 2px solid var(--border);
+    box-shadow: none;
+}
+
+#retry-mistakes:hover, #restart:hover, .button-secondary:hover {
+    background-color: var(--surface-2);
+}
+
+/* ── Quick Practice & Advanced ────────────────────────────── */
 #quick-practice {
     display: block;
     width: 100%;
+    padding: 14px 22px;
+    font-size: 1.05rem;
     margin-bottom: 6px;
+}
+
+#advanced {
+    margin-top: 8px;
+}
+
+#advanced > summary {
+    list-style: none;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 700;
+    color: var(--text-warm);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 10px 22px;
+    margin-bottom: 16px;
+}
+
+#advanced > summary::-webkit-details-marker {
+    display: none;
+}
+
+#advanced[open] > summary {
+    background-color: var(--surface-2);
 }
 
 /* ── Multiple-choice options ──────────────────────────────── */
 #options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 10px;
     width: 100%;
 }
 
 button.option {
-    background-color: var(--surface-2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    background-color: var(--surface);
     color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+    font-weight: 600;
+    font-size: 1rem;
     text-align: left;
 }
 
-button.option:hover {
+button.option:hover:not(:disabled) {
     background-color: var(--surface);
-    border-color: var(--accent);
+    border-color: var(--warm-end);
+}
+
+.option-badge {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 12px;
+    background-color: var(--surface-2);
+    color: var(--text-warm);
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+button.option--correct {
+    border-color: var(--correct);
+    background-color: color-mix(in srgb, var(--correct) 12%, var(--surface));
+    color: var(--correct);
+}
+
+button.option--correct .option-badge {
+    background-color: var(--correct);
+    color: #fff;
+}
+
+button.option--wrong {
+    border-color: var(--incorrect);
+    background-color: color-mix(in srgb, var(--incorrect) 12%, var(--surface));
+    color: var(--incorrect);
+}
+
+button.option--wrong .option-badge {
+    background-color: var(--incorrect);
+    color: #fff;
 }
 
 /* ── Answer input ─────────────────────────────────────────── */
@@ -139,11 +255,11 @@ button.option:hover {
 
 #answer {
     font-family: inherit;
-    font-size: 1rem;
-    padding: 9px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background-color: var(--surface-2);
+    font-size: 1.05rem;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--surface);
     color: var(--text);
     outline: none;
     flex: 1;
@@ -152,22 +268,34 @@ button.option:hover {
 }
 
 #answer:focus {
-    border-color: var(--accent);
+    border-color: var(--warm-end);
 }
 
-/* ── Question text ────────────────────────────────────────── */
+/* ── Question (the app's prompt card) ─────────────────────── */
 #question {
-    font-size: 1.15rem;
-    line-height: 1.5;
-    margin-bottom: 16px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.55;
+    text-align: center;
+    margin: 0 0 16px;
+    padding: 26px 20px;
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
 }
 
 /* ── Feedback ─────────────────────────────────────────────── */
 #feedback {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     margin: 8px 0;
+    padding: 14px 16px;
+    border-radius: var(--radius-lg);
 }
+
+#feedback.correct   { background-color: color-mix(in srgb, var(--correct) 12%, transparent); }
+#feedback.incorrect { background-color: color-mix(in srgb, var(--incorrect) 12%, transparent); }
 
 .correct   { color: var(--correct); }
 .incorrect { color: var(--incorrect); }
@@ -180,18 +308,18 @@ button.option:hover {
     min-height: 100px;
 }
 
-#progress-container {
+#progress-container, .progress-track {
     width: 100%;
     background-color: var(--surface-2);
     border-radius: 99px;
-    height: 8px;
+    height: 10px;
     overflow: hidden;
 }
 
-#progress-bar {
+#progress-bar, .progress-fill {
     width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent-dim));
+    background: linear-gradient(90deg, var(--warm-start), var(--accent));
     border-radius: 99px;
     transition: width 0.4s ease;
 }
@@ -204,7 +332,7 @@ button.option:hover {
 
 /* ── Next button ──────────────────────────────────────────── */
 #next-question {
-    align-self: flex-start;
+    width: 100%;
     margin-top: 4px;
 }
 
@@ -221,8 +349,8 @@ button.option:hover {
 }
 
 #score-display, #timer-display {
-    background-color: var(--accent);
-    color: #fff;
+    background-color: var(--surface-2);
+    color: var(--text-warm);
     padding: 6px 14px;
     border-radius: 99px;
     font-size: 0.85rem;
@@ -241,7 +369,7 @@ button.option:hover {
     border-radius: 99px;
     background-color: var(--surface-2);
     color: var(--text);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     box-shadow: var(--shadow-sm);
     z-index: 1000;
     cursor: pointer;
@@ -288,9 +416,56 @@ button.option:hover {
     margin-bottom: 12px;
 }
 
-/* ── Top mistakes list ────────────────────────────────────── */
+/* ── Results ──────────────────────────────────────────────── */
+/* Accuracy ring, like the app's AccuracyRing: --pct is set by QuizBase.endQuiz. */
+#accuracy {
+    --pct: 0;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    width: 140px;
+    height: 140px;
+    margin: 8px auto 18px;
+    border-radius: 50%;
+    background:
+        radial-gradient(closest-side, var(--surface) 79%, transparent 80% 100%),
+        conic-gradient(var(--correct) calc(var(--pct) * 1%), var(--surface-2) 0);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+#accuracy::after {
+    content: "PRECISÃO";
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+#total-score, #quiz-time, #best-score:not(:empty) {
+    display: inline-block;
+    margin: 0 6px 8px 0;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-2);
+    color: var(--text-warm);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+#best-score.correct {
+    color: var(--correct);
+}
+
+/* "Para rever" box */
 #top-mistakes {
-    padding-left: 20px;
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    background-color: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
 }
 
 #top-mistakes li {
@@ -298,6 +473,10 @@ button.option:hover {
     font-size: 0.92rem;
     line-height: 1.5;
     color: var(--text-muted);
+}
+
+#top-mistakes li:last-child {
+    margin-bottom: 0;
 }
 
 #top-mistakes li strong {
@@ -313,21 +492,30 @@ button.option:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     padding: 8px 20px;
     font-size: 0.8rem;
     color: var(--text-muted);
     background-color: var(--bg);
-    border-top: 1px solid var(--border);
+    border-top: 2px solid var(--border);
     z-index: 999;
 }
 
+/* The "buy me a pastel de nata" link, as a small warm pill. */
 #support-link {
-    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 99px;
+    background: var(--warm);
+    color: #fff;
+    font-weight: 700;
     text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, filter 0.15s;
 }
 
 #support-link:hover {
-    text-decoration: underline;
+    transform: translateY(-1px);
+    filter: brightness(1.05);
 }
 
 #version-container {
@@ -341,19 +529,19 @@ button.option:hover {
     flex-wrap: wrap;
 }
 
-/* ── Back-to-menu link ────────────────────────────────────── */
+/* ── Back-to-home link ────────────────────────────────────── */
 #back-link {
     display: inline-block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-warm);
     text-decoration: none;
     margin-bottom: 12px;
-    transition: color 0.15s;
+    transition: filter 0.15s;
 }
 
 #back-link:hover {
-    color: var(--text);
+    filter: brightness(1.15);
 }
 
 @media (max-width: 480px) {
@@ -366,7 +554,7 @@ button.option:hover {
     top: 24px;
     left: 50%;
     transform: translateX(-50%) translateY(-80px);
-    background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+    background: var(--warm);
     color: #fff;
     padding: 14px 28px;
     border-radius: 99px;
@@ -384,37 +572,133 @@ button.option:hover {
     opacity: 1;
 }
 
-/* ── Index page ───────────────────────────────────────────── */
-#main-container {
-    background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 32px 24px;
-    box-shadow: var(--shadow);
+/* ── Home page ────────────────────────────────────────────── */
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 40px 0 18px;
 }
 
-#stats-bar {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin: 0 0 16px;
-    font-size: 0.88rem;
-    font-weight: 600;
+.home-header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.home-subtitle {
+    margin: 4px 0 0;
     color: var(--text-muted);
 }
 
-#button-container {
+.streak-pill {
+    flex: none;
+    padding: 7px 14px;
+    border-radius: 99px;
+    background: var(--warm);
+    color: #fff;
+    font-weight: 800;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.stat-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-2);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-warm);
+}
+
+.stat-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+#module-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 8px;
 }
 
-#button-container button {
-    font-size: 1rem;
-    padding: 14px 24px;
+/* One whole card is the tap target; "Praticar" is a label, not a separate button. */
+.module-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--text);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, border-color 0.15s;
+}
+
+.module-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--warm-start);
+}
+
+.module-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
     border-radius: 12px;
-    text-align: left;
+    background-color: var(--surface-2);
+    font-size: 1.35rem;
+}
+
+.module-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.module-title {
+    display: block;
+    font-weight: 700;
+}
+
+.module-due {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.module-card .progress-track {
+    display: block;
+    height: 7px;
+}
+
+.module-cta {
+    flex: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-xl);
+    background-color: var(--accent);
+    color: var(--on-accent);
+    font-size: 0.88rem;
+    font-weight: 700;
 }
 
 /* ── SRS manager link on home page ───────────────────────── */
@@ -430,7 +714,7 @@ button.option:hover {
 }
 
 #btn-srs-manager:hover {
-    color: var(--accent);
+    color: var(--text-warm);
 }
 
 /* ── Utility ──────────────────────────────────────────────── */
@@ -463,6 +747,26 @@ button.option:hover {
 .ter   { color: #66bb6a; }
 .ser   { color: #26c6da; }
 .estar { color: #ff8a65; }
+
+/* Darker shades of the colour coding for the light theme, so it stays readable on cream. */
+[data-theme="light"] .regular-verb   { color: #0277bd; }
+[data-theme="light"] .irregular-verb { color: #8e24aa; }
+[data-theme="light"] .tense-color-0  { color: #2e7d32; }
+[data-theme="light"] .tense-color-1  { color: #00838f; }
+[data-theme="light"] .tense-color-2  { color: #a07800; }
+[data-theme="light"] .tense-color-3  { color: #c25e00; }
+[data-theme="light"] .tense-color-4  { color: #d84315; }
+[data-theme="light"] .tense-color-5  { color: #c62828; }
+[data-theme="light"] .tense-color-6  { color: #7b1fa2; }
+[data-theme="light"] .tense-color-7  { color: #3949ab; }
+[data-theme="light"] .person-color-0 { color: #c2185b; }
+[data-theme="light"] .person-color-1 { color: #8e24aa; }
+[data-theme="light"] .person-color-2 { color: #1565c0; }
+[data-theme="light"] .person-color-3 { color: #00796b; }
+[data-theme="light"] .person-color-4 { color: #2e7d32; }
+[data-theme="light"] .ter            { color: #2e7d32; }
+[data-theme="light"] .ser            { color: #00838f; }
+[data-theme="light"] .estar          { color: #d84315; }
 
 /* ── SRS due-items notice ─────────────────────────────────── */
 .srs-due {
