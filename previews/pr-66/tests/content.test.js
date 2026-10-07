@@ -18,14 +18,24 @@ describe('verbs.json', () => {
     const verbs = load('verbs.json');
     const conjugated = Object.entries(verbs).filter(([, v]) => v.presente);
 
-    it('every fully conjugated verb has a difficulty, a regular flag and 5 forms per tense', () => {
+    it('every fully conjugated verb has a difficulty, a regular flag and 5 forms in every tense', () => {
         expect(conjugated.length).toBeGreaterThan(0);
         for (const [verb, entry] of conjugated) {
             expect(['beginner', 'intermediate', 'advanced'], verb).toContain(entry.difficulty);
             expect(typeof entry.regular, verb).toBe('boolean');
             for (const tense of CONJUGATION_TENSES) {
-                if (!(tense in entry)) continue;
-                expect(entry[tense], `${verb} ${tense}`).toHaveLength(5);
+                // querer has no imperative in practice; every other verb must have every tense.
+                if (tense === 'imperativo' && verb === 'querer') continue;
+                const forms = entry[tense];
+                expect(forms, `${verb} ${tense}`).toHaveLength(5);
+                forms.forEach((form, person) => {
+                    // The imperative has no "eu" form, so its first slot is intentionally empty.
+                    if (tense === 'imperativo' && person === 0) {
+                        expect(form, `${verb} imperativo eu`).toBe('');
+                    } else {
+                        expect(nonEmptyString(form), `${verb} ${tense} [${person}]`).toBe(true);
+                    }
+                });
             }
         }
     });
@@ -66,6 +76,8 @@ describe('vocabulary.json', () => {
         const all = Object.assign({}, ...Object.values(vocab));
         expect(all).toHaveProperty('dezanove e trinta');
         expect(all).not.toHaveProperty('dezenove e trinta');
+        expect(all).toHaveProperty('catorze horas');
+        expect(all).not.toHaveProperty('quatorze horas');
         expect(all).toHaveProperty('bom apetite');
         expect(all).not.toHaveProperty('bom aproveito');
         expect(all.madrugada).not.toMatch(/dusk/);
@@ -93,6 +105,22 @@ describe('category-based content files', () => {
             }
         });
     }
+
+    it('ser_estar_ficar.json sentences contain the ___ blank the quiz splits on', () => {
+        for (const items of Object.values(load('ser_estar_ficar.json'))) {
+            for (const item of items) {
+                expect(item.sentence).toContain('___');
+            }
+        }
+    });
+
+    it('subjunctive_quiz.json prompts have a "___ (infinitive)" blank', () => {
+        for (const items of Object.values(load('subjunctive_quiz.json'))) {
+            for (const item of items) {
+                expect(item.prompt).toMatch(/___ \([^)]+\)/);
+            }
+        }
+    });
 
     it('contractions.json items have a [preposition, article] pair', () => {
         for (const items of Object.values(load('contractions.json'))) {
