@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quiz Português</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        // Apply saved theme before first paint to avoid flash
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+<button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
+
+<div id="main-container">
+    <h1>Bem-vindo ao Quiz de Português!</h1>
+
+    <div id="stats-bar">
+        <span id="streak-display" class="hidden"></span>
+        <span id="mastered-display" class="hidden"></span>
+    </div>
+
+    <div id="button-container">
+        <button id="btn-verbs">Praticar Conjugação de Verbos</button>
+        <button id="btn-vocab">Praticar Vocabulário</button>
+        <button id="btn-gender">Praticar Género e Plural</button>
+        <button id="btn-ser-estar-ficar">Ser / Estar / Ficar</button>
+        <button id="btn-contractions">Contrações</button>
+        <button id="btn-subjunctive">Conjuntivo</button>
+        <button id="btn-indirect-speech">Discurso Indireto</button>
+    </div>
+    <div id="tools-container">
+        <a href="srs_manager.html" id="btn-srs-manager">Gerir repetição espaçada →</a>
+    </div>
+</div>
+
+<div id="footer">
+    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
+        Compre-me um pastel de nata
+    </a>
+    <div id="version-container">
+        Version: <span id="version"></span>
+    </div>
+</div>
+
+<script type="module">
+    import { loadVersion, initTheme } from './common.js';
+    import { loadStreak, getTotalMastered } from './gamification.js';
+
+    initTheme();
+    loadVersion();
+
+    // Streak display
+    const streak = loadStreak();
+    if (streak.currentStreak > 0) {
+        const el = document.getElementById('streak-display');
+        el.textContent = `🔥 ${streak.currentStreak} dia${streak.currentStreak > 1 ? 's' : ''} seguido${streak.currentStreak > 1 ? 's' : ''}`;
+        el.classList.remove('hidden');
+    }
+
+    // Mastered items display
+    const mastered = getTotalMastered();
+    if (mastered > 0) {
+        const el = document.getElementById('mastered-display');
+        el.textContent = `${mastered} item${mastered > 1 ? 'ns' : ''} dominado${mastered > 1 ? 's' : ''}`;
+        el.classList.remove('hidden');
+    }
+
+    document.getElementById('btn-verbs').addEventListener('click', () => location.href = 'verb_quiz.html');
+    document.getElementById('btn-vocab').addEventListener('click', () => location.href = 'vocabulary_quiz.html');
+    document.getElementById('btn-gender').addEventListener('click', () => location.href = 'gender_quiz.html');
+    document.getElementById('btn-ser-estar-ficar').addEventListener('click', () => location.href = 'ser_estar_ficar_quiz.html');
+    document.getElementById('btn-contractions').addEventListener('click', () => location.href = 'contractions_quiz.html');
+    document.getElementById('btn-subjunctive').addEventListener('click', () => location.href = 'subjunctive_quiz.html');
+    document.getElementById('btn-indirect-speech').addEventListener('click', () => location.href = 'indirect_speech_quiz.html');
+</script>
+</body>
+</html>
