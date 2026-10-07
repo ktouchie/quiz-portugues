@@ -66,21 +66,28 @@ describe('buildQuickPracticePool', () => {
 
 describe('buildOptions', () => {
     it('returns the correct answer once plus three distinct wrong answers', () => {
-        const options = buildOptions('dog', ['cat', 'bird', 'fish', 'cow', 'dog']);
+        const options = buildOptions('dog', [['cat', 'bird', 'fish', 'cow', 'dog']]);
         expect(options).toHaveLength(4);
         expect(options.filter(o => o === 'dog')).toHaveLength(1);
         expect(new Set(options).size).toBe(4);
     });
 
-    it('prefers the preferred candidates and only falls back when there are too few', () => {
-        const options = buildOptions('red', ['blue', 'green'], ['one', 'two', 'three']);
+    it('takes candidates from the first pool before the next one', () => {
+        const options = buildOptions('red', [['blue', 'green'], ['one', 'two', 'three']]);
         expect(options).toEqual(expect.arrayContaining(['red', 'blue', 'green']));
         expect(options.filter(o => ['one', 'two', 'three'].includes(o))).toHaveLength(1);
     });
 
     it('ignores duplicate candidates', () => {
-        const options = buildOptions('a', ['b', 'b', 'b'], ['c', 'c', 'd']);
+        const options = buildOptions('a', [['b', 'b', 'b'], ['c', 'c', 'd']]);
         expect([...options].sort()).toEqual(['a', 'b', 'c', 'd']);
+    });
+
+    it('skips candidates that only differ from the answer or each other in case', () => {
+        const options = buildOptions('Bom dia', [['bom dia', 'Boa tarde', 'boa tarde', 'Boa noite', 'Olá']]);
+        expect(options).toHaveLength(4);
+        expect(options.filter(o => o.toLowerCase() === 'bom dia')).toEqual(['Bom dia']);
+        expect(new Set(options.map(o => o.toLowerCase())).size).toBe(4);
     });
 });
 
@@ -93,7 +100,7 @@ class McQuiz extends QuizBase {
     getSelectedItems() { return this.all.slice(0, 2); }
     getAllItems() { return this.all; }
     getOptions(key) {
-        return this.quickPractice ? [this.itemData[key].answer, 'wrong 1', 'wrong 2', 'wrong 3'] : null;
+        return [this.itemData[key].answer, 'wrong 1', 'wrong 2', 'wrong 3'];
     }
     renderQuestion(key) { document.getElementById('question').textContent = key; }
     getCorrectAnswer(key) { return this.itemData[key].answer; }
@@ -129,24 +136,17 @@ describe('QuizBase Quick Practice and multiple choice', () => {
         expect(document.getElementById('submit-answer').classList.contains('hidden')).toBe(true);
     });
 
+    const option = (text) => [...document.querySelectorAll('#options button')]
+        .find(b => b.querySelector('.option-text').textContent === text);
+
     it('scores a tapped option like a typed answer', () => {
         const quiz = startQuick();
-        const right = quiz.itemData[quiz.currentKey].answer;
-        [...document.querySelectorAll('#options button')].find(b => b.textContent === right).click();
+        option(quiz.itemData[quiz.currentKey].answer).click();
         expect(quiz.correctCount).toBe(1);
 
         quiz.nextQuestion();
-        [...document.querySelectorAll('#options button')].find(b => b.textContent === 'wrong 1').click();
+        option('wrong 1').click();
         expect(quiz.errorCount).toBe(1);
-    });
-
-    it('goes back to the text box for a normal session', () => {
-        const quiz = startQuick();
-        quiz.quickPractice = false;
-        quiz.startQuiz();
-        expect(document.getElementById('options').classList.contains('hidden')).toBe(true);
-        expect(document.getElementById('answer').classList.contains('hidden')).toBe(false);
-        expect(quiz.currentOptions).toBeNull();
     });
 });
 
@@ -175,29 +175,26 @@ describe('VocabQuiz Quick Practice', () => {
             .toEqual(['azul', 'branco', 'cão', 'gato', 'preto', 'verde', 'vermelho']);
     });
 
-    it('asks Portuguese → English with four options, wrong ones from the same category', () => {
+    it('asks Portuguese → English with four English options', () => {
         const quiz = makeVocab();
         quiz.startQuickPractice();
         expect(quiz.ENtoPT).toBe(false);
         const options = quiz.getOptions('Cores|||azul|||blue');
         expect(options).toHaveLength(4);
         expect(options).toContain('blue');
-        expect(options.every(o => Object.values(VOCAB.Cores).includes(o))).toBe(true);
+        const english = Object.values(VOCAB).flatMap(words => Object.values(words));
+        expect(options.every(o => english.includes(o))).toBe(true);
         expect(quiz.getCorrectAnswer('Cores|||azul|||blue')).toBe('blue');
     });
 
-    it('falls back to other categories when a category is too small', () => {
+    it('offers Portuguese options when a normal session asks English → Portuguese', () => {
         const quiz = makeVocab();
-        quiz.startQuickPractice();
+        quiz.ENtoPT = true;
         const options = quiz.getOptions('Animais|||cão|||dog');
         expect(options).toHaveLength(4);
-        expect(options).toContain('dog');
-        expect(options).toContain('cat');
-    });
-
-    it('keeps typed answers for a normal session', () => {
-        const quiz = makeVocab();
-        expect(quiz.getOptions('Cores|||azul|||blue')).toBeNull();
+        expect(options).toContain('cão');
+        const portuguese = Object.values(VOCAB).flatMap(words => Object.keys(words));
+        expect(options.every(o => portuguese.includes(o))).toBe(true);
     });
 });
 

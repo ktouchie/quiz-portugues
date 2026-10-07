@@ -105,3 +105,20 @@ export function isItemDue(state, key) {
     const item = state[key];
     return item ? (item.nextReview > 0 && item.nextReview <= Date.now()) : false;
 }
+
+/** Correct reviews in a row an item needs before it's asked as a typed answer. */
+export const PRODUCTION_MIN_REPETITIONS = 3;
+
+/** SM-2 interval (days) an item needs before it's asked as a typed answer. */
+export const PRODUCTION_MIN_INTERVAL_DAYS = 6;
+
+/**
+ * Whether an item is known well enough to be typed rather than picked from options (same rule as
+ * the Android app's srs/Production.kt). A wrong answer resets repetitions to 0, so a missed item
+ * goes back to multiple choice by itself until it's earned again.
+ * @param {SRSItem|undefined} item
+ * @returns {boolean}
+ */
+export function isReadyForTyping(item) {
+    return !!item && item.repetitions >= PRODUCTION_MIN_REPETITIONS && item.interval >= PRODUCTION_MIN_INTERVAL_DAYS;
+}

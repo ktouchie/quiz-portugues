@@ -1,7 +1,13 @@
 import { addSelectAll } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
-import { buildOptions } from './practice.js';
+import { buildGatedQuickPracticePool, buildOptions, stringSimilarity } from './practice.js';
+import { getDueItems } from './srs.js';
+import { vocabularyCategoryLevel } from './cefr.js';
+
+/** How many of the most confusable words the three wrong options are drawn from, so the same
+ *  word doesn't always get the same options (same as the Android app). */
+const CONFUSABLE_SHORTLIST_SIZE = 8;
 
 export class VocabQuiz extends QuizBase {
     constructor() {
@@ -47,18 +53,39 @@ export class VocabQuiz extends QuizBase {
         return this._itemsFor(Object.keys(this.data));
     }
 
-    /** Quick Practice asks Portuguese → English with multiple-choice options, as on Android. */
+    /** Quick Practice asks Portuguese → English, from unlocked CEFR tiers only, as on Android. */
     startQuickPractice() {
         this.ENtoPT = false;
-        super.startQuickPractice();
+        this.quickPractice = true;
+        const dueKeys = new Set(getDueItems(this.srsState));
+        this.startQuiz(buildGatedQuickPracticePool(
+            this.getAllItems(), dueKeys, this.srsState, item => vocabularyCategoryLevel(item.category),
+        ));
     }
 
+    /**
+     * Wrong options are the words most easily confused with this one (same as the Android app):
+     * every other word is scored by the closer of two spellings, its answer-language word against
+     * the prompt (false friends, e.g. "constipation" for "constipação") and its Portuguese word
+     * against this Portuguese word (look-alikes, e.g. "irmã" for "irmão"). The options come from
+     * the top few at random.
+     */
     getOptions(key) {
-        if (!this.quickPractice) return null;
-        const [category, , enWord] = key.split('|||');
-        const sameCategory = Object.values(this.data[category]);
-        const everything = Object.values(this.data).flatMap(words => Object.values(words));
-        return buildOptions(enWord, sameCategory, everything);
+        const [, ptWord, enWord] = key.split('|||');
+        const prompt = this.ENtoPT ? enWord : ptWord;
+        const answerOf = (item) => (this.ENtoPT ? item.ptWord : item.enWord);
+        const ranked = this.getAllItems()
+            .filter(item => item.key !== key)
+            .map(item => ({
+                answer: answerOf(item),
+                score: Math.max(stringSimilarity(ptWord, item.ptWord), stringSimilarity(prompt, answerOf(item))),
+            }))
+            .sort((a, b) => b.score - a.score)
+            .map(c => c.answer);
+        return buildOptions(this.getCorrectAnswer(key), [
+            ranked.slice(0, CONFUSABLE_SHORTLIST_SIZE),
+            ranked.slice(CONFUSABLE_SHORTLIST_SIZE),
+        ]);
     }
 
     _itemsFor(categories) {
