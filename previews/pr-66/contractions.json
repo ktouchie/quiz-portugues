@@ -1,0 +1,62 @@
+{
+  "de + artigo definido": [
+    { "parts": ["de", "o"], "answer": "do", "example": "O livro é do professor.", "english": "The book belongs to the teacher.", "hint": "de + o = do" },
+    { "parts": ["de", "a"], "answer": "da", "example": "A chave da porta.", "english": "The key of the door.", "hint": "de + a = da" },
+    { "parts": ["de", "os"], "answer": "dos", "example": "O nome dos alunos.", "english": "The name of the students.", "hint": "de + os = dos" },
+    { "parts": ["de", "as"], "answer": "das", "example": "A cor das paredes.", "english": "The colour of the walls.", "hint": "de + as = das" }
+  ],
+  "em + artigo definido": [
+    { "parts": ["em", "o"], "answer": "no", "example": "Ele vive no Porto.", "english": "He lives in Porto.", "hint": "em + o = no" },
+    { "parts": ["em", "a"], "answer": "na", "example": "Ela trabalha na escola.", "english": "She works at the school.", "hint": "em + a = na" },
+    { "parts": ["em", "os"], "answer": "nos", "example": "Nos últimos anos, muito mudou.", "english": "In the last few years, much has changed.", "hint": "em + os = nos" },
+    { "parts": ["em", "as"], "answer": "nas", "example": "Nas férias fui ao Algarve.", "english": "On holiday I went to the Algarve.", "hint": "em + as = nas" }
+  ],
+  "a + artigo definido": [
+    { "parts": ["a", "o"], "answer": "ao", "example": "Vou ao supermercado.", "english": "I'm going to the supermarket.", "hint": "a + o = ao" },
+    { "parts": ["a", "a"], "answer": "à", "example": "Vou à farmácia.", "english": "I'm going to the pharmacy.", "hint": "a + a = à" },
+    { "parts": ["a", "os"], "answer": "aos", "example": "Ele vai aos jogos.", "english": "He goes to the matches.", "hint": "a + os = aos" },
+    { "parts": ["a", "as"], "answer": "às", "example": "Ela chega às oito.", "english": "She arrives at eight.", "hint": "a + as = às" }
+  ],
+  "por + artigo definido": [
+    { "parts": ["por", "o"], "answer": "pelo", "example": "Passei pelo parque.", "english": "I went through the park.", "hint": "por + o = pelo" },
+    { "parts": ["por", "a"], "answer": "pela", "example": "Caminhámos pela praia.", "english": "We walked along the beach.", "hint": "por + a = pela" },
+    { "parts": ["por", "os"], "answer": "pelos", "example": "Agradecemos pelos presentes.", "english": "We are grateful for the presents.", "hint": "por + os = pelos" },
+    { "parts": ["por", "as"], "answer": "pelas", "example": "Ela luta pelas crianças.", "english": "She fights for the children.", "hint": "por + as = pelas" }
+  ],
+  "em + artigo indefinido": [
+    { "parts": ["em", "um"], "answer": "num", "example": "Vivo num apartamento pequeno.", "english": "I live in a small flat.", "hint": "em + um = num" },
+    { "parts": ["em", "uma"], "answer": "numa", "example": "Trabalho numa empresa grande.", "english": "I work in a large company.", "hint": "em + uma = numa" },
+    { "parts": ["em", "uns"], "answer": "nuns", "example": "Encontrei-o nuns documentos antigos.", "english": "I found it in some old documents.", "hint": "em + uns = nuns" },
+    { "parts": ["em", "umas"], "answer": "numas", "example": "Numas situações é melhor esperar.", "english": "In some situations it's better to wait.", "hint": "em + umas = numas" }
+  ],
+  "de + demonstrativo": [
+    { "parts": ["de", "este"], "answer": "deste", "example": "Gosto deste livro.", "english": "I like this book.", "hint": "de + este = deste (EP demonstrativo proximal)" },
+    { "parts": ["de", "esta"], "answer": "desta", "example": "Preciso desta caneta.", "english": "I need this pen.", "hint": "de + esta = desta" },
+    { "parts": ["de", "estes"], "answer": "destes", "example": "Quais destes preferes?", "english": "Which of these do you prefer?", "hint": "de + estes = destes" },
+    { "parts": ["de", "estas"], "answer": "destas", "example": "Uma destas opções é correta.", "english": "One of these options is correct.", "hint": "de + estas = destas" },
+    { "parts": ["de", "esse"], "answer": "desse", "example": "Não gosto desse barulho.", "english": "I don't like that noise.", "hint": "de + esse = desse" },
+    { "parts": ["de", "essa"], "answer": "dessa", "example": "Preciso dessa informação.", "english": "I need that information.", "hint": "de + essa = dessa" },
+    { "parts": ["de", "aquele"], "answer": "daquele", "example": "Vens daquele sítio?", "english": "Are you coming from that place (over there)?", "hint": "de + aquele = daquele" },
+    { "parts": ["de", "aquela"], "answer": "daquela", "example": "É daquela época.", "english": "It's from that era.", "hint": "de + aquela = daquela" },
+    { "parts": ["de", "aqui"], "answer": "daqui", "example": "Daqui a pouco saio.", "english": "I'll leave shortly.", "hint": "de + aqui = daqui" },
+    { "parts": ["de", "ali"], "answer": "dali", "example": "Ele veio dali mesmo.", "english": "He came from right over there.", "hint": "de + ali = dali" },
+    { "parts": ["de", "aí"], "answer": "daí", "example": "Daí resulta a confusão.", "english": "Hence the confusion.", "hint": "de + aí = daí" }
+  ],
+  "em + demonstrativo": [
+    { "parts": ["em", "este"], "answer": "neste", "example": "Neste momento estou ocupado.", "english": "At this moment I am busy.", "hint": "em + este = neste" },
+    { "parts": ["em", "esta"], "answer": "nesta", "example": "Nesta cidade há muito para ver.", "english": "In this city there is a lot to see.", "hint": "em + esta = nesta" },
+    { "parts": ["em", "esse"], "answer": "nesse", "example": "Nesse caso, concordo.", "english": "In that case, I agree.", "hint": "em + esse = nesse" },
+    { "parts": ["em", "essa"], "answer": "nessa", "example": "Nessa altura já era tarde.", "english": "At that point it was already late.", "hint": "em + essa = nessa" },
+    { "parts": ["em", "aquele"], "answer": "naquele", "example": "Naquele tempo as coisas eram diferentes.", "english": "In those days things were different.", "hint": "em + aquele = naquele" },
+    { "parts": ["em", "aquela"], "answer": "naquela", "example": "Vivíamos naquela rua.", "english": "We used to live on that street.", "hint": "em + aquela = naquela" },
+    { "parts": ["em", "aqui"], "answer": "aqui", "example": "Fique aqui, por favor.", "english": "Please stay here.", "hint": "em + aqui: aqui já incorpora a preposição" },
+    { "parts": ["em", "isso"], "answer": "nisso", "example": "Nisso tens razão.", "english": "In that respect you are right.", "hint": "em + isso = nisso" },
+    { "parts": ["em", "aquilo"], "answer": "naquilo", "example": "Naquilo que disseste há verdade.", "english": "In what you said there is truth.", "hint": "em + aquilo = naquilo" }
+  ],
+  "a + demonstrativo": [
+    { "parts": ["a", "aquele"], "answer": "àquele", "example": "Refiro-me àquele senhor.", "english": "I am referring to that gentleman.", "hint": "a + aquele = àquele" },
+    { "parts": ["a", "aquela"], "answer": "àquela", "example": "Vou àquela mercearia.", "english": "I'm going to that grocery shop.", "hint": "a + aquela = àquela" },
+    { "parts": ["a", "aqueles"], "answer": "àqueles", "example": "Pertence àqueles tempos.", "english": "It belongs to those times.", "hint": "a + aqueles = àqueles" },
+    { "parts": ["a", "aquelas"], "answer": "àquelas", "example": "Assisti àquelas palestras.", "english": "I attended those lectures.", "hint": "a + aquelas = àquelas" }
+  ]
+}
