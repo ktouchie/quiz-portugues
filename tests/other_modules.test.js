@@ -88,7 +88,10 @@ describe('multiple-choice options', () => {
     it('ser/estar/ficar: offers the same person of the other two verbs first', () => {
         expect(serEstarFicarVerbDistractors('sou')).toEqual(['estou', 'fiquei']);
         expect(serEstarFicarVerbDistractors('ficou')).toEqual(['é', 'está']);
+        expect(serEstarFicarVerbDistractors('fica')).toEqual(['é', 'está']);
         expect(serEstarFicarVerbDistractors('xyz')).toEqual([]);
+        const answers = Object.values(readJson('ser_estar_ficar.json')).flat().map(e => e.answer);
+        expect(answers.filter(a => serEstarFicarVerbDistractors(a).length === 0)).toEqual([]);
         const quiz = make(SerEstarFicarQuiz, 'ser_estar_ficar.json');
         const item = quiz.getAllItems().find(i => i.answer === 'é');
         quiz.itemData = { [item.key]: item };
