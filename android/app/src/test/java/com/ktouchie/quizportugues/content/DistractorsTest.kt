@@ -36,6 +36,7 @@ class DistractorsTest {
 
     @Test
     fun returnsFewerWhenThereAreNotEnoughCandidates() {
-        assertEquals(listOf("b"), pickDistractors("a", listOf(listOf("a", "b", "B"))))
+        // "b" and "B" read the same, so only one of them is kept; which one depends on the shuffle.
+        assertEquals(listOf("b"), pickDistractors("a", listOf(listOf("a", "b", "B"))).map { it.lowercase() })
     }
 }
