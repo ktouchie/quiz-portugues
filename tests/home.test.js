@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { cwd } from 'node:process';
-import { verbItemKeys, vocabularyItemKeys, seenPercent, renderModuleCard, addProgressBar, setDueCount, dueAmong, MODULES } from '../home.js';
+import { verbItemKeys, vocabularyItemKeys, seenPercent, renderModuleCard, addProgressBar, setDueCount, dueAmong, renderHome, MODULES } from '../home.js';
+import { pruneRecords } from '../srs.js';
 import { VerbQuiz } from '../script.js';
 import { VocabQuiz } from '../vocabulary_quiz.js';
 
@@ -73,5 +74,49 @@ describe('records left behind by renamed words', () => {
         quiz.srsState = { 'Adjetivos|||baixo|||short': { nextReview: past }, 'Cores|||azul|||blue': { nextReview: past } };
         quiz._updateDueCount();
         expect(document.getElementById('srs-due-count').textContent).toBe('1 item para rever hoje');
+    });
+});
+
+describe('deleting records left behind by renamed words', () => {
+    const OLD = 'Adjetivos|||baixo|||short';
+    const NEW = 'Adjetivos|||baixo|||short (height)';
+    const record = { interval: 3, repetitions: 2, easeFactor: 2.5, nextReview: Date.now() - 1000 };
+    const vocab = { Adjetivos: { baixo: 'short (height)' } };
+
+    beforeEach(() => {
+        localStorage.clear();
+        localStorage.setItem('srs_vocab', JSON.stringify({ [OLD]: record, [NEW]: record }));
+        localStorage.setItem('srs_verbs', JSON.stringify({ 'ser|||participios_passados|||ter': record }));
+    });
+    afterEach(() => vi.unstubAllGlobals());
+
+    it('pruneRecords removes only keys that are not current', () => {
+        const state = { [OLD]: record, [NEW]: record };
+        expect(pruneRecords(state, new Set([NEW]))).toBe(1);
+        expect(Object.keys(state)).toEqual([NEW]);
+        expect(pruneRecords(state, new Set([NEW]))).toBe(0);
+    });
+
+    it('happens when the vocabulary quiz opens', () => {
+        document.body.innerHTML = '<div id="categories"></div>';
+        const quiz = new VocabQuiz();
+        quiz.data = vocab;
+        quiz.srsState = JSON.parse(localStorage.getItem('srs_vocab'));
+        quiz.setupUI();
+        expect(Object.keys(JSON.parse(localStorage.getItem('srs_vocab')))).toEqual([NEW]);
+    });
+
+    it('happens on the home page, which then shows the corrected mastered count, and leaves verbs alone', async () => {
+        document.body.innerHTML = `
+            <span id="streak-pill"></span><span id="streak-count"></span><span id="mastered-count"></span>
+            <nav id="module-list"></nav>`;
+        vi.stubGlobal('fetch', async (file) => ({
+            ok: true,
+            json: async () => (file === 'vocabulary.json' ? vocab : { ser: { presente: ['sou', 'és', 'é', 'somos', 'são'] } }),
+        }));
+        await renderHome();
+        expect(Object.keys(JSON.parse(localStorage.getItem('srs_vocab')))).toEqual([NEW]);
+        expect(Object.keys(JSON.parse(localStorage.getItem('srs_verbs')))).toEqual(['ser|||participios_passados|||ter']);
+        expect(document.getElementById('mastered-count').textContent).toBe('2');
     });
 });

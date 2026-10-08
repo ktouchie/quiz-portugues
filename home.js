@@ -1,5 +1,5 @@
 import { loadStreak, getTotalMastered } from './gamification.js';
-import { loadSRSState, getDueItems } from './srs.js';
+import { loadSRSState, saveSRSState, getDueItems, pruneRecords } from './srs.js';
 import { PERSONS, STORAGE_KEYS, TENSE_LABELS } from './config.js';
 
 /**
@@ -49,7 +49,8 @@ const srsKeyFor = (bestScoreKey) => bestScoreKey.replace('bestScore_', 'srs_');
 
 /**
  * The home page's module cards. `progress` loads the module's content and returns its item keys;
- * modules without it show their due count only, until they get Quick Practice too.
+ * modules without it show their due count only, until they get Quick Practice too. `pruneStale`
+ * deletes records for items that no longer exist.
  */
 export const MODULES = [
     {
@@ -59,6 +60,9 @@ export const MODULES = [
     {
         title: 'Vocabulário', icon: '📚', href: 'vocabulary_quiz.html', storageKey: STORAGE_KEYS.vocab,
         progress: async () => vocabularyItemKeys(await fetchJson('vocabulary.json')),
+        // Every vocabulary record should match a current word (see pruneRecords). Not verbs: the
+        // Avançado setup also records participles, which progress() leaves out.
+        pruneStale: true,
     },
     { title: 'Género e Plural', icon: '🔤', href: 'gender_quiz.html', storageKey: STORAGE_KEYS.gender },
     { title: 'Ser / Estar / Ficar', icon: '⚖️', href: 'ser_estar_ficar_quiz.html', storageKey: STORAGE_KEYS.serEstarFicar },
@@ -164,6 +168,11 @@ export async function renderHome() {
         if (!module.progress) return null;
         return module.progress()
             .then(keys => {
+                const srsKey = srsKeyFor(module.storageKey);
+                if (module.pruneStale && keys.length > 0 && pruneRecords(srsState, new Set(keys)) > 0) {
+                    saveSRSState(srsKey, srsState);
+                    document.getElementById('mastered-count').textContent = String(getTotalMastered());
+                }
                 setDueCount(card, dueAmong(keys, srsState));
                 addProgressBar(card, seenPercent(keys, srsState));
             })

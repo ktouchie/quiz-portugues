@@ -25,6 +25,9 @@ interface SrsRecordDao {
 
     @Upsert
     suspend fun upsert(record: SrsRecordEntity)
+
+    @Query("DELETE FROM srs_records WHERE item_id IN (:itemIds)")
+    suspend fun deleteAll(itemIds: List<String>)
 }
 
 @Dao
