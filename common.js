@@ -90,6 +90,12 @@ export function updateBestScore(storageKey, score) {
     const isRecord = isNaN(prev) || score > prev;
     if (isRecord) localStorage.setItem(storageKey, score);
     const best = isRecord ? score : prev;
+    renderBestScore(isRecord, best);
+    return { isRecord, best };
+}
+
+/** Shows the best-score line in the interface language (also after a language change). */
+export function renderBestScore(isRecord, best) {
     const el = document.getElementById('best-score');
     if (!el) return;
     el.textContent = t(isRecord ? 'result.newBest' : 'result.best', { n: best });

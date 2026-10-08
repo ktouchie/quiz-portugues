@@ -10,6 +10,9 @@ export const LANGUAGES = ['en', 'pt'];
 export const DEFAULT_LANGUAGE = 'en';
 const STORAGE_KEY = 'language';
 
+/** The choice made on this page when the browser won't store it (e.g. blocked storage). */
+let unsavedLanguage = null;
+
 const plural = (n, one, many) => (n === 1 ? one : many);
 
 /** @type {Object.<string, { en: string|Function, pt: string|Function }>} */
@@ -212,6 +215,7 @@ export const STRINGS = {
 
 /** @returns {'en'|'pt'} */
 export function getLanguage() {
+    if (unsavedLanguage) return unsavedLanguage;
     try {
         return localStorage.getItem(STORAGE_KEY) === 'pt' ? 'pt' : DEFAULT_LANGUAGE;
     } catch {
@@ -224,7 +228,10 @@ export function setLanguage(language) {
     if (!LANGUAGES.includes(language)) throw new Error(`Unknown language "${language}"`);
     try {
         localStorage.setItem(STORAGE_KEY, language);
-    } catch { /* still switches for this page */ }
+        unsavedLanguage = null;
+    } catch {
+        unsavedLanguage = language; // still switches, for this page
+    }
     document.documentElement.lang = language === 'pt' ? 'pt-PT' : 'en';
     applyTranslations();
     document.dispatchEvent(new window.CustomEvent('languagechange', { detail: { language } }));

@@ -186,3 +186,69 @@ describe('switching language mid-quiz', () => {
         expect(document.getElementById('progress-percentage').textContent).toMatch(/^Progresso/);
     });
 });
+
+describe('review fixes', () => {
+    it('still switches when the browser blocks storage', () => {
+        const setItem = vi.spyOn(window.Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('blocked'); });
+        setLanguage('pt');
+        expect(getLanguage()).toBe('pt');
+        expect(t('home.nothingDue')).toBe('Nada por rever');
+        setItem.mockRestore();
+        setLanguage('en'); // storable again: back to the normal path
+        expect(getLanguage()).toBe('en');
+    });
+
+    function quizDom() {
+        document.body.innerHTML = `
+            <div id="setup"></div><div id="quiz" class="hidden"></div><div id="result" class="hidden"></div>
+            <div id="score-display"></div><div id="timer-display"></div><p id="question"></p>
+            <div id="answer-container"><input id="answer"><button id="submit-answer"></button></div>
+            <button id="next-question"></button><p id="feedback"></p>
+            <div id="progress-bar"></div><p id="progress-percentage"></p>
+            <p id="total-score"></p><p id="quiz-time"></p><p id="accuracy"></p><p id="best-score"></p>
+            <ol id="top-mistakes"></ol><button id="retry-mistakes" class="hidden"></button>`;
+    }
+
+    class Hinted extends QuizBase {
+        constructor() { super('bestScore_hinted'); }
+        async fetchData() { return {}; }
+        getSelectedItems() { return [{ key: 'a' }]; }
+        renderQuestion() {}
+        getCorrectAnswer() { return 'x'; }
+        getHint() { return getVerbHint('futuro', 'falar', '0'); }
+        formatMistake() { return document.createElement('li'); }
+    }
+
+    it('redraws the feedback for the last answer in the new language', () => {
+        vi.useFakeTimers();
+        quizDom();
+        const quiz = new Hinted();
+        quiz.timerState.timerDisplay = document.getElementById('timer-display');
+        quiz.startQuiz();
+        quiz.submitAnswer('wrong');
+        expect(document.getElementById('feedback').textContent).toMatch(/^Wrong\..*The future/);
+        setLanguage('pt');
+        quiz._onLanguageChange();
+        expect(document.getElementById('feedback').textContent).toMatch(/^Errado\..*O futuro/);
+        vi.useRealTimers();
+    });
+
+    it('redraws the results in the new language', () => {
+        vi.useFakeTimers();
+        quizDom();
+        const quiz = new Hinted();
+        quiz.timerState.timerDisplay = document.getElementById('timer-display');
+        quiz.startQuiz();
+        quiz.submitAnswer('wrong');
+        quiz.endQuiz();
+        expect(document.getElementById('total-score').textContent).toBe('Correct: 0 | Wrong: 1');
+        expect(document.getElementById('retry-mistakes').textContent).toBe('Practise mistakes (1)');
+        setLanguage('pt');
+        quiz._onLanguageChange();
+        expect(document.getElementById('total-score').textContent).toBe('Corretas: 0 | Erros: 1');
+        expect(document.getElementById('retry-mistakes').textContent).toBe('Praticar erros (1)');
+        expect(document.getElementById('best-score').textContent).toMatch(/^Novo recorde/);
+        expect(document.getElementById('accuracy').dataset.label).toBe('PRECISÃO');
+        vi.useRealTimers();
+    });
+});
