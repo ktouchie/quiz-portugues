@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        Compose owns the app's actual color scheme (see ui/theme/Theme.kt). This XML theme only
+        needs to exist so the manifest has a valid android:theme to reference before Compose
+        content is set, and so the system splash/launch screen behaves reasonably.
+    -->
+    <style name="Theme.QuizPortugues" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

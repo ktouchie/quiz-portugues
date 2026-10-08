@@ -1,0 +1,202 @@
+[
+  {
+    "direct": "«Estou cansada.»",
+    "context": "Ela disse:",
+    "verb_direct": "estou",
+    "answer": "estava",
+    "rule": "presente → imperfeito",
+    "indirect_full": "Ela disse que estava cansada.",
+    "english": "She said that she was tired.",
+    "hint": "Presente do indicativo → imperfeito do indicativo em discurso indireto"
+  },
+  {
+    "direct": "«Vou ao mercado.»",
+    "context": "Ele disse:",
+    "verb_direct": "vou",
+    "answer": "ia",
+    "rule": "presente → imperfeito",
+    "indirect_full": "Ele disse que ia ao mercado.",
+    "english": "He said he was going to the market.",
+    "hint": "Presente de ir → imperfeito: vou → ia"
+  },
+  {
+    "direct": "«Já comi.»",
+    "context": "Ela contou que:",
+    "verb_direct": "comi",
+    "answer": "tinha comido",
+    "rule": "pretérito → pretérito mais-que-perfeito composto",
+    "indirect_full": "Ela contou que já tinha comido.",
+    "english": "She said she had already eaten.",
+    "hint": "Pretérito → pretérito mais-que-perfeito composto (tinha + particípio)"
+  },
+  {
+    "direct": "«Vou fazer a tarefa amanhã.»",
+    "context": "Ele disse:",
+    "verb_direct": "vou fazer",
+    "answer": "ia fazer",
+    "rule": "ir + inf (futuro próximo) → ia + inf",
+    "indirect_full": "Ele disse que ia fazer a tarefa no dia seguinte.",
+    "english": "He said he was going to do the task the following day.",
+    "hint": "vou + infinitivo → ia + infinitivo em discurso indireto"
+  },
+  {
+    "direct": "«Fiz tudo o que pedi.»",
+    "context": "Ela explicou que:",
+    "verb_direct": "fiz",
+    "answer": "tinha feito",
+    "rule": "pretérito → pretérito mais-que-perfeito composto",
+    "indirect_full": "Ela explicou que tinha feito tudo o que pedira.",
+    "english": "She explained she had done everything she had asked for.",
+    "hint": "Pretérito de fazer → tinha feito (mais-que-perfeito composto)"
+  },
+  {
+    "direct": "«Posso ajudar.»",
+    "context": "Ele disse:",
+    "verb_direct": "posso",
+    "answer": "podia",
+    "rule": "presente → imperfeito",
+    "indirect_full": "Ele disse que podia ajudar.",
+    "english": "He said he could help.",
+    "hint": "Presente de poder → imperfeito: posso → podia"
+  },
+  {
+    "direct": "«Não sei a resposta.»",
+    "context": "Ela admitiu que:",
+    "verb_direct": "sei",
+    "answer": "sabia",
+    "rule": "presente → imperfeito",
+    "indirect_full": "Ela admitiu que não sabia a resposta.",
+    "english": "She admitted she didn't know the answer.",
+    "hint": "Presente de saber → imperfeito: sei → sabia"
+  },
+  {
+    "direct": "«Estive em Paris.»",
+    "context": "Ela contou que:",
+    "verb_direct": "estive",
+    "answer": "tinha estado",
+    "rule": "pretérito → pretérito mais-que-perfeito composto",
+    "indirect_full": "Ela contou que tinha estado em Paris.",
+    "english": "She said she had been to Paris.",
+    "hint": "Pretérito de estar → tinha estado"
+  },
+  {
+    "direct": "«Estou a estudar.»",
+    "context": "Ele disse:",
+    "verb_direct": "estou a estudar",
+    "answer": "estava a estudar",
+    "rule": "estar a + inf (presente) → estar a + inf (imperfeito)",
+    "indirect_full": "Ele disse que estava a estudar.",
+    "english": "He said he was studying.",
+    "hint": "EP: estar a + infinitivo (presente) → estava a + infinitivo em discurso indireto"
+  },
+  {
+    "direct": "«Vou telefonar amanhã.»",
+    "context": "Ela disse:",
+    "verb_direct": "vou telefonar",
+    "answer": "ia telefonar",
+    "rule": "ir + inf → ia + inf",
+    "indirect_full": "Ela disse que ia telefonar no dia seguinte.",
+    "english": "She said she was going to call the next day.",
+    "hint": "vou + infinitivo → ia + infinitivo; 'amanhã' → 'no dia seguinte'"
+  },
+  {
+    "direct": "«Quero falar contigo.»",
+    "context": "Ele disse:",
+    "verb_direct": "quero",
+    "answer": "queria",
+    "rule": "presente → imperfeito",
+    "indirect_full": "Ele disse que queria falar comigo.",
+    "english": "He said he wanted to talk to me.",
+    "hint": "Presente de querer → imperfeito: quero → queria"
+  },
+  {
+    "direct": "«Nunca fiz isso.»",
+    "context": "Ele jurou que:",
+    "verb_direct": "fiz",
+    "answer": "tinha feito",
+    "rule": "pretérito → pretérito mais-que-perfeito composto",
+    "indirect_full": "Ele jurou que nunca tinha feito isso.",
+    "english": "He swore he had never done that.",
+    "hint": "Pretérito de fazer → tinha feito"
+  },
+  {
+    "direct": "«Tenho muito trabalho.»",
+    "context": "Ela explicou que:",
+    "verb_direct": "tenho",
+    "answer": "tinha",
+    "rule": "presente → imperfeito",
+    "indirect_full": "Ela explicou que tinha muito trabalho.",
+    "english": "She explained she had a lot of work.",
+    "hint": "Presente de ter → imperfeito: tenho → tinha"
+  },
+  {
+    "direct": "«Vi o acidente.»",
+    "context": "A testemunha disse que:",
+    "verb_direct": "vi",
+    "answer": "tinha visto",
+    "rule": "pretérito → pretérito mais-que-perfeito composto",
+    "indirect_full": "A testemunha disse que tinha visto o acidente.",
+    "english": "The witness said she had seen the accident.",
+    "hint": "Pretérito de ver → tinha visto"
+  },
+  {
+    "direct": "«Vou ficar em casa.»",
+    "context": "Ela disse:",
+    "verb_direct": "vou ficar",
+    "answer": "ia ficar",
+    "rule": "ir + inf → ia + inf",
+    "indirect_full": "Ela disse que ia ficar em casa.",
+    "english": "She said she was going to stay home.",
+    "hint": "vou + infinitivo → ia + infinitivo"
+  },
+  {
+    "direct": "«Não consigo dormir.»",
+    "context": "Ele disse:",
+    "verb_direct": "consigo",
+    "answer": "conseguia",
+    "rule": "presente → imperfeito",
+    "indirect_full": "Ele disse que não conseguia dormir.",
+    "english": "He said he couldn't sleep.",
+    "hint": "Presente de conseguir → imperfeito: consigo → conseguia"
+  },
+  {
+    "direct": "«Vim de propósito.»",
+    "context": "Ela afirmou que:",
+    "verb_direct": "vim",
+    "answer": "tinha vindo",
+    "rule": "pretérito → pretérito mais-que-perfeito composto",
+    "indirect_full": "Ela afirmou que tinha vindo de propósito.",
+    "english": "She stated she had come on purpose.",
+    "hint": "Pretérito de vir → tinha vindo"
+  },
+  {
+    "direct": "«Está a chover.»",
+    "context": "Ela disse:",
+    "verb_direct": "está a chover",
+    "answer": "estava a chover",
+    "rule": "estar a + inf (presente) → estar a + inf (imperfeito)",
+    "indirect_full": "Ela disse que estava a chover.",
+    "english": "She said it was raining.",
+    "hint": "EP: está a chover → estava a chover em discurso indireto"
+  },
+  {
+    "direct": "«Dei o livro à professora.»",
+    "context": "Ele disse que:",
+    "verb_direct": "dei",
+    "answer": "tinha dado",
+    "rule": "pretérito → pretérito mais-que-perfeito composto",
+    "indirect_full": "Ele disse que tinha dado o livro à professora.",
+    "english": "He said he had given the book to the teacher.",
+    "hint": "Pretérito de dar → tinha dado"
+  },
+  {
+    "direct": "«Há muito barulho aqui.»",
+    "context": "Ela queixou-se de que:",
+    "verb_direct": "há",
+    "answer": "havia",
+    "rule": "presente → imperfeito",
+    "indirect_full": "Ela queixou-se de que havia muito barulho ali.",
+    "english": "She complained that there was a lot of noise there.",
+    "hint": "Presente há (haver impessoal) → imperfeito havia"
+  }
+]
