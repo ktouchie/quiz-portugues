@@ -69,7 +69,7 @@ export function buildGatedQuickPracticePool(items, dueKeys, srsState, levelOf, c
 }
 
 /** Lower-cased, NFC-normalised form used to compare answers. */
-const normalise = (text) => text.trim().toLowerCase().normalize('NFC');
+export const normalise = (text) => text.trim().toLowerCase().normalize('NFC');
 
 /**
  * Whether a typed answer matches the expected one, ignoring case, surrounding spaces and Unicode

@@ -397,7 +397,7 @@ button.option--wrong .option-badge {
     margin-bottom: 8px;
 }
 
-#categories {
+#tenses, #categories {
     display: flex;
     flex-wrap: wrap;
     gap: 4px 20px;

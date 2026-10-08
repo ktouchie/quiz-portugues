@@ -4,7 +4,8 @@
  * so both apps open up content in the same order. Hand-assigned and approximate: A1 is presente
  * plus concrete, high-frequency topics; later tiers add less frequent verbs, harder tenses and more
  * abstract topics. Every verb, tense and category must be listed: a missing one throws instead of
- * silently landing in some tier (tests/cefr.test.js checks the content files against these maps).
+ * silently landing in some tier (tests/smarter_questions.test.js checks the content files against these
+ * maps, and that they match the Android app's).
  *
  * @typedef {'A1'|'A2'|'B1'|'B2'|'C1'|'C2'} CefrLevel
  */
