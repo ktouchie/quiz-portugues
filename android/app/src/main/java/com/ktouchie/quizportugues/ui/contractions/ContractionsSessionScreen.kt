@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ktouchie.quizportugues.content.QuestionModality
+import com.ktouchie.quizportugues.content.maskAnswer
 import com.ktouchie.quizportugues.ui.common.AccuracyRing
 import com.ktouchie.quizportugues.ui.common.GradientProgressBar
 import com.ktouchie.quizportugues.ui.common.MilestoneBanner
@@ -119,7 +120,9 @@ private fun InProgressContent(
                 chipLabel = LocalStrings.current.categoryName(state.item.category),
                 prompt = LocalStrings.current.contractionQuestion(state.item.prep, state.item.article),
             )
-            val caption = listOfNotNull(state.item.example, state.item.english).joinToString(" — ")
+            // The example is blanked until answered: it would otherwise give the answer away.
+            val example = state.item.example?.let { if (state.feedback == null) maskAnswer(it, state.item.answer) else it }
+            val caption = listOfNotNull(example, state.item.english).joinToString(" — ")
             if (caption.isNotEmpty()) {
                 Text(
                     text = caption,

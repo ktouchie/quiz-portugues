@@ -1,7 +1,13 @@
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { getGenderHint } from './grammar_hints.js';
-import { appendTemplate, t } from './i18n.js';
+import { appendTemplate, categorySpan, t } from './i18n.js';
+import { addSelectAll, getCheckedValues } from './common.js';
+import { buildOptions, stringSimilarity } from './practice.js';
+import { genderCategoryLevel } from './cefr.js';
+
+/** How many of the most similar answers the wrong options are drawn from (as on Android). */
+const CONFUSABLE_SHORTLIST_SIZE = 8;
 
 export class GenderQuiz extends QuizBase {
     constructor() {
@@ -14,13 +20,59 @@ export class GenderQuiz extends QuizBase {
         return res.json();
     }
 
+    setupUI() {
+        const categoryDiv = document.getElementById('categories');
+        if (!categoryDiv) return;
+        Object.keys(this.data).forEach(category => {
+            const label = document.createElement('label');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = category;
+            label.appendChild(cb);
+            label.append(' ', categorySpan(category));
+            categoryDiv.appendChild(label);
+        });
+        addSelectAll('categories');
+    }
+
     getSelectedItems() {
+        const selected = getCheckedValues('categories');
+        if (selected.length === 0) {
+            alert(t('quiz.selectCategory'));
+            return null;
+        }
+        return this._itemsFor(selected);
+    }
+
+    getAllItems() {
+        return this._itemsFor(Object.keys(this.data));
+    }
+
+    /** Quick Practice is gated by CEFR tier, as on Android. */
+    getItemLevel(item) {
+        return genderCategoryLevel(item.category);
+    }
+
+    /**
+     * Wrong options are the other answers spelt most like this one (same as the Android app):
+     * the top few by stringSimilarity, at random.
+     */
+    getOptions(key) {
+        const answer = this.getCorrectAnswer(key);
+        const ranked = [...new Set(this.getAllItems().map(item => item.answer))]
+            .filter(other => other !== answer)
+            .sort((a, b) => stringSimilarity(answer, b) - stringSimilarity(answer, a));
+        return buildOptions(answer, [ranked.slice(0, CONFUSABLE_SHORTLIST_SIZE), ranked.slice(CONFUSABLE_SHORTLIST_SIZE)]);
+    }
+
+    _itemsFor(categories) {
         const items = [];
-        for (const category of Object.keys(this.data)) {
+        for (const category of categories) {
             this.data[category].forEach((word, index) => {
                 if (word.feminine !== null) {
                     items.push({
                         key: `${category}|||${index}|||f`,
+                        category,
                         masculine: word.masculine,
                         english: word.english,
                         label: 'feminino',
@@ -29,6 +81,7 @@ export class GenderQuiz extends QuizBase {
                 }
                 items.push({
                     key: `${category}|||${index}|||p`,
+                    category,
                     masculine: word.masculine,
                     english: word.english,
                     label: 'plural',

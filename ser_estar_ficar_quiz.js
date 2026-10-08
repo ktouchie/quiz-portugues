@@ -2,8 +2,33 @@ import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { categoryName, categorySpan, localized, t } from './i18n.js';
+import { buildOptions } from './practice.js';
+import { serEstarFicarCategoryLevel } from './cefr.js';
 
-class SerEstarFicarQuiz extends QuizBase {
+const SER_PRESENTE = { 0: 'sou', 1: 'és', 2: 'é', 3: 'somos', 4: 'são' };
+const ESTAR_PRESENTE = { 0: 'estou', 1: 'estás', 2: 'está', 3: 'estamos', 4: 'estão' };
+const FICAR_PRESENTE = { 2: 'fica' };
+const FICAR_PRETERITO = { 0: 'fiquei', 2: 'ficou', 3: 'ficámos', 4: 'ficaram' };
+
+/**
+ * The same person of the other two verbs, for a ser/estar/ficar answer ("sou" → "estou", "ficou"…),
+ * same as the Android app's SerEstarFicarConjugations.
+ * @param {string} answer
+ * @returns {string[]}
+ */
+export function serEstarFicarVerbDistractors(answer) {
+    const forms = { ser: SER_PRESENTE, estar: ESTAR_PRESENTE, ficar: { ...FICAR_PRESENTE, ...FICAR_PRETERITO } };
+    for (const [verb, table] of Object.entries(forms)) {
+        const person = Object.keys(table).find(p => table[p] === answer);
+        if (person === undefined) continue;
+        return Object.keys(forms).filter(other => other !== verb)
+            .map(other => (other === 'ficar' ? (FICAR_PRETERITO[person] ?? FICAR_PRESENTE[person]) : forms[other][person]))
+            .filter(Boolean);
+    }
+    return [];
+}
+
+export class SerEstarFicarQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.serEstarFicar);
     }
@@ -36,8 +61,30 @@ class SerEstarFicarQuiz extends QuizBase {
             return null;
         }
 
+        return this._itemsFor(selected);
+    }
+
+    getAllItems() {
+        return this._itemsFor(Object.keys(this.data));
+    }
+
+    getItemLevel(item) {
+        return serEstarFicarCategoryLevel(item.category);
+    }
+
+    /**
+     * Wrong options: the same person of the other two verbs first ("estou" for "sou"), then other
+     * answers from the module — same as the Android app's SerEstarFicarConjugations.
+     */
+    getOptions(key) {
+        const answer = this.getCorrectAnswer(key);
+        const others = this.getAllItems().map(item => item.answer).filter(other => other !== answer);
+        return buildOptions(answer, [serEstarFicarVerbDistractors(answer), others]);
+    }
+
+    _itemsFor(categories) {
         const items = [];
-        for (const category of selected) {
+        for (const category of categories) {
             this.data[category].forEach((entry, index) => {
                 items.push({
                     key: `${category}|||${index}`,

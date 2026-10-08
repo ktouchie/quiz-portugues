@@ -26,10 +26,15 @@
 
 <div id="setup">
     <p class="setup-hint" data-i18n="subjunctive.intro">Conjugue o verbo indicado no conjuntivo correto. Identifique o gatilho que exige o conjuntivo e escreva a forma verbal adequada.</p>
-    <h2 data-i18n="categories">Categorias</h2>
-    <div id="categories"></div>
     <p id="srs-due-count" class="srs-due hidden"></p>
-    <button id="start-quiz" data-i18n="quiz.start">Iniciar Quiz</button>
+    <button id="quick-practice" data-i18n="quiz.quickPractice">Prática Rápida</button>
+    <p class="setup-hint" data-i18n="quiz.quickPracticeHint">12 itens ao seu nível, primeiro os que estão para rever. O nível seguinte abre quando dominar a maior parte deste.</p>
+    <details id="advanced">
+        <summary data-i18n="quiz.advanced">Avançado</summary>
+        <h2 data-i18n="categories">Categorias</h2>
+        <div id="categories"></div>
+        <button id="start-quiz" data-i18n="quiz.start">Iniciar Quiz</button>
+    </details>
 </div>
 
 <div id="quiz" class="hidden">

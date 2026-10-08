@@ -1,7 +1,7 @@
 import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore, renderBestScore } from './common.js';
 import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems, isReadyForTyping } from './srs.js';
 import { updateStreak, checkMilestone, showMilestoneBanner } from './gamification.js';
-import { buildQuickPracticePool, answerMatches } from './practice.js';
+import { buildGatedQuickPracticePool, buildQuickPracticePool, answerMatches } from './practice.js';
 import { initLanguage, t } from './i18n.js';
 
 /**
@@ -137,6 +137,14 @@ export class QuizBase {
      */
     getOptions(_key) { return null; }
 
+    /**
+     * Optional: the item's CEFR level ('A1'…'C2'), which gates Quick Practice by unlocked tier
+     * (see cefr.js). Null means Quick Practice draws from the whole module.
+     * @param {QuizItem} _item
+     * @returns {string|null}
+     */
+    getItemLevel(_item) { return null; }
+
     // ── Template hook ────────────────────────────────────────────────────────
 
     /** Override to build setup-screen UI (checkboxes, etc.) after data loads. */
@@ -194,7 +202,10 @@ export class QuizBase {
         const all = this.getAllItems();
         if (!all || all.length === 0) return;
         this.quickPractice = true;
-        this.startQuiz(buildQuickPracticePool(all, new Set(getDueItems(this.srsState))));
+        const dueKeys = new Set(getDueItems(this.srsState));
+        this.startQuiz(this.getItemLevel(all[0])
+            ? buildGatedQuickPracticePool(all, dueKeys, this.srsState, item => this.getItemLevel(item))
+            : buildQuickPracticePool(all, dueKeys));
     }
 
     /** @param {QuizItem[]|null} [explicitItems] - session items; defaults to the setup selection */

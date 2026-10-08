@@ -2,8 +2,10 @@ import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { appendTemplate, categoryName, categorySpan, localized, t } from './i18n.js';
+import { buildOptions, maskAnswer } from './practice.js';
+import { contractionsCategoryLevel } from './cefr.js';
 
-class ContractionsQuiz extends QuizBase {
+export class ContractionsQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.contractions);
     }
@@ -36,8 +38,39 @@ class ContractionsQuiz extends QuizBase {
             return null;
         }
 
+        return this._itemsFor(selected);
+    }
+
+    getAllItems() {
+        return this._itemsFor(Object.keys(this.data));
+    }
+
+    /** The full example sentence, shown after a wrong answer. */
+    getExample(key) {
+        return this.itemData[key]?.example ?? null;
+    }
+
+    getItemLevel(item) {
+        return contractionsCategoryLevel(item.category);
+    }
+
+    /**
+     * Wrong options: contractions of the same preposition, then of the same article or
+     * demonstrative, then any other (same as the Android app).
+     */
+    getOptions(key) {
+        const item = this.itemData[key] ?? this.getAllItems().find(i => i.key === key);
+        const all = this.getAllItems();
+        return buildOptions(item.answer, [
+            all.filter(i => i.parts[0] === item.parts[0]).map(i => i.answer),
+            all.filter(i => i.parts[1] === item.parts[1]).map(i => i.answer),
+            all.map(i => i.answer),
+        ]);
+    }
+
+    _itemsFor(categories) {
         const items = [];
-        for (const category of selected) {
+        for (const category of categories) {
             this.data[category].forEach((entry, index) => {
                 items.push({
                     key: `${category}|||${index}`,
@@ -70,7 +103,8 @@ class ContractionsQuiz extends QuizBase {
         if (item.example) {
             const ex = document.createElement('p');
             ex.className = 'question-translation';
-            ex.textContent = item.example;
+            // Blanked: the example would otherwise give the answer away.
+            ex.textContent = maskAnswer(item.example, item.answer);
             if (item.english) ex.textContent += ' — ' + item.english;
             el.appendChild(ex);
         }

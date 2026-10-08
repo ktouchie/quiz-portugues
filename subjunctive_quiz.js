@@ -2,8 +2,32 @@ import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { categoryName, categorySpan, localized, t, triggerText } from './i18n.js';
+import { buildOptions } from './practice.js';
+import { subjunctiveCategoryLevel } from './cefr.js';
 
-class SubjunctiveQuiz extends QuizBase {
+/** The infinitive in a prompt's "___ (vir)" brackets, or null. */
+export function subjunctiveInfinitive(prompt) {
+    return prompt.match(/\(([^)]+)\)/)?.[1] ?? null;
+}
+
+const SUBJECT_PERSONS = [
+    [/\beu\b/, 0], [/\btu\b/, 1], [/\b(ele|ela|você)(?!\p{L})/u, 2], [/\bnós(?!\p{L})/u, 3], [/\b(eles|elas|vocês)(?!\p{L})/u, 4],
+];
+
+/**
+ * The present indicative of a verb for the subject named in the prompt (third person singular
+ * when none is named), or null — the Android app's indicativeDistractor.
+ * @param {{ presente?: string[] }|undefined} verb - the verb's verbs.json entry
+ * @param {string} prompt
+ * @returns {string|null}
+ */
+export function indicativeForm(verb, prompt) {
+    const lower = prompt.toLowerCase();
+    const person = SUBJECT_PERSONS.find(([pattern]) => pattern.test(lower))?.[1] ?? 2;
+    return verb?.presente?.[person] || null;
+}
+
+export class SubjunctiveQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.subjunctive);
     }
@@ -11,6 +35,8 @@ class SubjunctiveQuiz extends QuizBase {
     async fetchData() {
         const res = await fetch('subjunctive_quiz.json');
         if (!res.ok) throw new Error('Failed to load subjunctive quiz data.');
+        // verbs.json gives the indicative forms offered as wrong options; the quiz works without it.
+        this.verbs = await fetch('verbs.json').then(r => (r.ok ? r.json() : {})).catch(() => ({}));
         return res.json();
     }
 
@@ -36,8 +62,37 @@ class SubjunctiveQuiz extends QuizBase {
             return null;
         }
 
+        return this._itemsFor(selected);
+    }
+
+    getAllItems() {
+        return this._itemsFor(Object.keys(this.data));
+    }
+
+    getItemLevel(item) {
+        return subjunctiveCategoryLevel(item.category);
+    }
+
+    /**
+     * Wrong options (same as the Android app): the indicative present of the same verb and person
+     * (the classic mistake: "vem" for "venha"), then the same verb's other subjunctive answers,
+     * then any other answer.
+     */
+    getOptions(key) {
+        const item = this.itemData[key] ?? this.getAllItems().find(i => i.key === key);
+        const all = this.getAllItems();
+        const infinitive = subjunctiveInfinitive(item.prompt);
+        const indicative = infinitive ? indicativeForm(this.verbs?.[infinitive], item.prompt) : null;
+        return buildOptions(item.answer, [
+            indicative ? [indicative] : [],
+            all.filter(i => infinitive && subjunctiveInfinitive(i.prompt) === infinitive).map(i => i.answer),
+            all.map(i => i.answer),
+        ]);
+    }
+
+    _itemsFor(categories) {
         const items = [];
-        for (const category of selected) {
+        for (const category of categories) {
             this.data[category].forEach((entry, index) => {
                 items.push({
                     key: `${category}|||${index}`,

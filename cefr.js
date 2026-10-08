@@ -64,6 +64,47 @@ export const VOCABULARY_CATEGORY_CEFR_LEVEL = {
     'Adjetivos': 'B2', 'Advérbios': 'B2', 'Emoções': 'B2', 'Natureza': 'B2', 'Verbos': 'B2',
 };
 
+/** Gender & plural patterns, by how early courses introduce each (same as the Android app). */
+export const GENDER_CATEGORY_CEFR_LEVEL = {
+    'Nomes em -or': 'A2',
+    'Palavras em -ão': 'A2',
+    'Adjetivos em -l': 'B1',
+    'Outros adjetivos e nomes': 'B1',
+};
+
+/** Ser / estar / ficar: identity and temporary state first; location and ficar's "become" later. */
+export const SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL = {
+    'Profissões e identidade (ser)': 'A2',
+    'Estado temporário (estar)': 'A2',
+    'Localização de pessoas/coisas (estar vs ser vs ficar)': 'B1',
+    'Resultado e mudança de estado (ficar)': 'B1',
+};
+
+/** Contractions: definite articles with de/em/a first, demonstratives last. */
+export const CONTRACTIONS_CATEGORY_CEFR_LEVEL = {
+    'de + artigo definido': 'A1',
+    'em + artigo definido': 'A1',
+    'a + artigo definido': 'A1',
+    'por + artigo definido': 'A2',
+    'em + artigo indefinido': 'A2',
+    'de + demonstrativo': 'B1',
+    'em + demonstrativo': 'B1',
+    'a + demonstrativo': 'B2',
+};
+
+/** Subjunctive: the mood starts at B1; the imperfect subjunctive is C1. */
+export const SUBJUNCTIVE_CATEGORY_CEFR_LEVEL = {
+    'Expressões de vontade e desejo': 'B1',
+    'Expressões de emoção e sentimento': 'B1',
+    'Expressões de dúvida e incerteza': 'B2',
+    'Expressões impessoais de necessidade e obrigação': 'B2',
+    'Conjunções temporais e condicionais': 'B2',
+    'Conjuntivo imperfeito (após expressões de passado)': 'C1',
+};
+
+/** Indirect speech has no categories: every item is B1 (tense backshift is intermediate grammar). */
+export const INDIRECT_SPEECH_CEFR_LEVEL = 'B1';
+
 function lookup(map, name, what) {
     const level = map[name];
     if (!level) throw new Error(`No CEFR level assigned for ${what} "${name}"`);
@@ -89,6 +130,15 @@ export function verbItemLevel(verb, tense) {
 export function vocabularyCategoryLevel(category) {
     return lookup(VOCABULARY_CATEGORY_CEFR_LEVEL, category, 'vocabulary category');
 }
+
+/** @param {string} category @returns {CefrLevel} */
+export const genderCategoryLevel = (category) => lookup(GENDER_CATEGORY_CEFR_LEVEL, category, 'gender category');
+/** @param {string} category @returns {CefrLevel} */
+export const serEstarFicarCategoryLevel = (category) => lookup(SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL, category, 'ser/estar/ficar category');
+/** @param {string} category @returns {CefrLevel} */
+export const contractionsCategoryLevel = (category) => lookup(CONTRACTIONS_CATEGORY_CEFR_LEVEL, category, 'contractions category');
+/** @param {string} category @returns {CefrLevel} */
+export const subjunctiveCategoryLevel = (category) => lookup(SUBJUNCTIVE_CATEGORY_CEFR_LEVEL, category, 'subjunctive category');
 
 /**
  * Which tiers are open. A1 always is; each later tier opens once TIER_UNLOCK_THRESHOLD of the

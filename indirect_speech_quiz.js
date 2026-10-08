@@ -1,8 +1,10 @@
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { appendTemplate, localized, t } from './i18n.js';
+import { buildOptions } from './practice.js';
+import { INDIRECT_SPEECH_CEFR_LEVEL } from './cefr.js';
 
-class IndirectSpeechQuiz extends QuizBase {
+export class IndirectSpeechQuiz extends QuizBase {
     constructor() {
         super(STORAGE_KEYS.indirectSpeech);
     }
@@ -11,6 +13,21 @@ class IndirectSpeechQuiz extends QuizBase {
         const res = await fetch('indirect_speech.json');
         if (!res.ok) throw new Error('Failed to load indirect speech data.');
         return res.json();
+    }
+
+    getAllItems() {
+        return this.getSelectedItems();
+    }
+
+    /** Every indirect speech item is B1 (same as the Android app). */
+    getItemLevel() {
+        return INDIRECT_SPEECH_CEFR_LEVEL;
+    }
+
+    /** Wrong options: the unchanged verb from the original sentence first, then other answers. */
+    getOptions(key) {
+        const item = this.itemData[key] ?? this.getAllItems().find(i => i.key === key);
+        return buildOptions(item.answer, [[item.verb_direct], this.getAllItems().map(i => i.answer)]);
     }
 
     getSelectedItems() {
