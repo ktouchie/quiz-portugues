@@ -1,0 +1,48 @@
+{
+  "Profissões e identidade (ser)": [
+    { "sentence": "A Joana ___ arquiteta.", "answer": "é", "hint": "Profissão permanente → ser", "hint_en": "Permanent profession → ser", "english": "Joana is an architect." },
+    { "sentence": "Eles ___ estudantes universitários.", "answer": "são", "hint": "Categoria/identidade permanente → ser", "hint_en": "Permanent category/identity → ser", "english": "They are university students." },
+    { "sentence": "O Pedro e eu ___ irmãos.", "answer": "somos", "hint": "Relação familiar permanente → ser", "hint_en": "Permanent family relationship → ser", "english": "Pedro and I are brothers." },
+    { "sentence": "Tu ___ uma pessoa muito criativa.", "answer": "és", "hint": "Característica permanente → ser", "hint_en": "Permanent characteristic → ser", "english": "You are a very creative person." },
+    { "sentence": "Eu ___ português.", "answer": "sou", "hint": "Nacionalidade/origem → ser", "hint_en": "Nationality/origin → ser", "english": "I am Portuguese." },
+    { "sentence": "Ela ___ professora de história.", "answer": "é", "hint": "Profissão permanente → ser", "hint_en": "Permanent profession → ser", "english": "She is a history teacher." },
+    { "sentence": "Nós ___ de Lisboa.", "answer": "somos", "hint": "Origem geográfica → ser", "hint_en": "Geographic origin → ser", "english": "We are from Lisbon." },
+    { "sentence": "Eles ___ muito inteligentes.", "answer": "são", "hint": "Característica permanente → ser", "hint_en": "Permanent characteristic → ser", "english": "They are very intelligent." },
+    { "sentence": "Este edifício ___ muito antigo.", "answer": "é", "hint": "Característica permanente de objeto → ser", "hint_en": "Permanent characteristic of an object → ser", "english": "This building is very old." },
+    { "sentence": "O concerto ___ amanhã à noite.", "answer": "é", "hint": "Evento agendado → ser", "hint_en": "Scheduled event → ser", "english": "The concert is tomorrow night." }
+  ],
+  "Estado temporário (estar)": [
+    { "sentence": "O Miguel ___ doente esta semana.", "answer": "está", "hint": "Estado temporário → estar", "hint_en": "Temporary state → estar", "english": "Miguel is ill this week." },
+    { "sentence": "Eu ___ muito cansado hoje.", "answer": "estou", "hint": "Estado temporário → estar", "hint_en": "Temporary state → estar", "english": "I am very tired today." },
+    { "sentence": "Tu ___ a trabalhar neste momento?", "answer": "estás", "hint": "Ação em curso → estar a + infinitivo (EP)", "hint_en": "Action in progress → estar a + infinitive (EP)", "english": "Are you working at this moment?" },
+    { "sentence": "A sopa ___ quente.", "answer": "está", "hint": "Estado temporário/condição atual → estar", "hint_en": "Temporary state/current condition → estar", "english": "The soup is hot." },
+    { "sentence": "Nós ___ a estudar para o exame.", "answer": "estamos", "hint": "Ação em curso → estar a + infinitivo (EP)", "hint_en": "Action in progress → estar a + infinitive (EP)", "english": "We are studying for the exam." },
+    { "sentence": "Eles ___ zangados com a decisão.", "answer": "estão", "hint": "Estado emocional temporário → estar", "hint_en": "Temporary emotional state → estar", "english": "They are angry about the decision." },
+    { "sentence": "Ela ___ de férias no Algarve.", "answer": "está", "hint": "Situação temporária → estar", "hint_en": "Temporary situation → estar", "english": "She is on holiday in the Algarve." },
+    { "sentence": "O carro ___ avariado.", "answer": "está", "hint": "Condição temporária → estar", "hint_en": "Temporary condition → estar", "english": "The car is broken down." },
+    { "sentence": "A porta ___ aberta.", "answer": "está", "hint": "Estado resultante (temporário) → estar", "hint_en": "Resulting (temporary) state → estar", "english": "The door is open." },
+    { "sentence": "Eu ___ a falar ao telefone.", "answer": "estou", "hint": "Ação em curso → estar a + infinitivo (EP)", "hint_en": "Action in progress → estar a + infinitive (EP)", "english": "I am talking on the phone." }
+  ],
+  "Localização de pessoas/coisas (estar vs ser vs ficar)": [
+    { "sentence": "Onde ___ o museu?", "answer": "fica", "hint": "Localização permanente/fixa de lugar → ficar", "hint_en": "Permanent/fixed location of a place → ficar", "english": "Where is the museum?" },
+    { "sentence": "O supermercado ___ na Rua Augusta.", "answer": "fica", "hint": "Localização fixa de estabelecimento → ficar", "hint_en": "Fixed location of a business → ficar", "english": "The supermarket is on Rua Augusta." },
+    { "sentence": "Os meus filhos ___ em casa.", "answer": "estão", "hint": "Localização temporária de pessoa → estar", "hint_en": "Temporary location of a person → estar", "english": "My children are at home." },
+    { "sentence": "O comboio ___ na plataforma dois.", "answer": "está", "hint": "Localização temporária → estar", "hint_en": "Temporary location → estar", "english": "The train is on platform two." },
+    { "sentence": "A farmácia ___ mesmo ao lado do banco.", "answer": "fica", "hint": "Localização fixa de estabelecimento → ficar", "hint_en": "Fixed location of a business → ficar", "english": "The pharmacy is right next to the bank." },
+    { "sentence": "O Porto ___ no norte de Portugal.", "answer": "fica", "hint": "Localização fixa de cidade → ficar", "hint_en": "Fixed location of a city → ficar", "english": "Porto is in the north of Portugal." },
+    { "sentence": "Onde ___ a Ana neste momento?", "answer": "está", "hint": "Localização atual/temporária de pessoa → estar", "hint_en": "Current/temporary location of a person → estar", "english": "Where is Ana right now?" },
+    { "sentence": "A reunião ___ na sala B.", "answer": "é", "hint": "Evento (reunião, aula, etc.) tem lugar → ser", "hint_en": "Where an event (meeting, class, etc.) takes place → ser", "english": "The meeting is in room B." },
+    { "sentence": "A biblioteca ___ no primeiro andar.", "answer": "fica", "hint": "Localização fixa de lugar → ficar", "hint_en": "Fixed location of a place → ficar", "english": "The library is on the first floor." },
+    { "sentence": "Os meus pais ___ no Alentejo agora.", "answer": "estão", "hint": "Localização temporária de pessoas → estar", "hint_en": "Temporary location of people → estar", "english": "My parents are in Alentejo now." }
+  ],
+  "Resultado e mudança de estado (ficar)": [
+    { "sentence": "Ela ___ muito triste com a notícia.", "answer": "ficou", "hint": "Mudança para novo estado emocional → ficar (pretérito)", "hint_en": "Change to a new emotional state → ficar (preterite)", "english": "She became very sad with the news." },
+    { "sentence": "Eu ___ surpreendido com a resposta.", "answer": "fiquei", "hint": "Mudança de estado → ficar (pretérito)", "hint_en": "Change of state → ficar (preterite)", "english": "I was surprised by the answer." },
+    { "sentence": "O leite ___ fora do prazo.", "answer": "ficou", "hint": "Mudança de estado → ficar (pretérito)", "hint_en": "Change of state → ficar (preterite)", "english": "The milk went past its expiry date." },
+    { "sentence": "Depois do treino, eles ___ esgotados.", "answer": "ficaram", "hint": "Resultado de ação → ficar (pretérito)", "hint_en": "Result of an action → ficar (preterite)", "english": "After training, they were exhausted." },
+    { "sentence": "Com a operação, o João ___ bem.", "answer": "ficou", "hint": "Resultado/recuperação → ficar (pretérito)", "hint_en": "Result/recovery → ficar (preterite)", "english": "After the operation, João was fine." },
+    { "sentence": "A criança ___ com medo do barulho.", "answer": "ficou", "hint": "Reação emocional → ficar + com (pretérito)", "hint_en": "Emotional reaction → ficar + com (preterite)", "english": "The child was frightened by the noise." },
+    { "sentence": "Nós ___ em casa durante a tempestade.", "answer": "ficámos", "hint": "Permanecer (stay) → ficar (pretérito)", "hint_en": "To stay → ficar (preterite)", "english": "We stayed home during the storm." },
+    { "sentence": "Ela ___ calada durante a reunião.", "answer": "ficou", "hint": "Resultado/estado mantido → ficar (pretérito)", "hint_en": "Result/state that lasts → ficar (preterite)", "english": "She stayed quiet during the meeting." }
+  ]
+}

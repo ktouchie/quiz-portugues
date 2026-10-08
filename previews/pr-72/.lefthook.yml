@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    lint:
+      run: ~/.local/bin/npm run lint
+    test:
+      run: ~/.local/bin/npm test

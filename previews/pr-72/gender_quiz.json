@@ -1,0 +1,63 @@
+{
+  "Nomes em -or": [
+    { "masculine": "ator", "feminine": "atriz", "plural": "atores", "english": "actor" },
+    { "masculine": "trabalhador", "feminine": "trabalhadora", "plural": "trabalhadores", "english": "worker" },
+    { "masculine": "diretor", "feminine": "diretora", "plural": "diretores", "english": "director" },
+    { "masculine": "professor", "feminine": "professora", "plural": "professores", "english": "teacher" },
+    { "masculine": "cantor", "feminine": "cantora", "plural": "cantores", "english": "singer" },
+    { "masculine": "escritor", "feminine": "escritora", "plural": "escritores", "english": "writer" },
+    { "masculine": "doutor", "feminine": "doutora", "plural": "doutores", "english": "doctor" },
+    { "masculine": "trabalhador rural", "feminine": "trabalhadora rural", "plural": "trabalhadores rurais", "english": "farm worker" },
+    { "masculine": "imperador", "feminine": "imperatriz", "plural": "imperadores", "english": "emperor" }
+  ],
+  "Palavras em -ão": [
+    { "masculine": "campeão", "feminine": "campeã", "plural": "campeões", "english": "champion" },
+    { "masculine": "alemão", "feminine": "alemã", "plural": "alemães", "english": "German" },
+    { "masculine": "cristão", "feminine": "cristã", "plural": "cristãos", "english": "Christian" },
+    { "masculine": "irmão", "feminine": "irmã", "plural": "irmãos", "english": "brother" },
+    { "masculine": "leão", "feminine": "leoa", "plural": "leões", "english": "lion" },
+    { "masculine": "cidadão", "feminine": "cidadã", "plural": "cidadãos", "english": "citizen" },
+    { "masculine": "capitão", "feminine": "capitã", "plural": "capitães", "english": "captain" },
+    { "masculine": "guardião", "feminine": "guardiã", "plural": "guardiões", "english": "guardian" },
+    { "masculine": "anfitrião", "feminine": "anfitriã", "plural": "anfitriões", "english": "host" },
+    { "masculine": "aldeão", "feminine": "aldeã", "plural": "aldeões", "english": "villager" },
+    { "masculine": "charlatão", "feminine": "charlatã", "plural": "charlatões", "english": "charlatan" },
+    { "masculine": "catalão", "feminine": "catalã", "plural": "catalães", "english": "Catalan" },
+    { "masculine": "cão", "feminine": "cadela", "plural": "cães", "english": "dog" },
+    { "masculine": "homem", "feminine": "mulher", "plural": "homens", "english": "man" },
+    { "masculine": "pão", "feminine": null, "plural": "pães", "english": "bread" },
+    { "masculine": "mão", "feminine": null, "plural": "mãos", "english": "hand" },
+    { "masculine": "avião", "feminine": null, "plural": "aviões", "english": "airplane" }
+  ],
+  "Adjetivos em -l": [
+    { "masculine": "espanhol", "feminine": "espanhola", "plural": "espanhóis", "english": "Spanish" },
+    { "masculine": "difícil", "feminine": "difícil", "plural": "difíceis", "english": "difficult" },
+    { "masculine": "útil", "feminine": "útil", "plural": "úteis", "english": "useful" },
+    { "masculine": "fácil", "feminine": "fácil", "plural": "fáceis", "english": "easy" },
+    { "masculine": "terrível", "feminine": "terrível", "plural": "terríveis", "english": "terrible" },
+    { "masculine": "possível", "feminine": "possível", "plural": "possíveis", "english": "possible" },
+    { "masculine": "incrível", "feminine": "incrível", "plural": "incríveis", "english": "incredible" },
+    { "masculine": "responsável", "feminine": "responsável", "plural": "responsáveis", "english": "responsible" },
+    { "masculine": "azul", "feminine": "azul", "plural": "azuis", "english": "blue" },
+    { "masculine": "fóssil", "feminine": "fóssil", "plural": "fósseis", "english": "fossil" },
+    { "masculine": "civil", "feminine": "civil", "plural": "civis", "english": "civil" },
+    { "masculine": "comum", "feminine": "comum", "plural": "comuns", "english": "common" },
+    { "masculine": "animal", "feminine": "animal", "plural": "animais", "english": "animal" },
+    { "masculine": "papel", "feminine": null, "plural": "papéis", "english": "paper" }
+  ],
+  "Outros adjetivos e nomes": [
+    { "masculine": "juiz", "feminine": "juíza", "plural": "juízes", "english": "judge" },
+    { "masculine": "feliz", "feminine": "feliz", "plural": "felizes", "english": "happy" },
+    { "masculine": "capaz", "feminine": "capaz", "plural": "capazes", "english": "capable" },
+    { "masculine": "simples", "feminine": "simples", "plural": "simples", "english": "simple" },
+    { "masculine": "mau", "feminine": "má", "plural": "maus", "english": "bad" },
+    { "masculine": "bom", "feminine": "boa", "plural": "bons", "english": "good" },
+    { "masculine": "grande", "feminine": "grande", "plural": "grandes", "english": "big / great" },
+    { "masculine": "jovem", "feminine": "jovem", "plural": "jovens", "english": "young" },
+    { "masculine": "inteligente", "feminine": "inteligente", "plural": "inteligentes", "english": "intelligent" },
+    { "masculine": "português", "feminine": "portuguesa", "plural": "portugueses", "english": "Portuguese" },
+    { "masculine": "francês", "feminine": "francesa", "plural": "franceses", "english": "French" },
+    { "masculine": "inglês", "feminine": "inglesa", "plural": "ingleses", "english": "English" },
+    { "masculine": "rapaz", "feminine": "rapariga", "plural": "rapazes", "english": "boy" }
+  ]
+}

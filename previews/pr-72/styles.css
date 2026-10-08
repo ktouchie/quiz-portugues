@@ -1,0 +1,979 @@
+/* ── Theme variables ──────────────────────────────────────── */
+/* "Warm Encourager", the same palette as the Android app (ui/theme/Color.kt): cream and toast
+   surfaces, a blue accent, and a warm amber gradient for the main calls to action. */
+:root {
+    --bg:         #fbf7f1;
+    --surface:    #fff9f0;
+    --surface-2:  #fff1dc;
+    --border:     #f3e6d2;
+    --accent:     #4a7cf7;
+    --accent-dim: #3a63cc;
+    --on-accent:  #ffffff;
+    --warm-start: #ffb25e;
+    --warm-end:   #ff8a3d;
+    --warm:       linear-gradient(135deg, var(--warm-start), var(--warm-end));
+    --correct:    #1e9e6b;
+    --incorrect:  #e03e52;
+    --text:       #3a2e1f;
+    --text-muted: #8a7a5f;
+    --text-warm:  #b8874a;
+    --radius-md:  16px;
+    --radius-lg:  22px;
+    --radius-xl:  28px;
+    --shadow:     0 6px 24px rgba(120, 80, 30, 0.10);
+    --shadow-sm:  0 2px 8px  rgba(120, 80, 30, 0.08);
+}
+
+[data-theme="dark"] {
+    --bg:         #1f1710;
+    --surface:    #2a2018;
+    --surface-2:  #3a2c1c;
+    --border:     #4a3826;
+    --accent:     #7fc1ff;
+    --accent-dim: #5e9bff;
+    /* The dark theme's light blue needs dark text to stay readable. */
+    --on-accent:  #1f1710;
+    --correct:    #3ddc97;
+    --incorrect:  #ff5c6c;
+    --text:       #f5e9da;
+    --text-muted: #b8a88c;
+    --text-warm:  #ffc98c;
+    --shadow:     0 6px 24px rgba(0, 0, 0, 0.40);
+    --shadow-sm:  0 2px 8px  rgba(0, 0, 0, 0.30);
+}
+
+/* ── Reset & base ─────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+    max-width: 680px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 12px;
+}
+
+h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 16px 0 8px;
+}
+
+/* ── Cards ────────────────────────────────────────────────── */
+#setup, #result {
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+}
+
+/* During a question the parts sit straight on the page, as in the app: prompt card, options,
+   feedback panel. */
+#quiz {
+    margin-bottom: 16px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+button {
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 11px 22px;
+    border: none;
+    border-radius: var(--radius-lg);
+    background-color: var(--accent);
+    color: var(--on-accent);
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    box-shadow: var(--shadow-sm);
+}
+
+button:hover {
+    background-color: var(--accent-dim);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    cursor: default;
+    transform: none;
+}
+
+/* Main calls to action wear the warm gradient, like the app's WarmGradientButton. */
+#quick-practice, #start-quiz, #submit-answer {
+    background: var(--warm);
+    color: #fff;
+}
+
+#quick-practice:hover, #start-quiz:hover, #submit-answer:hover {
+    background: var(--warm);
+    filter: brightness(1.05);
+}
+
+/* Secondary actions: outlined in the warm text colour, like the app's OutlinedButton. */
+#retry-mistakes, #restart, .button-secondary {
+    background: transparent;
+    color: var(--text-warm);
+    border: 2px solid var(--border);
+    box-shadow: none;
+}
+
+#retry-mistakes:hover, #restart:hover, .button-secondary:hover {
+    background-color: var(--surface-2);
+}
+
+/* ── Quick Practice & Advanced ────────────────────────────── */
+#quick-practice {
+    display: block;
+    width: 100%;
+    padding: 14px 22px;
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+}
+
+#advanced {
+    margin-top: 8px;
+}
+
+#advanced > summary {
+    list-style: none;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 700;
+    color: var(--text-warm);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 10px 22px;
+    margin-bottom: 16px;
+}
+
+#advanced > summary::-webkit-details-marker {
+    display: none;
+}
+
+#advanced[open] > summary {
+    background-color: var(--surface-2);
+}
+
+/* ── Multiple-choice options ──────────────────────────────── */
+#options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+button.option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    background-color: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: left;
+}
+
+button.option:hover:not(:disabled) {
+    background-color: var(--surface);
+    border-color: var(--warm-end);
+}
+
+.option-badge {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 12px;
+    background-color: var(--surface-2);
+    color: var(--text-warm);
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+button.option--correct {
+    border-color: var(--correct);
+    background-color: color-mix(in srgb, var(--correct) 12%, var(--surface));
+    color: var(--correct);
+}
+
+button.option--correct .option-badge {
+    background-color: var(--correct);
+    color: #fff;
+}
+
+button.option--wrong {
+    border-color: var(--incorrect);
+    background-color: color-mix(in srgb, var(--incorrect) 12%, var(--surface));
+    color: var(--incorrect);
+}
+
+button.option--wrong .option-badge {
+    background-color: var(--incorrect);
+    color: #fff;
+}
+
+/* ── Answer input ─────────────────────────────────────────── */
+#answer-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+#answer {
+    font-family: inherit;
+    font-size: 1.05rem;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--surface);
+    color: var(--text);
+    outline: none;
+    flex: 1;
+    min-width: 160px;
+    transition: border-color 0.2s;
+}
+
+#answer:focus {
+    border-color: var(--warm-end);
+}
+
+/* ── Question (the app's prompt card) ─────────────────────── */
+#question {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.55;
+    text-align: center;
+    margin: 0 0 16px;
+    padding: 26px 20px;
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ── Feedback ─────────────────────────────────────────────── */
+#feedback {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 8px 0;
+    padding: 14px 16px;
+    border-radius: var(--radius-lg);
+}
+
+#feedback.correct   { background-color: color-mix(in srgb, var(--correct) 12%, transparent); }
+#feedback.incorrect { background-color: color-mix(in srgb, var(--incorrect) 12%, transparent); }
+
+.correct   { color: var(--correct); }
+.incorrect { color: var(--incorrect); }
+
+/* ── Progress bar ─────────────────────────────────────────── */
+#feedback-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 100px;
+}
+
+#progress-container, .progress-track {
+    width: 100%;
+    background-color: var(--surface-2);
+    border-radius: 99px;
+    height: 10px;
+    overflow: hidden;
+}
+
+#progress-bar, .progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--warm-start), var(--accent));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+#progress-percentage {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ── Next button ──────────────────────────────────────────── */
+#next-question {
+    width: 100%;
+    margin-top: 4px;
+}
+
+/* ── Score & Timer (fixed top-right) ─────────────────────── */
+#score-timer-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 1000;
+    text-align: right;
+}
+
+#score-display, #timer-display {
+    background-color: var(--surface-2);
+    color: var(--text-warm);
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+}
+
+/* ── Theme toggle (fixed top-left) ───────────────────────── */
+#theme-toggle {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    border-radius: 99px;
+    background-color: var(--surface-2);
+    color: var(--text);
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    z-index: 1000;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s;
+}
+
+#theme-toggle:hover {
+    background-color: var(--border);
+    transform: translateY(-1px);
+}
+
+/* ── Language switch (next to the theme toggle) ──────────── */
+#lang-toggle {
+    position: fixed;
+    top: 16px;
+    left: 70px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border-radius: 99px;
+    background-color: var(--surface-2);
+    color: var(--text-warm);
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    z-index: 1000;
+}
+
+#lang-toggle:hover {
+    background-color: var(--border);
+    transform: translateY(-1px);
+}
+
+/* ── Tense / category checkboxes ─────────────────────────── */
+.select-all-label {
+    flex: 1 1 100% !important;
+    font-weight: 700;
+    padding-bottom: 8px;
+    margin-bottom: 4px !important;
+    border-bottom: 1px solid var(--border);
+}
+
+#tenses label, #categories label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+#tenses, #categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+}
+
+#categories label {
+    flex: 1 1 calc(33% - 20px);
+}
+
+/* ── Translation direction radios ────────────────────────── */
+#setup div label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 16px;
+    margin-bottom: 12px;
+}
+
+/* ── Results ──────────────────────────────────────────────── */
+/* Accuracy ring, like the app's AccuracyRing: --pct is set by QuizBase.endQuiz. */
+#accuracy {
+    --pct: 0;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    width: 140px;
+    height: 140px;
+    margin: 8px auto 18px;
+    border-radius: 50%;
+    background:
+        radial-gradient(closest-side, var(--surface) 79%, transparent 80% 100%),
+        conic-gradient(var(--correct) calc(var(--pct) * 1%), var(--surface-2) 0);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+}
+
+#accuracy::after {
+    content: attr(data-label); /* "ACCURACY" / "PRECISÃO", set with the score */
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+#total-score, #quiz-time, #best-score:not(:empty) {
+    display: inline-block;
+    margin: 0 6px 8px 0;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-2);
+    color: var(--text-warm);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+#best-score.correct {
+    color: var(--correct);
+}
+
+/* "Para rever" box */
+#top-mistakes {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    background-color: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+#top-mistakes li {
+    margin-bottom: 8px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+#top-mistakes li:last-child {
+    margin-bottom: 0;
+}
+
+#top-mistakes li strong {
+    color: var(--text);
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background-color: var(--bg);
+    border-top: 2px solid var(--border);
+    z-index: 999;
+}
+
+/* The "buy me a pastel de nata" link, as a small warm pill. */
+#support-link {
+    padding: 6px 14px;
+    border-radius: 99px;
+    background: var(--warm);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, filter 0.15s;
+}
+
+#support-link:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+#version-container {
+    white-space: nowrap;
+}
+
+/* ── Result page buttons ──────────────────────────────────── */
+#result-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ── Back-to-home link ────────────────────────────────────── */
+#back-link {
+    display: inline-block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-warm);
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: filter 0.15s;
+}
+
+#back-link:hover {
+    filter: brightness(1.15);
+}
+
+@media (max-width: 480px) {
+    #back-link { margin-top: 48px; }
+}
+
+/* ── Milestone banner ─────────────────────────────────────── */
+#milestone-banner {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--warm);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: var(--shadow);
+    z-index: 2000;
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    pointer-events: none;
+}
+
+#milestone-banner.milestone-banner--visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+/* ── Home page ────────────────────────────────────────────── */
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 40px 0 18px;
+}
+
+.home-header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.home-subtitle {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+}
+
+.streak-pill {
+    flex: none;
+    padding: 7px 14px;
+    border-radius: 99px;
+    background: var(--warm);
+    color: #fff;
+    font-weight: 800;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.stat-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-2);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-warm);
+}
+
+.stat-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+#module-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* One whole card is the tap target; "Praticar" is a label, not a separate button. */
+.module-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--text);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, border-color 0.15s;
+}
+
+.module-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--warm-start);
+}
+
+.module-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background-color: var(--surface-2);
+    font-size: 1.35rem;
+}
+
+.module-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.module-title {
+    display: block;
+    font-weight: 700;
+}
+
+.module-due {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.module-card .progress-track {
+    display: block;
+    height: 7px;
+}
+
+.module-cta {
+    flex: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-xl);
+    background-color: var(--accent);
+    color: var(--on-accent);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+/* ── SRS manager link on home page ───────────────────────── */
+#tools-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#btn-srs-manager {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+#btn-srs-manager:hover {
+    color: var(--text-warm);
+}
+
+/* ── Utility ──────────────────────────────────────────────── */
+.hidden {
+    display: none !important;
+}
+
+/* ── Colour coding: verb regularity ──────────────────────── */
+.regular-verb   { color: #4fc3f7; }
+.irregular-verb { color: #ce93d8; }
+
+/* ── Colour coding: tenses ───────────────────────────────── */
+.tense-color-0 { color: #66bb6a; }
+.tense-color-1 { color: #26c6da; }
+.tense-color-2 { color: #ffd54f; }
+.tense-color-3 { color: #ffb74d; }
+.tense-color-4 { color: #ff8a65; }
+.tense-color-5 { color: #ef5350; }
+.tense-color-6 { color: #ab47bc; }
+.tense-color-7 { color: #7986cb; }
+
+/* ── Colour coding: persons ──────────────────────────────── */
+.person-color-0 { color: #f48fb1; }
+.person-color-1 { color: #ce93d8; }
+.person-color-2 { color: #90caf9; }
+.person-color-3 { color: #80cbc4; }
+.person-color-4 { color: #a5d6a7; }
+
+/* ── Colour coding: participio auxiliaries ───────────────── */
+.ter   { color: #66bb6a; }
+.ser   { color: #26c6da; }
+.estar { color: #ff8a65; }
+
+/* Darker shades of the colour coding for the light theme, so it stays readable on cream. */
+[data-theme="light"] .regular-verb   { color: #0277bd; }
+[data-theme="light"] .irregular-verb { color: #8e24aa; }
+[data-theme="light"] .tense-color-0  { color: #2e7d32; }
+[data-theme="light"] .tense-color-1  { color: #00838f; }
+[data-theme="light"] .tense-color-2  { color: #a07800; }
+[data-theme="light"] .tense-color-3  { color: #c25e00; }
+[data-theme="light"] .tense-color-4  { color: #d84315; }
+[data-theme="light"] .tense-color-5  { color: #c62828; }
+[data-theme="light"] .tense-color-6  { color: #7b1fa2; }
+[data-theme="light"] .tense-color-7  { color: #3949ab; }
+[data-theme="light"] .person-color-0 { color: #c2185b; }
+[data-theme="light"] .person-color-1 { color: #8e24aa; }
+[data-theme="light"] .person-color-2 { color: #1565c0; }
+[data-theme="light"] .person-color-3 { color: #00796b; }
+[data-theme="light"] .person-color-4 { color: #2e7d32; }
+[data-theme="light"] .ter            { color: #2e7d32; }
+[data-theme="light"] .ser            { color: #00838f; }
+[data-theme="light"] .estar          { color: #d84315; }
+
+/* ── SRS due-items notice ─────────────────────────────────── */
+.srs-due {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 12px;
+}
+
+/* ── Setup hint & keyboard hint ──────────────────────────── */
+.setup-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: -4px 0 12px;
+}
+
+.keyboard-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: -4px 0 8px;
+}
+
+/* ── Progress info row ────────────────────────────────────── */
+#progress-info {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+#progress-info p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ── Grammar hint (shown after wrong answer) ─────────────── */
+.grammar-hint {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: 6px 0 0;
+    font-style: italic;
+}
+
+/* ── Example sentence (shown after wrong answer for verbs) ── */
+.example-sentence {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+    padding: 6px 10px;
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+}
+
+/* ── Fill-in-the-blank underline ─────────────────────────── */
+.fill-blank {
+    display: inline-block;
+    min-width: 60px;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+    font-style: italic;
+}
+
+/* ── Contextual translation / trigger shown below question ── */
+.question-translation {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+}
+
+/* ── Portuguese word tooltip (hover for English translation) ─ */
+.pt-tooltip {
+    position: relative;
+    cursor: help;
+    text-decoration: underline dotted var(--text-muted);
+    text-underline-offset: 3px;
+}
+
+.pt-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 400;
+    font-style: normal;
+    padding: 4px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 20;
+    box-shadow: var(--shadow-sm);
+}
+
+.pt-tooltip:hover::after {
+    opacity: 1;
+}
+
+/* ── Difficulty selector & interleaved toggle ─────────────── */
+#difficulty-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-bottom: 12px;
+}
+
+#difficulty-selector label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.interleaved-label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+/* ── Category badge (vocab mistakes) ─────────────────────── */
+.category-badge {
+    display: inline-block;
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+    body {
+        padding-top: 16px;
+        padding-bottom: 24px;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+        margin-top: 48px;
+    }
+
+    #setup, #quiz, #result {
+        padding: 16px;
+    }
+
+    /* Keep score/timer at top-right on mobile — avoid footer overlap */
+    #score-timer-container {
+        flex-direction: column;
+        top: 16px;
+        right: 16px;
+        bottom: auto;
+        left: auto;
+        transform: none;
+    }
+
+    /* Footer is static on mobile so it doesn't cover answer input */
+    #footer {
+        position: static;
+        margin-top: 16px;
+    }
+
+    .keyboard-hint {
+        display: none;
+    }
+
+    #categories label {
+        flex: 1 1 calc(50% - 20px);
+    }
+
+    #answer-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #answer-container button {
+        width: 100%;
+    }
+}

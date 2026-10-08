@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quiz Português</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        // Apply saved theme before first paint to avoid flash
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+<button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
+
+<main id="home">
+    <header class="home-header">
+        <div>
+            <h1 data-i18n="home.greeting">Olá! 👋</h1>
+            <p class="home-subtitle" data-i18n="home.subtitle">Continua a praticar hoje!</p>
+        </div>
+        <span id="streak-pill" class="streak-pill" title="Dias seguidos">🔥 0</span>
+    </header>
+
+    <div class="stat-chips">
+        <div class="stat-chip"><span id="mastered-count" class="stat-value">0</span><span class="stat-label" data-i18n="home.statMastered">Dominadas</span></div>
+        <div class="stat-chip"><span id="streak-count" class="stat-value">0</span><span class="stat-label" data-i18n="home.statStreak">Dias seguidos</span></div>
+    </div>
+
+    <nav id="module-list" aria-label="Módulos" data-i18n-attr="aria-label:home.modules"></nav>
+
+    <div id="tools-container">
+        <a href="srs_manager.html" id="btn-srs-manager" data-i18n="home.srsLink">Gerir repetição espaçada →</a>
+    </div>
+</main>
+
+<div id="footer">
+    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer" data-i18n="footer.support">
+        Compre-me um pastel de nata
+    </a>
+    <div id="version-container">
+        <span data-i18n="footer.version">Versão:</span> <span id="version"></span>
+    </div>
+</div>
+
+<script type="module">
+    import { loadVersion, initTheme } from './common.js';
+    import { initLanguage } from './i18n.js';
+    import { renderHome } from './home.js';
+
+    initTheme();
+    initLanguage();
+    loadVersion();
+    renderHome();
+    document.addEventListener('languagechange', () => renderHome());
+</script>
+</body>
+</html>
