@@ -41,7 +41,7 @@ import com.ktouchie.quizportugues.ui.theme.OnAccent
 
 /** One tappable, lettered option per choice; the caller supplies already-shuffled [options]. Once
  *  [revealAnswer] is true (an answer has been given), the option matching [correctAnswer] is
- *  highlighted — mirrors the mockup's "correct option turns green" state. */
+ *  highlighted, and a wrong tap is marked in the incorrect colour, as on the web. */
 @Composable
 fun MultipleChoiceOptions(
     options: List<String>,
@@ -50,37 +50,51 @@ fun MultipleChoiceOptions(
     enabled: Boolean,
     onSelect: (String) -> Unit,
 ) {
+    // Remembered here so a wrong tap can be marked too, like the web. The caller keys this
+    // composable per question, so it starts empty for each one.
+    var chosen by remember { mutableStateOf<String?>(null) }
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         options.forEachIndexed { index, option ->
             OptionRow(
                 badge = ('A' + index).toString(),
                 text = option,
-                highlighted = revealAnswer && option == correctAnswer,
+                state = when {
+                    !revealAnswer -> OptionState.Neutral
+                    option == correctAnswer -> OptionState.Correct
+                    option == chosen -> OptionState.Wrong
+                    else -> OptionState.Neutral
+                },
                 enabled = enabled,
-                onClick = { onSelect(option) },
+                onClick = {
+                    chosen = option
+                    onSelect(option)
+                },
             )
         }
     }
 }
 
+private enum class OptionState { Neutral, Correct, Wrong }
+
 @Composable
 private fun OptionRow(
     badge: String,
     text: String,
-    highlighted: Boolean,
+    state: OptionState,
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
     val shape = MaterialTheme.shapes.large
-    val borderColor = if (highlighted) ExtendedTheme.colors.correct else MaterialTheme.colorScheme.outline
-    val backgroundColor = if (highlighted) {
-        ExtendedTheme.colors.correct.copy(alpha = 0.12f)
-    } else {
-        MaterialTheme.colorScheme.surface
+    val tint = when (state) {
+        OptionState.Correct -> ExtendedTheme.colors.correct
+        OptionState.Wrong -> ExtendedTheme.colors.incorrect
+        OptionState.Neutral -> null
     }
-    val textColor = if (highlighted) ExtendedTheme.colors.correct else MaterialTheme.colorScheme.onSurface
-    val badgeBg = if (highlighted) ExtendedTheme.colors.correct else MaterialTheme.colorScheme.surfaceVariant
-    val badgeText = if (highlighted) OnAccent else ExtendedTheme.colors.textWarm
+    val borderColor = tint ?: MaterialTheme.colorScheme.outline
+    val backgroundColor = tint?.copy(alpha = 0.12f) ?: MaterialTheme.colorScheme.surface
+    val textColor = tint ?: MaterialTheme.colorScheme.onSurface
+    val badgeBg = tint ?: MaterialTheme.colorScheme.surfaceVariant
+    val badgeText = if (tint != null) OnAccent else ExtendedTheme.colors.textWarm
 
     var rowModifier = Modifier
         .fillMaxWidth()

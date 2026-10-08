@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { cwd } from 'node:process';
 import {
-    CEFR_LEVELS, TENSE_CEFR_LEVEL, VERB_CEFR_LEVEL, VOCABULARY_CATEGORY_CEFR_LEVEL,
+    CEFR_LEVELS, TENSE_CEFR_LEVEL, TIER_UNLOCK_THRESHOLD, VERB_CEFR_LEVEL, VOCABULARY_CATEGORY_CEFR_LEVEL,
     unlockedTiers, verbItemLevel, vocabularyCategoryLevel,
 } from '../cefr.js';
 import { TENSE_LABELS } from '../config.js';
@@ -350,5 +350,29 @@ describe('answers that share a meaning', () => {
         quiz.submitAnswer('dezanove e trinta');
         vi.useRealTimers();
         expect(quiz.correctCount).toBe(1);
+    });
+});
+
+describe('CEFR levels match the Android app', () => {
+    const kotlin = readFileSync(join(cwd(), 'android/app/src/main/java/com/ktouchie/quizportugues/content/CefrTiers.kt'), 'utf8');
+
+    /** Reads one `val NAME: Map<String, CefrLevel> = mapOf("x" to A1, ...)` from CefrTiers.kt. */
+    function kotlinMap(name) {
+        const start = kotlin.indexOf(`val ${name}`);
+        expect(start, name).toBeGreaterThan(-1);
+        const body = kotlin.slice(start, kotlin.indexOf('\n)', start));
+        return Object.fromEntries([...body.matchAll(/"([^"]+)" to (A1|A2|B1|B2|C1|C2)/g)].map(m => [m[1], m[2]]));
+    }
+
+    it('has the same verb, tense and vocabulary category levels', () => {
+        expect(kotlinMap('VERB_CEFR_LEVEL')).toEqual(VERB_CEFR_LEVEL);
+        expect(kotlinMap('TENSE_CEFR_LEVEL')).toEqual(TENSE_CEFR_LEVEL);
+        expect(kotlinMap('VOCABULARY_CATEGORY_CEFR_LEVEL')).toEqual(VOCABULARY_CATEGORY_CEFR_LEVEL);
+    });
+
+    it('unlocks at the same threshold', () => {
+        const progression = readFileSync(join(cwd(), 'android/app/src/main/java/com/ktouchie/quizportugues/content/ContentProgression.kt'), 'utf8');
+        expect(progression).toMatch(/const val TIER_UNLOCK_THRESHOLD = 0\.8\b/);
+        expect(TIER_UNLOCK_THRESHOLD).toBe(0.8);
     });
 });

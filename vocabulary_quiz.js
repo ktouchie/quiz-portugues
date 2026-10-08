@@ -1,7 +1,7 @@
 import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
-import { buildGatedQuickPracticePool, buildOptions, stringSimilarity } from './practice.js';
+import { buildGatedQuickPracticePool, buildOptions, normalise, stringSimilarity } from './practice.js';
 import { getDueItems } from './srs.js';
 import { vocabularyCategoryLevel } from './cefr.js';
 
@@ -150,7 +150,7 @@ export class VocabQuiz extends QuizBase {
 }
 
 function sameMeaning(a, b) {
-    return a.trim().toLowerCase() === b.trim().toLowerCase();
+    return normalise(a) === normalise(b);
 }
 
 function _strong(parent, text) {
