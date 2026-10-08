@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.tenseLabel
+import com.ktouchie.quizportugues.ui.common.AccuracyRing
 import com.ktouchie.quizportugues.ui.common.GradientProgressBar
 import com.ktouchie.quizportugues.ui.common.MilestoneBanner
 import com.ktouchie.quizportugues.ui.common.MultipleChoiceOptions
@@ -36,7 +37,8 @@ import com.ktouchie.quizportugues.ui.common.StatChip
 import com.ktouchie.quizportugues.ui.common.TypedAnswerInput
 import com.ktouchie.quizportugues.ui.common.hapticCorrect
 import com.ktouchie.quizportugues.ui.common.hapticWrong
-import com.ktouchie.quizportugues.ui.common.AccuracyRing
+import com.ktouchie.quizportugues.ui.i18n.LocalAppLanguage
+import com.ktouchie.quizportugues.ui.i18n.LocalStrings
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 
 /**
@@ -71,7 +73,7 @@ fun VerbSessionScreen(
 @Composable
 private fun LoadingContent() {
     Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-        Text("A carregar…")
+        Text(LocalStrings.current.loading)
     }
 }
 
@@ -112,7 +114,7 @@ private fun InProgressContent(
             )
         }
         Text(
-            text = "${state.correctCount} certas · ${state.errorCount} erradas",
+            text = LocalStrings.current.progressSummary(state.correctCount, state.errorCount),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -150,17 +152,17 @@ private fun InProgressContent(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = if (feedback.wasCorrect) "Correto!" else "Resposta certa: ${feedback.correctAnswer}",
+                    text = if (feedback.wasCorrect) LocalStrings.current.correct else LocalStrings.current.rightAnswer(feedback.correctAnswer),
                     color = tint,
                     style = MaterialTheme.typography.titleMedium,
                 )
-                feedback.hint?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+                feedback.hint?.let { Text(it.get(LocalAppLanguage.current), style = MaterialTheme.typography.bodyMedium) }
                 feedback.exampleSentence?.let {
-                    Text("Exemplo: $it", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(LocalStrings.current.example(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             Button(onClick = onContinue, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
-                Text("Continuar")
+                Text(LocalStrings.current.continueLabel)
             }
         }
     }
@@ -183,16 +185,16 @@ private fun ResultsContent(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Sessão concluída! 🎉", style = MaterialTheme.typography.headlineSmall)
+        Text(LocalStrings.current.sessionDone, style = MaterialTheme.typography.headlineSmall)
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             AccuracyRing(percent = accuracyPct)
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            StatChip("${elapsedSeconds}s", "Tempo", modifier = Modifier.weight(1f))
-            StatChip("${state.correctCount}", "Corretas", modifier = Modifier.weight(1f))
-            StatChip("${state.errorCount}", "Erros", modifier = Modifier.weight(1f))
+            StatChip("${elapsedSeconds}s", LocalStrings.current.statTime, modifier = Modifier.weight(1f))
+            StatChip("${state.correctCount}", LocalStrings.current.statCorrect, modifier = Modifier.weight(1f))
+            StatChip("${state.errorCount}", LocalStrings.current.statWrong, modifier = Modifier.weight(1f))
         }
 
         state.newMilestone?.let { MilestoneBanner(count = it) }
@@ -206,9 +208,9 @@ private fun ResultsContent(
                     .padding(14.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                Text("PARA REVER", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(LocalStrings.current.toReview, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 state.topMistakes.forEach { (label, count) ->
-                    Text("• $label ($count erro${if (count > 1) "s" else ""})", style = MaterialTheme.typography.bodyMedium)
+                    Text("• $label (${LocalStrings.current.mistakeCount(count)})", style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
@@ -221,11 +223,11 @@ private fun ResultsContent(
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = ExtendedTheme.colors.textWarm),
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text("Praticar erros")
+                    Text(LocalStrings.current.practiseMistakes)
                 }
             }
             Button(onClick = onDone, modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.large) {
-                Text("Concluído")
+                Text(LocalStrings.current.done)
             }
         }
     }

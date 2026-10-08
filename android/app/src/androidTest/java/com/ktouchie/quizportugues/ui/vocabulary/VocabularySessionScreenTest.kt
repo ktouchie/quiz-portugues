@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
 
 /**
  * Smoke test for the Quick Practice happy path: a question renders with 4 tappable options, and
- * tapping one shows feedback plus a "Continuar" button. Full session-completion coverage (results
+ * tapping one shows feedback plus a "Continue" button. Full session-completion coverage (results
  * screen, retry-mistakes) is broader than a single smoke test should carry — see the
  * Testing & CI epic for dedicated coverage.
  */
@@ -36,6 +36,6 @@ class VocabularySessionScreenTest {
 
         composeTestRule.onAllNodes(hasClickAction())[0].performClick()
 
-        composeTestRule.onNodeWithText("Continuar").assertExists()
+        composeTestRule.onNodeWithText("Continue").assertExists()
     }
 }

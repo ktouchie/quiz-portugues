@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.ktouchie.quizportugues.ui.i18n.LocalStrings
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 
 /** Celebratory banner shown on a results screen when a new mastery milestone is reached. */
@@ -33,7 +34,7 @@ fun MilestoneBanner(count: Int, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "🏅 Novo marco: $count itens dominados!",
+            text = LocalStrings.current.milestone(count),
             style = MaterialTheme.typography.titleMedium,
             color = ExtendedTheme.colors.textWarm,
             textAlign = TextAlign.Center,

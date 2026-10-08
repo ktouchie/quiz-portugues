@@ -1,6 +1,7 @@
 import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
+import { categoryName, categorySpan, localized, t, triggerText } from './i18n.js';
 
 class SubjunctiveQuiz extends QuizBase {
     constructor() {
@@ -21,7 +22,7 @@ class SubjunctiveQuiz extends QuizBase {
             cb.type = 'checkbox';
             cb.value = category;
             label.appendChild(cb);
-            label.appendChild(document.createTextNode(' ' + category));
+            label.append(' ', categorySpan(category));
             categoryDiv.appendChild(label);
         });
         addSelectAll('categories');
@@ -31,7 +32,7 @@ class SubjunctiveQuiz extends QuizBase {
         const selected = getCheckedValues('categories');
 
         if (selected.length === 0) {
-            alert('Por favor, selecione pelo menos uma categoria.');
+            alert(t('quiz.selectCategory'));
             return null;
         }
 
@@ -45,6 +46,7 @@ class SubjunctiveQuiz extends QuizBase {
                     answer: entry.answer,
                     trigger: entry.trigger || null,
                     hint: entry.hint || null,
+                    hint_en: entry.hint_en || null,
                     english: entry.english || null,
                 });
             });
@@ -77,7 +79,7 @@ class SubjunctiveQuiz extends QuizBase {
         if (item.trigger) {
             const triggerEl = document.createElement('p');
             triggerEl.className = 'question-translation';
-            triggerEl.textContent = `Gatilho: ${item.trigger}`;
+            triggerEl.textContent = t('subjunctive.trigger', { trigger: triggerText(item.trigger) });
             el.appendChild(triggerEl);
         }
 
@@ -95,7 +97,7 @@ class SubjunctiveQuiz extends QuizBase {
     }
 
     getHint(key) {
-        return this.itemData[key].hint || null;
+        return localized(this.itemData[key], 'hint') || null;
     }
 
     getLabel(key) {
@@ -109,14 +111,14 @@ class SubjunctiveQuiz extends QuizBase {
         const li = document.createElement('li');
         const badge = document.createElement('span');
         badge.className = 'category-badge';
-        badge.textContent = item.category;
+        badge.textContent = categoryName(item.category);
         li.append(`${index + 1}. `);
         li.appendChild(badge);
         li.append(' ');
         const s = document.createElement('strong');
         s.textContent = item.prompt.replace(/___.*$/, `[${item.answer}]`);
         li.appendChild(s);
-        li.append(` (${count} erro${count > 1 ? 's' : ''})`);
+        li.append(` (${t('result.mistakeCount', { n: count })})`);
         return li;
     }
 }

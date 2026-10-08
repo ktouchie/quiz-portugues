@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quiz dos Verbos Portugueses</title>
+    <title data-i18n="verbs.title">Quiz dos Verbos Portugueses</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <script>
@@ -22,19 +22,19 @@
     <div id="timer-display">Tempo: 00:00</div>
 </div>
 
-<a href="index.html" id="back-link">← Início</a>
-<h1>Quiz dos Verbos Portugueses</h1>
+<a href="index.html" id="back-link" data-i18n="nav.home">← Início</a>
+<h1 data-i18n="verbs.title">Quiz dos Verbos Portugueses</h1>
 
 <div id="setup">
     <p id="srs-due-count" class="srs-due hidden"></p>
-    <button id="quick-practice">Prática Rápida</button>
-    <p class="setup-hint">12 itens ao seu nível, primeiro os que estão para rever. O nível seguinte abre quando dominar a maior parte deste.</p>
+    <button id="quick-practice" data-i18n="quiz.quickPractice">Prática Rápida</button>
+    <p class="setup-hint" data-i18n="quiz.quickPracticeHint">12 itens ao seu nível, primeiro os que estão para rever. O nível seguinte abre quando dominar a maior parte deste.</p>
     <details id="advanced">
-        <summary>Avançado</summary>
-        <h2>Selecione os tempos para praticar</h2>
-        <p class="setup-hint">Selecione pelo menos um tempo verbal. Quanto mais tempos, mais longa a quiz.</p>
+        <summary data-i18n="quiz.advanced">Avançado</summary>
+        <h2 data-i18n="verbs.tensesHeading">Selecione os tempos para praticar</h2>
+        <p class="setup-hint" data-i18n="verbs.tensesHint">Selecione pelo menos um tempo verbal. Quanto mais tempos, mais longa a quiz.</p>
         <div id="tenses"></div>
-        <button id="start-quiz">Iniciar Quiz</button>
+        <button id="start-quiz" data-i18n="quiz.start">Iniciar Quiz</button>
     </details>
 </div>
 
@@ -42,9 +42,9 @@
     <p id="question"></p>
     <div id="answer-container">
         <input type="text" id="answer" autocomplete="off">
-        <button id="submit-answer">Enviar</button>
+        <button id="submit-answer" data-i18n="quiz.submit">Enviar</button>
     </div>
-    <p class="keyboard-hint">Pressione Enter para enviar</p>
+    <p class="keyboard-hint" data-i18n="quiz.enterHint">Pressione Enter para enviar</p>
     <div id="feedback-progress-container">
         <p id="feedback" class="hidden"></p>
         <div id="progress-container">
@@ -54,31 +54,31 @@
             <p id="progress-percentage"></p>
             <p id="mastery-counter"></p>
         </div>
-        <button id="next-question" class="hidden">Próxima</button>
+        <button id="next-question" class="hidden" data-i18n="quiz.next">Próxima</button>
     </div>
 </div>
 
 <div id="result" class="hidden">
-    <h2>Parabéns! Conjugou corretamente todos os verbos.</h2>
+    <h2 data-i18n="verbs.done">Parabéns! Conjugou corretamente todos os verbos.</h2>
     <p id="total-score"></p>
     <p id="quiz-time"></p>
     <p id="accuracy"></p>
     <p id="best-score"></p>
-    <h3>Erros mais comuns</h3>
+    <h3 data-i18n="result.topMistakes">Erros mais comuns</h3>
     <ol id="top-mistakes"></ol>
     <div id="result-buttons">
-        <button id="retry-mistakes" class="hidden">Praticar erros</button>
-        <button id="restart">Reiniciar Quiz</button>
-        <a href="index.html"><button class="button-secondary">← Início</button></a>
+        <button id="retry-mistakes" class="hidden" data-i18n="result.retry">Praticar erros</button>
+        <button id="restart" data-i18n="result.restart">Reiniciar Quiz</button>
+        <a href="index.html"><button class="button-secondary" data-i18n="nav.home">← Início</button></a>
     </div>
 </div>
 
 <div id="footer">
-    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
+    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer" data-i18n="footer.support">
         Compre-me um pastel de nata
     </a>
     <div id="version-container">
-        Versão: <span id="version"></span>
+        <span data-i18n="footer.version">Versão:</span> <span id="version"></span>
     </div>
 </div>
 

@@ -16,6 +16,7 @@ import com.ktouchie.quizportugues.content.pickDistractors
 import com.ktouchie.quizportugues.content.unlockedTiers
 import com.ktouchie.quizportugues.content.verbQuizItems
 import com.ktouchie.quizportugues.data.AppDatabase
+import com.ktouchie.quizportugues.i18n.LocalizedText
 import com.ktouchie.quizportugues.data.GamificationRepository
 import com.ktouchie.quizportugues.data.SrsRepository
 import com.ktouchie.quizportugues.srs.SrsRecord
@@ -27,7 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class VerbAnswerFeedback(val wasCorrect: Boolean, val correctAnswer: String, val hint: String?, val exampleSentence: String?)
+data class VerbAnswerFeedback(val wasCorrect: Boolean, val correctAnswer: String, val hint: LocalizedText?, val exampleSentence: String?)
 
 sealed interface VerbSessionUiState {
     data object Loading : VerbSessionUiState

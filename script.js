@@ -5,6 +5,7 @@ import { getVerbHint } from './grammar_hints.js';
 import { buildGatedQuickPracticePool, buildOptions } from './practice.js';
 import { getDueItems } from './srs.js';
 import { verbItemLevel } from './cefr.js';
+import { appendTemplate, t } from './i18n.js';
 
 const TENSE_KEYS = Object.keys(TENSE_LABELS);
 
@@ -40,7 +41,7 @@ export class VerbQuiz extends QuizBase {
         ppCb.value = 'participios_passados';
         const ppLabel = document.createElement('label');
         ppLabel.appendChild(ppCb);
-        ppLabel.appendChild(document.createTextNode(' particípios passados'));
+        ppLabel.append(' ', _i18nSpan('verbs.participles'));
         tensesDiv.appendChild(ppLabel);
 
         // Difficulty selector
@@ -49,12 +50,13 @@ export class VerbQuiz extends QuizBase {
         const advanced = startButton.parentNode;
 
         const diffH = document.createElement('h2');
-        diffH.textContent = 'Nível de dificuldade';
+        diffH.dataset.i18n = 'verbs.difficulty';
+        diffH.textContent = t('verbs.difficulty');
         advanced.insertBefore(diffH, startButton);
 
         const diffDiv = document.createElement('div');
         diffDiv.id = 'difficulty-selector';
-        [['all', 'Todos'], ['beginner', 'Iniciante'], ['intermediate', 'Intermédio'], ['advanced', 'Avançado']].forEach(([val, label], i) => {
+        ['all', 'beginner', 'intermediate', 'advanced'].forEach((val, i) => {
             const radio = document.createElement('input');
             radio.type = 'radio';
             radio.name = 'difficulty';
@@ -64,7 +66,7 @@ export class VerbQuiz extends QuizBase {
             const lbl = document.createElement('label');
             lbl.htmlFor = `diff-${val}`;
             lbl.appendChild(radio);
-            lbl.appendChild(document.createTextNode(' ' + label));
+            lbl.append(' ', _i18nSpan(`verbs.difficulty.${val}`));
             diffDiv.appendChild(lbl);
         });
         advanced.insertBefore(diffDiv, startButton);
@@ -76,7 +78,7 @@ export class VerbQuiz extends QuizBase {
         intCb.type = 'checkbox';
         intCb.id = 'interleaved-mode';
         intLabel.appendChild(intCb);
-        intLabel.appendChild(document.createTextNode(' Modo intercalado (melhor para retenção)'));
+        intLabel.append(' ', _i18nSpan('verbs.interleaved'));
         advanced.insertBefore(intLabel, startButton);
     }
 
@@ -84,7 +86,7 @@ export class VerbQuiz extends QuizBase {
         this.selectedTenses = getCheckedValues('tenses');
 
         if (this.selectedTenses.length === 0) {
-            alert('Por favor, selecione pelo menos um tempo verbal.');
+            alert(t('verbs.selectTense'));
             return null;
         }
 
@@ -173,34 +175,25 @@ export class VerbQuiz extends QuizBase {
         el.textContent = '';
 
         if (tense === 'participios_passados') {
-            el.append('Qual é o particípio correto para o verbo ');
             const s1 = document.createElement('strong');
             s1.className = 'irregular-verb';
             _withTooltip(s1, verb, verbs[verb].english);
-            el.append(s1, ' usado com o verbo auxiliar ');
             const s2 = document.createElement('strong');
             s2.className = third;
             s2.textContent = third;
-            el.append(s2, '?');
+            appendTemplate(el, 'verbs.participleQuestion', { verb: s1, aux: s2 });
         } else {
             const personIdx = parseInt(third, 10);
-            const verbClass = verbs[verb].regular ? 'regular-verb' : 'irregular-verb';
-            const tenseClass = `tense-color-${TENSE_KEYS.indexOf(tense)}`;
-            const personClass = `person-color-${personIdx}`;
-
-            el.append('Conjugue o verbo ');
             const s1 = document.createElement('strong');
-            s1.className = verbClass;
+            s1.className = verbs[verb].regular ? 'regular-verb' : 'irregular-verb';
             _withTooltip(s1, verb, verbs[verb].english);
-            el.append(s1, ' no tempo ');
             const s2 = document.createElement('strong');
-            s2.className = tenseClass;
+            s2.className = `tense-color-${TENSE_KEYS.indexOf(tense)}`;
             s2.textContent = TENSE_LABELS[tense] || tense;
-            el.append(s2, ' para ');
             const s3 = document.createElement('strong');
-            s3.className = personClass;
+            s3.className = `person-color-${personIdx}`;
             s3.textContent = PERSONS[personIdx];
-            el.append(s3, ':');
+            appendTemplate(el, 'verbs.question', { verb: s1, tense: s2, person: s3 });
         }
     }
 
@@ -233,33 +226,39 @@ export class VerbQuiz extends QuizBase {
     formatMistake(key, count, index) {
         const [verb, tense, third] = key.split('|||');
         const li = document.createElement('li');
+        const field = (labelKey, value) => {
+            li.append(`${t(labelKey)}: `);
+            _strong(li, value);
+        };
 
+        li.append(`${index + 1}. `);
+        field('verbs.mistake.verb', verb);
+        li.append(', ');
         if (tense === 'participios_passados') {
-            const answer = this.data[verb].participios_passados[third];
-            li.append(`${index + 1}. Verbo: `);
-            _strong(li, verb);
-            li.append(', Tempo: ');
-            _strong(li, 'particípios passados');
-            li.append(', Auxiliar: ');
-            _strong(li, third);
-            li.append(', Resposta: ');
-            _strong(li, answer);
-            li.append(`, Erros: ${count}`);
+            field('verbs.mistake.tense', t('verbs.participles'));
+            li.append(', ');
+            field('verbs.mistake.auxiliary', third);
+            li.append(', ');
+            field('verbs.mistake.answer', this.data[verb].participios_passados[third]);
         } else {
             const personIdx = parseInt(third, 10);
-            const answer = this.data[verb][tense][personIdx];
-            li.append(`${index + 1}. Verbo: `);
-            _strong(li, verb);
-            li.append(', Tempo: ');
-            _strong(li, TENSE_LABELS[tense] || tense);
-            li.append(', Pessoa: ');
-            _strong(li, PERSONS[personIdx]);
-            li.append(', Resposta: ');
-            _strong(li, answer);
-            li.append(`, Erros: ${count}`);
+            field('verbs.mistake.tense', TENSE_LABELS[tense] || tense);
+            li.append(', ');
+            field('verbs.mistake.person', PERSONS[personIdx]);
+            li.append(', ');
+            field('verbs.mistake.answer', this.data[verb][tense][personIdx]);
         }
+        li.append(`, ${t('verbs.mistake.count')}: ${count}`);
         return li;
     }
+}
+
+/** A span whose text follows the interface language (see applyTranslations in i18n.js). */
+function _i18nSpan(key) {
+    const span = document.createElement('span');
+    span.dataset.i18n = key;
+    span.textContent = t(key);
+    return span;
 }
 
 function _strong(parent, text) {

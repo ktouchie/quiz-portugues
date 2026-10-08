@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import com.ktouchie.quizportugues.ui.i18n.LocalStrings
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 import com.ktouchie.quizportugues.ui.theme.OnAccent
 
@@ -155,12 +156,12 @@ fun TypedAnswerInput(enabled: Boolean, onSubmit: (String) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         )
         Text(
-            text = "💡 Mantém premida uma letra no teclado para ver os acentos",
+            text = LocalStrings.current.accentTip,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         WarmGradientButton(
-            text = "Responder",
+            text = LocalStrings.current.answer,
             onClick = { onSubmit(answerText) },
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
