@@ -76,4 +76,19 @@ class SrsRepositoryTest {
 
         assertEquals(1, repo.countMastered())
     }
+
+    @Test
+    fun `deleteRecordsNotIn removes only the module's records for items that no longer exist`() = runBlocking {
+        val dao = FakeSrsRecordDao()
+        val repo = SrsRepository(dao)
+        repo.recordAnswer("Adjetivos|||baixo|||short", "vocabulary", quality = 4, now = 1L)
+        repo.recordAnswer("Adjetivos|||baixo|||short (height)", "vocabulary", quality = 4, now = 1L)
+        repo.recordAnswer("ser|||presente|||0", "verbs", quality = 4, now = 1L)
+
+        val deleted = repo.deleteRecordsNotIn("vocabulary", setOf("Adjetivos|||baixo|||short (height)"))
+
+        assertEquals(1, deleted)
+        assertEquals(setOf("Adjetivos|||baixo|||short (height)", "ser|||presente|||0"), dao.records.keys)
+        assertEquals(0, repo.deleteRecordsNotIn("vocabulary", setOf("Adjetivos|||baixo|||short (height)")))
+    }
 }

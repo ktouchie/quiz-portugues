@@ -122,3 +122,18 @@ export const PRODUCTION_MIN_INTERVAL_DAYS = 6;
 export function isReadyForTyping(item) {
     return !!item && item.repetitions >= PRODUCTION_MIN_REPETITIONS && item.interval >= PRODUCTION_MIN_INTERVAL_DAYS;
 }
+
+/**
+ * Deletes records for items that no longer exist. A vocabulary key includes its English, so
+ * correcting a word's spelling or translation gives it a new key and leaves the old record
+ * behind: nothing can review it, but it would still count as mastered. The renamed word restarts,
+ * as agreed for content fixes. Same rule as Android's SrsRepository.deleteRecordsNotIn.
+ * @param {SRSState} state - mutated in place; the caller saves it
+ * @param {Set<string>} currentKeys
+ * @returns {number} how many records were deleted
+ */
+export function pruneRecords(state, currentKeys) {
+    const stale = Object.keys(state).filter(key => !currentKeys.has(key));
+    for (const key of stale) delete state[key];
+    return stale.length;
+}

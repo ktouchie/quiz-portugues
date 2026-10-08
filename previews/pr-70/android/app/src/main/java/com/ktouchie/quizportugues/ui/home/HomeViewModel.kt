@@ -52,6 +52,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             val verbItemIds = verbQuizItems(loadVerbEntries(application.assets)).map { it.id }
             val vocabItemIds = vocabularyQuizItems(loadVocabularyEntries(application.assets)).map { it.id }
+            // Before counting anything: drop records left behind by renamed vocabulary.
+            srsRepository.deleteRecordsNotIn(MODULE_VOCABULARY, vocabItemIds.toSet())
             val verbRecords = srsRepository.getAllRecords(MODULE_VERBS)
             val vocabRecords = srsRepository.getAllRecords(MODULE_VOCABULARY)
 

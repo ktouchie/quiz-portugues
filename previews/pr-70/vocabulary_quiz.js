@@ -2,7 +2,7 @@ import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { buildGatedQuickPracticePool, buildOptions, normalise, stringSimilarity } from './practice.js';
-import { getDueItems } from './srs.js';
+import { getDueItems, pruneRecords, saveSRSState } from './srs.js';
 import { vocabularyCategoryLevel } from './cefr.js';
 
 /** How many of the most confusable words the three wrong options are drawn from, so the same
@@ -33,6 +33,11 @@ export class VocabQuiz extends QuizBase {
             categoryDiv.appendChild(label);
         });
         addSelectAll('categories');
+
+        // Delete records for words whose spelling or English has changed (see pruneRecords).
+        if (pruneRecords(this.srsState, new Set(this.getAllItems().map(item => item.key))) > 0) {
+            saveSRSState(this.srsStorageKey, this.srsState);
+        }
     }
 
     getSelectedItems() {
