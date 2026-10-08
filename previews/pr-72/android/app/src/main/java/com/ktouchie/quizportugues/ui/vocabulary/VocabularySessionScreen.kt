@@ -115,7 +115,7 @@ private fun InProgressContent(
         )
 
         PromptCard(
-            chipLabel = state.question.item.category,
+            chipLabel = LocalStrings.current.categoryName(state.question.item.category),
             prompt = state.question.item.portuguese,
         )
 

@@ -1,7 +1,7 @@
 import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
-import { localized, t } from './i18n.js';
+import { categoryName, categorySpan, localized, t, triggerText } from './i18n.js';
 
 class SubjunctiveQuiz extends QuizBase {
     constructor() {
@@ -22,7 +22,7 @@ class SubjunctiveQuiz extends QuizBase {
             cb.type = 'checkbox';
             cb.value = category;
             label.appendChild(cb);
-            label.appendChild(document.createTextNode(' ' + category));
+            label.append(' ', categorySpan(category));
             categoryDiv.appendChild(label);
         });
         addSelectAll('categories');
@@ -79,7 +79,7 @@ class SubjunctiveQuiz extends QuizBase {
         if (item.trigger) {
             const triggerEl = document.createElement('p');
             triggerEl.className = 'question-translation';
-            triggerEl.textContent = t('subjunctive.trigger', { trigger: item.trigger });
+            triggerEl.textContent = t('subjunctive.trigger', { trigger: triggerText(item.trigger) });
             el.appendChild(triggerEl);
         }
 
@@ -111,7 +111,7 @@ class SubjunctiveQuiz extends QuizBase {
         const li = document.createElement('li');
         const badge = document.createElement('span');
         badge.className = 'category-badge';
-        badge.textContent = item.category;
+        badge.textContent = categoryName(item.category);
         li.append(`${index + 1}. `);
         li.appendChild(badge);
         li.append(' ');

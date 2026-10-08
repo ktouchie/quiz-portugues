@@ -4,7 +4,7 @@ import { STORAGE_KEYS } from './config.js';
 import { buildGatedQuickPracticePool, buildOptions, normalise, stringSimilarity } from './practice.js';
 import { getDueItems, pruneRecords, saveSRSState } from './srs.js';
 import { vocabularyCategoryLevel } from './cefr.js';
-import { appendTemplate, t } from './i18n.js';
+import { appendTemplate, categoryName, categorySpan, t } from './i18n.js';
 
 /** How many of the most confusable words the three wrong options are drawn from, so the same
  *  word doesn't always get the same options (same as the Android app). */
@@ -30,7 +30,7 @@ export class VocabQuiz extends QuizBase {
             cb.type = 'checkbox';
             cb.value = category;
             label.appendChild(cb);
-            label.appendChild(document.createTextNode(' ' + category));
+            label.append(' ', categorySpan(category));
             categoryDiv.appendChild(label);
         });
         addSelectAll('categories');
@@ -142,7 +142,7 @@ export class VocabQuiz extends QuizBase {
         const li = document.createElement('li');
         const badge = document.createElement('span');
         badge.className = 'category-badge';
-        badge.textContent = category;
+        badge.textContent = categoryName(category);
         li.append(`${index + 1}. `);
         li.appendChild(badge);
         li.append(' ');

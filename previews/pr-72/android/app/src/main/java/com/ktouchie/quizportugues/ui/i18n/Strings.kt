@@ -58,6 +58,8 @@ class Strings(
     val startQuiz: String,
     // Language switch
     val languageLabel: String,
+    /** A content category's name: English in English mode, the Portuguese key otherwise. */
+    val categoryName: (String) -> String,
 )
 
 val EnglishStrings = Strings(
@@ -106,6 +108,7 @@ val EnglishStrings = Strings(
     matching = { items, due -> "$items items · $due due for review" },
     startQuiz = "Start quiz",
     languageLabel = "Language",
+    categoryName = { VOCABULARY_CATEGORY_NAMES_EN[it] ?: it },
 )
 
 val PortugueseStrings = Strings(
@@ -154,6 +157,7 @@ val PortugueseStrings = Strings(
     matching = { items, due -> "$items itens · $due por rever" },
     startQuiz = "Iniciar Quiz",
     languageLabel = "Idioma",
+    categoryName = { it },
 )
 
 fun stringsFor(language: AppLanguage): Strings = if (language == AppLanguage.PT) PortugueseStrings else EnglishStrings
