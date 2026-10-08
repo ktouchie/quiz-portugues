@@ -1,11 +1,11 @@
 package com.ktouchie.quizportugues.ui.i18n
 
 /**
- * English names for the vocabulary categories, shown in English mode only; the Portuguese names
- * stay the content keys and record ids. Same as CATEGORY_NAMES_EN in the web app's i18n.js (a web
- * test keeps them identical).
+ * English names for content categories, shown in English mode only; the Portuguese names stay
+ * the content keys and record ids. Same as CATEGORY_NAMES_EN in the web app's i18n.js (a web test
+ * keeps them identical).
  */
-val VOCABULARY_CATEGORY_NAMES_EN: Map<String, String> = mapOf(
+val CATEGORY_NAMES_EN: Map<String, String> = mapOf(
     "Adjetivos" to "Adjectives",
     "Advérbios" to "Adverbs",
     "Anatomia" to "Anatomy",
@@ -37,4 +37,26 @@ val VOCABULARY_CATEGORY_NAMES_EN: Map<String, String> = mapOf(
     "Tempo" to "Weather",
     "Transporte" to "Transport",
     "Verbos" to "Verbs",
+    "Nomes em -or" to "Nouns in -or",
+    "Palavras em -ão" to "Words in -ão",
+    "Adjetivos em -l" to "Adjectives in -l",
+    "Outros adjetivos e nomes" to "Other adjectives and nouns",
+    "Profissões e identidade (ser)" to "Professions and identity (ser)",
+    "Estado temporário (estar)" to "Temporary states (estar)",
+    "Localização de pessoas/coisas (estar vs ser vs ficar)" to "Location of people/things (estar vs ser vs ficar)",
+    "Resultado e mudança de estado (ficar)" to "Results and changes of state (ficar)",
+    "de + artigo definido" to "de + definite article",
+    "em + artigo definido" to "em + definite article",
+    "a + artigo definido" to "a + definite article",
+    "por + artigo definido" to "por + definite article",
+    "em + artigo indefinido" to "em + indefinite article",
+    "de + demonstrativo" to "de + demonstrative",
+    "em + demonstrativo" to "em + demonstrative",
+    "a + demonstrativo" to "a + demonstrative",
+    "Expressões de vontade e desejo" to "Expressions of will and desire",
+    "Expressões de emoção e sentimento" to "Expressions of emotion and feeling",
+    "Expressões de dúvida e incerteza" to "Expressions of doubt and uncertainty",
+    "Expressões impessoais de necessidade e obrigação" to "Impersonal expressions of need and obligation",
+    "Conjunções temporais e condicionais" to "Time and condition conjunctions",
+    "Conjuntivo imperfeito (após expressões de passado)" to "Imperfect subjunctive (after past expressions)",
 )

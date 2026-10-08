@@ -2,7 +2,7 @@ package com.ktouchie.quizportugues.i18n
 
 import com.ktouchie.quizportugues.ui.i18n.EnglishStrings
 import com.ktouchie.quizportugues.ui.i18n.PortugueseStrings
-import com.ktouchie.quizportugues.ui.i18n.VOCABULARY_CATEGORY_NAMES_EN
+import com.ktouchie.quizportugues.ui.i18n.CATEGORY_NAMES_EN
 import com.ktouchie.quizportugues.ui.i18n.stringsFor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
@@ -55,7 +55,7 @@ class LanguageSettingsTest {
     fun `every vocabulary category has an English name, shown in English mode only`() {
         val categories = org.json.JSONObject(java.io.File("../../vocabulary.json").readText()).keys().asSequence().toList()
         for (category in categories) {
-            assert(VOCABULARY_CATEGORY_NAMES_EN.containsKey(category)) { "No English name for $category" }
+            assert(CATEGORY_NAMES_EN.containsKey(category)) { "No English name for $category" }
         }
         assertEquals("Colours", EnglishStrings.categoryName("Cores"))
         assertEquals("Cores", PortugueseStrings.categoryName("Cores"))

@@ -30,6 +30,73 @@ data class VocabularyQuizItem(
     override val module: String get() = "vocabulary"
 }
 
+/** [label] is "feminino" or "plural" — which form of [masculine] this item asks for. */
+data class GenderQuizItem(
+    override val id: String,
+    val category: String,
+    val masculine: String,
+    val english: String,
+    val label: String,
+    val answer: String,
+) : QuizItem {
+    override val module: String get() = "gender"
+}
+
+data class SerEstarFicarQuizItem(
+    override val id: String,
+    val category: String,
+    val sentence: String,
+    val answer: String,
+    val hint: String?,
+    val hintEn: String?,
+    val english: String?,
+) : QuizItem {
+    override val module: String get() = "ser_estar_ficar"
+}
+
+data class SubjunctiveQuizItem(
+    override val id: String,
+    val category: String,
+    val prompt: String,
+    val answer: String,
+    val trigger: String?,
+    val hint: String?,
+    val hintEn: String?,
+    val english: String?,
+    val infinitive: String?,
+) : QuizItem {
+    override val module: String get() = "subjunctive"
+}
+
+/** No `category` field — indirect_speech.json is a flat list, unlike every other module. */
+data class IndirectSpeechQuizItem(
+    override val id: String,
+    val direct: String,
+    val context: String,
+    val verbDirect: String,
+    val answer: String,
+    val rule: String,
+    val ruleEn: String?,
+    val indirectFull: String?,
+    val english: String?,
+) : QuizItem {
+    override val module: String get() = "indirect_speech"
+}
+
+data class ContractionQuizItem(
+    override val id: String,
+    val category: String,
+    val prep: String,
+    val article: String,
+    val answer: String,
+    val example: String?,
+    val english: String?,
+    val hint: String?,
+    val hintEn: String?,
+) : QuizItem {
+    override val module: String get() = "contractions"
+}
+
 /**
  * Stable content-item IDs — shared convention (docs/MOBILE_APP_SPEC.md §6.1).
  *
@@ -50,6 +117,29 @@ fun verbItemId(verb: String, tense: String, personIndex: Int): String =
 
 fun vocabularyItemId(category: String, portuguese: String, english: String): String =
     "$category$ID_SEPARATOR$portuguese$ID_SEPARATOR$english"
+
+/** Keyed on `masculine` rather than a list index (verified unique within each category in
+ *  gender_quiz.json) — more stable against content reordering than the web app's index-based key. */
+fun genderItemId(category: String, masculine: String, label: String): String =
+    "$category$ID_SEPARATOR$masculine$ID_SEPARATOR$label"
+
+/** Keyed on `sentence` (verified unique within each category in ser_estar_ficar.json) rather than
+ *  a list index — same rationale as [genderItemId]. */
+fun serEstarFicarItemId(category: String, sentence: String): String =
+    "$category$ID_SEPARATOR$sentence"
+
+/** Keyed on `prompt` (verified unique within each category in subjunctive_quiz.json) rather than
+ *  a list index — same rationale as [genderItemId]. */
+fun subjunctiveItemId(category: String, prompt: String): String =
+    "$category$ID_SEPARATOR$prompt"
+
+/** Keyed on `direct` (verified unique across all of indirect_speech.json's flat item list) —
+ *  there's no category to combine it with, unlike every other module's id function. */
+fun indirectSpeechItemId(direct: String): String = direct
+
+/** Keyed on `prep`+`article` (verified unique within each category in contractions.json). */
+fun contractionItemId(category: String, prep: String, article: String): String =
+    "$category$ID_SEPARATOR$prep$ID_SEPARATOR$article"
 
 /**
  * Flattens parsed [VerbEntry] data into individual quizzable conjugation items — one per
@@ -91,5 +181,97 @@ fun vocabularyQuizItems(entries: List<VocabularyEntry>): List<VocabularyQuizItem
             category = entry.category,
             portuguese = entry.portuguese,
             english = entry.english,
+        )
+    }
+
+/**
+ * Flattens parsed [GenderEntry] data into quizzable items — one per (word, "feminino"|"plural")
+ * combination that has a non-null form. Mirrors `gender_quiz.js`'s `getSelectedItems()`: every
+ * word yields a "plural" item; only words with a non-null `feminine` also yield a "feminino" item.
+ */
+fun genderQuizItems(entries: List<GenderEntry>): List<GenderQuizItem> {
+    val items = mutableListOf<GenderQuizItem>()
+    for (entry in entries) {
+        if (entry.feminine != null) {
+            items += GenderQuizItem(
+                id = genderItemId(entry.category, entry.masculine, "feminino"),
+                category = entry.category,
+                masculine = entry.masculine,
+                english = entry.english,
+                label = "feminino",
+                answer = entry.feminine,
+            )
+        }
+        items += GenderQuizItem(
+            id = genderItemId(entry.category, entry.masculine, "plural"),
+            category = entry.category,
+            masculine = entry.masculine,
+            english = entry.english,
+            label = "plural",
+            answer = entry.plural,
+        )
+    }
+    return items
+}
+
+/** Flattens parsed [SerEstarFicarEntry] data into quizzable items, one per sentence. */
+fun serEstarFicarQuizItems(entries: List<SerEstarFicarEntry>): List<SerEstarFicarQuizItem> =
+    entries.map { entry ->
+        SerEstarFicarQuizItem(
+            id = serEstarFicarItemId(entry.category, entry.sentence),
+            category = entry.category,
+            sentence = entry.sentence,
+            answer = entry.answer,
+            hint = entry.hint,
+            hintEn = entry.hintEn,
+            english = entry.english,
+        )
+    }
+
+/** Flattens parsed [SubjunctiveEntry] data into quizzable items, one per prompt. */
+fun subjunctiveQuizItems(entries: List<SubjunctiveEntry>): List<SubjunctiveQuizItem> =
+    entries.map { entry ->
+        SubjunctiveQuizItem(
+            id = subjunctiveItemId(entry.category, entry.prompt),
+            category = entry.category,
+            prompt = entry.prompt,
+            answer = entry.answer,
+            trigger = entry.trigger,
+            hint = entry.hint,
+            hintEn = entry.hintEn,
+            english = entry.english,
+            infinitive = entry.infinitive,
+        )
+    }
+
+/** Flattens parsed [IndirectSpeechEntry] data into quizzable items, one per entry. */
+fun indirectSpeechQuizItems(entries: List<IndirectSpeechEntry>): List<IndirectSpeechQuizItem> =
+    entries.map { entry ->
+        IndirectSpeechQuizItem(
+            id = indirectSpeechItemId(entry.direct),
+            direct = entry.direct,
+            context = entry.context,
+            verbDirect = entry.verbDirect,
+            answer = entry.answer,
+            rule = entry.rule,
+            ruleEn = entry.ruleEn,
+            indirectFull = entry.indirectFull,
+            english = entry.english,
+        )
+    }
+
+/** Flattens parsed [ContractionEntry] data into quizzable items, one per prep+article pair. */
+fun contractionQuizItems(entries: List<ContractionEntry>): List<ContractionQuizItem> =
+    entries.map { entry ->
+        ContractionQuizItem(
+            id = contractionItemId(entry.category, entry.prep, entry.article),
+            category = entry.category,
+            prep = entry.prep,
+            article = entry.article,
+            answer = entry.answer,
+            example = entry.example,
+            english = entry.english,
+            hint = entry.hint,
+            hintEn = entry.hintEn,
         )
     }
