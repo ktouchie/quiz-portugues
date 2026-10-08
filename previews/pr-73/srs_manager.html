@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="srs.title">Gerir Repetição Espaçada</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <script>
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t) document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <style>
+        #srs-manager { max-width: 700px; margin: 0 auto; padding: 20px 16px 80px; }
+        .srs-module { margin-bottom: 32px; }
+        .srs-module h2 { font-size: 1rem; margin: 0 0 8px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+        .srs-stats { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
+        .srs-item-list { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-direction: column; gap: 4px; }
+        .srs-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface-2); border-radius: 8px; padding: 6px 10px; font-size: 0.85rem; gap: 8px; }
+        .srs-item-label { flex: 1; color: var(--text); }
+        .srs-item-meta { color: var(--text-muted); font-size: 0.78rem; white-space: nowrap; }
+        .srs-item-due { color: var(--accent); font-weight: 600; }
+        .btn-reset-item { font-size: 0.72rem; padding: 2px 8px; border-radius: 99px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); box-shadow: none; cursor: pointer; }
+        .btn-reset-item:hover { background: var(--surface); color: var(--text); }
+        .module-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-reset-module { font-size: 0.8rem; padding: 6px 14px; border-radius: 8px; }
+        #reset-all-btn { margin-top: 32px; background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+        #reset-all-btn:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
+        .empty-note { color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
+        .search-bar { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-size: 0.9rem; margin-bottom: 20px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+<button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
+
+<div id="srs-manager">
+    <a href="index.html" id="back-link" data-i18n="nav.home">← Início</a>
+    <h1 data-i18n="srs.heading">Repetição Espaçada</h1>
+    <p style="color:var(--text-muted);font-size:0.9rem;" data-i18n="srs.intro">Veja e redefina os registos de prática de cada item. Repor um item remove o histórico SRS e recomeça do zero.</p>
+
+    <input type="search" class="search-bar" id="srs-search" placeholder="Filtrar itens…" data-i18n-attr="placeholder:srs.filter">
+
+    <div id="srs-modules"></div>
+
+    <button id="reset-all-btn" data-i18n="srs.resetAll">Repor TODOS os registos SRS</button>
+</div>
+
+<div id="footer">
+    <div id="version-container">
+        <span data-i18n="footer.version">Versão:</span> <span id="version"></span>
+    </div>
+</div>
+
+<script type="module">
+import { initTheme, loadVersion } from './common.js';
+import { loadSRSState, saveSRSState } from './srs.js';
+import { getLanguage, initLanguage, t } from './i18n.js';
+
+initTheme();
+initLanguage();
+loadVersion();
+
+const MODULES = [
+    { key: 'srs_verbs',          titleKey: 'module.verbs' },
+    { key: 'srs_vocab',          titleKey: 'module.vocab' },
+    { key: 'srs_gender',         titleKey: 'module.gender' },
+    { key: 'srs_ser_estar_ficar',titleKey: 'module.serEstarFicar' },
+    { key: 'srs_contractions',   titleKey: 'module.contractions' },
+    { key: 'srs_subjunctive',    titleKey: 'module.subjunctive' },
+    { key: 'srs_indirect_speech',titleKey: 'module.indirectSpeech' },
+];
+
+function formatDate(ts) {
+    if (!ts || ts === 0) return t('srs.never');
+    const d = new Date(ts);
+    return d.toLocaleDateString(getLanguage() === 'pt' ? 'pt-PT' : 'en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function isDue(item) {
+    return item.nextReview > 0 && item.nextReview <= Date.now();
+}
+
+function renderModules(filter = '') {
+    const container = document.getElementById('srs-modules');
+    container.textContent = '';
+    const lf = filter.toLowerCase();
+
+    for (const mod of MODULES) {
+        const state = loadSRSState(mod.key);
+        const allKeys = Object.keys(state);
+        const filteredKeys = lf
+            ? allKeys.filter(k => {
+                const label = state[k].label || k;
+                return label.toLowerCase().includes(lf) || k.toLowerCase().includes(lf);
+            })
+            : allKeys;
+
+        const section = document.createElement('div');
+        section.className = 'srs-module';
+
+        const heading = document.createElement('h2');
+        heading.textContent = t(mod.titleKey);
+        section.appendChild(heading);
+
+        const dueCount = allKeys.filter(k => isDue(state[k])).length;
+        const stats = document.createElement('p');
+        stats.className = 'srs-stats';
+        stats.textContent = t('srs.recorded', { n: allKeys.length });
+        if (dueCount > 0) stats.textContent += t('srs.dueToday', { n: dueCount });
+        section.appendChild(stats);
+
+        if (filteredKeys.length === 0 && allKeys.length === 0) {
+            const note = document.createElement('p');
+            note.className = 'empty-note';
+            note.textContent = t('srs.empty');
+            section.appendChild(note);
+        } else if (filteredKeys.length === 0) {
+            const note = document.createElement('p');
+            note.className = 'empty-note';
+            note.textContent = t('srs.noMatch');
+            section.appendChild(note);
+        } else {
+            const ul = document.createElement('ul');
+            ul.className = 'srs-item-list';
+
+            const sorted = [...filteredKeys].sort((a, b) => {
+                const la = state[a].label || a;
+                const lb = state[b].label || b;
+                return la.localeCompare(lb, 'pt');
+            });
+
+            for (const k of sorted) {
+                const item = state[k];
+                const li = document.createElement('li');
+                li.className = 'srs-item';
+
+                const labelEl = document.createElement('span');
+                labelEl.className = 'srs-item-label';
+                labelEl.textContent = item.label || k;
+                li.appendChild(labelEl);
+
+                const metaEl = document.createElement('span');
+                metaEl.className = 'srs-item-meta' + (isDue(item) ? ' srs-item-due' : '');
+                metaEl.textContent = isDue(item)
+                    ? t('srs.due')
+                    : t('srs.next', { date: formatDate(item.nextReview) });
+                li.appendChild(metaEl);
+
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'btn-reset-item';
+                resetBtn.textContent = t('srs.reset');
+                resetBtn.addEventListener('click', () => {
+                    delete state[k];
+                    saveSRSState(mod.key, state);
+                    renderModules(document.getElementById('srs-search').value);
+                });
+                li.appendChild(resetBtn);
+
+                ul.appendChild(li);
+            }
+            section.appendChild(ul);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'module-actions';
+        if (allKeys.length > 0) {
+            const resetModBtn = document.createElement('button');
+            resetModBtn.className = 'btn-reset-module';
+            resetModBtn.textContent = t('srs.resetModule', { module: t(mod.titleKey) });
+            resetModBtn.addEventListener('click', () => {
+                if (!confirm(t('srs.resetModuleConfirm', { n: allKeys.length, module: t(mod.titleKey) }))) return;
+                saveSRSState(mod.key, {});
+                renderModules(document.getElementById('srs-search').value);
+            });
+            actions.appendChild(resetModBtn);
+        }
+        section.appendChild(actions);
+
+        container.appendChild(section);
+    }
+}
+
+renderModules();
+document.addEventListener('languagechange', () => renderModules(document.getElementById('srs-search').value));
+
+document.getElementById('srs-search').addEventListener('input', e => {
+    renderModules(e.target.value);
+});
+
+document.getElementById('reset-all-btn').addEventListener('click', () => {
+    if (!confirm(t('srs.resetAllConfirm'))) return;
+    for (const mod of MODULES) saveSRSState(mod.key, {});
+    renderModules(document.getElementById('srs-search').value);
+});
+</script>
+</body>
+</html>

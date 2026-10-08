@@ -1,0 +1,139 @@
+/**
+ * SM-2 spaced repetition algorithm.
+ *
+ * @typedef {{ interval: number, repetitions: number, easeFactor: number, nextReview: number }} SRSItem
+ * @typedef {Object.<string, SRSItem>} SRSState
+ */
+
+const DEFAULT_EASE = 2.5;
+
+/**
+ * Compute next SRS interval for an item.
+ * @param {SRSItem} item
+ * @param {number} quality - 0 (blackout) to 5 (perfect)
+ * @returns {SRSItem} updated item (mutated in place and returned)
+ */
+export function sm2(item, quality) {
+    // Ease factor is always updated, even on failed recalls
+    item.easeFactor = Math.max(
+        1.3,
+        item.easeFactor + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)
+    );
+
+    if (quality < 3) {
+        // Failed or barely recalled — reset schedule, item comes back tomorrow
+        item.repetitions = 0;
+        item.interval = 1;
+    } else {
+        if (item.repetitions === 0) {
+            item.interval = 1;
+        } else if (item.repetitions === 1) {
+            item.interval = 3;
+        } else {
+            item.interval = Math.round(item.interval * item.easeFactor);
+        }
+        item.repetitions++;
+    }
+    item.nextReview = Date.now() + item.interval * 86_400_000;
+    return item;
+}
+
+/**
+ * @param {string} storageKey
+ * @returns {SRSState}
+ */
+export function loadSRSState(storageKey) {
+    try {
+        return JSON.parse(localStorage.getItem(storageKey) || '{}');
+    } catch {
+        return {};
+    }
+}
+
+/**
+ * @param {string} storageKey
+ * @param {SRSState} state
+ */
+export function saveSRSState(storageKey, state) {
+    localStorage.setItem(storageKey, JSON.stringify(state));
+}
+
+/**
+ * Get or initialise the SRS record for a single item key.
+ * @param {SRSState} state
+ * @param {string} key
+ * @returns {SRSItem}
+ */
+export function getItemSRS(state, key) {
+    if (!state[key]) {
+        state[key] = { interval: 0, repetitions: 0, easeFactor: DEFAULT_EASE, nextReview: 0 };
+    }
+    return state[key];
+}
+
+/**
+ * Apply a SM-2 quality score to an item and persist the state.
+ * @param {SRSState} state
+ * @param {string} key
+ * @param {number} quality - 0–5
+ * @param {string} storageKey - localStorage key for persistence
+ * @returns {SRSItem}
+ */
+export function updateItemSRS(state, key, quality, storageKey) {
+    const item = getItemSRS(state, key);
+    sm2(item, quality);
+    saveSRSState(storageKey, state);
+    return item;
+}
+
+/**
+ * Return all keys whose nextReview timestamp is in the past (due now).
+ * @param {SRSState} state
+ * @returns {string[]}
+ */
+export function getDueItems(state) {
+    const now = Date.now();
+    return Object.keys(state).filter(k => state[k].nextReview > 0 && state[k].nextReview <= now);
+}
+
+/**
+ * @param {SRSState} state
+ * @param {string} key
+ * @returns {boolean}
+ */
+export function isItemDue(state, key) {
+    const item = state[key];
+    return item ? (item.nextReview > 0 && item.nextReview <= Date.now()) : false;
+}
+
+/** Correct reviews in a row an item needs before it's asked as a typed answer. */
+export const PRODUCTION_MIN_REPETITIONS = 3;
+
+/** SM-2 interval (days) an item needs before it's asked as a typed answer. */
+export const PRODUCTION_MIN_INTERVAL_DAYS = 6;
+
+/**
+ * Whether an item is known well enough to be typed rather than picked from options (same rule as
+ * the Android app's srs/Production.kt). A wrong answer resets repetitions to 0, so a missed item
+ * goes back to multiple choice by itself until it's earned again.
+ * @param {SRSItem|undefined} item
+ * @returns {boolean}
+ */
+export function isReadyForTyping(item) {
+    return !!item && item.repetitions >= PRODUCTION_MIN_REPETITIONS && item.interval >= PRODUCTION_MIN_INTERVAL_DAYS;
+}
+
+/**
+ * Deletes records for items that no longer exist. A vocabulary key includes its English, so
+ * correcting a word's spelling or translation gives it a new key and leaves the old record
+ * behind: nothing can review it, but it would still count as mastered. The renamed word restarts,
+ * as agreed for content fixes. Same rule as Android's SrsRepository.deleteRecordsNotIn.
+ * @param {SRSState} state - mutated in place; the caller saves it
+ * @param {Set<string>} currentKeys
+ * @returns {number} how many records were deleted
+ */
+export function pruneRecords(state, currentKeys) {
+    const stale = Object.keys(state).filter(key => !currentKeys.has(key));
+    for (const key of stale) delete state[key];
+    return stale.length;
+}
