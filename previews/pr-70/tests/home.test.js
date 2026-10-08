@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { cwd } from 'node:process';
-import { verbItemKeys, vocabularyItemKeys, seenPercent, renderModuleCard, addProgressBar, MODULES } from '../home.js';
+import { verbItemKeys, vocabularyItemKeys, seenPercent, renderModuleCard, addProgressBar, setDueCount, dueAmong, MODULES } from '../home.js';
 import { VerbQuiz } from '../script.js';
 import { VocabQuiz } from '../vocabulary_quiz.js';
 
@@ -52,5 +52,26 @@ describe('module cards', () => {
         expect(card.getAttribute('href')).toBe('vocabulary_quiz.html');
         expect(card.querySelector('.progress-fill').style.width).toBe('40%');
         expect(card.querySelector('[role="progressbar"]').getAttribute('aria-valuenow')).toBe('40');
+    });
+});
+
+describe('records left behind by renamed words', () => {
+    const past = Date.now() - 1000;
+
+    it('are not counted as due on the home card', () => {
+        const state = { 'Adjetivos|||baixo|||short': { nextReview: past }, 'Cores|||azul|||blue': { nextReview: past } };
+        expect(dueAmong(['Cores|||azul|||blue', 'Adjetivos|||baixo|||short (height)'], state)).toBe(1);
+        const card = renderModuleCard(MODULES[1], state);
+        setDueCount(card, dueAmong(['Cores|||azul|||blue'], state));
+        expect(card.querySelector('.module-due').textContent).toBe('1 por rever');
+    });
+
+    it('are not counted as due on the setup screen', () => {
+        document.body.innerHTML = '<p id="srs-due-count" class="hidden"></p>';
+        const quiz = new VocabQuiz();
+        quiz.data = { Cores: { azul: 'blue' }, Adjetivos: { baixo: 'short (height)' } };
+        quiz.srsState = { 'Adjetivos|||baixo|||short': { nextReview: past }, 'Cores|||azul|||blue': { nextReview: past } };
+        quiz._updateDueCount();
+        expect(document.getElementById('srs-due-count').textContent).toBe('1 item para rever hoje');
     });
 });

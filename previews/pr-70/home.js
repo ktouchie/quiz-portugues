@@ -95,8 +95,6 @@ export function renderModuleCard(module, srsState) {
     title.textContent = module.title;
     const due = document.createElement('span');
     due.className = 'module-due';
-    const dueCount = getDueItems(srsState).length;
-    due.textContent = dueCount > 0 ? `${dueCount} por rever` : 'Nada por rever';
     body.append(title, due);
 
     const cta = document.createElement('span');
@@ -104,7 +102,29 @@ export function renderModuleCard(module, srsState) {
     cta.textContent = 'Praticar';
 
     card.append(icon, body, cta);
+    setDueCount(card, getDueItems(srsState).length);
     return card;
+}
+
+/**
+ * Shows how many items are due on a module card.
+ * @param {HTMLElement} card
+ * @param {number} count
+ */
+export function setDueCount(card, count) {
+    card.querySelector('.module-due').textContent = count > 0 ? `${count} por rever` : 'Nada por rever';
+}
+
+/**
+ * Due items among the module's current items only: a word whose spelling or translation changed
+ * leaves its old record behind, which nothing can ever review.
+ * @param {string[]} itemKeys
+ * @param {import('./srs.js').SRSState} srsState
+ * @returns {number}
+ */
+export function dueAmong(itemKeys, srsState) {
+    const known = new Set(itemKeys);
+    return getDueItems(srsState).filter(key => known.has(key)).length;
 }
 
 /**
@@ -143,7 +163,10 @@ export async function renderHome() {
         list.appendChild(card);
         if (!module.progress) return null;
         return module.progress()
-            .then(keys => addProgressBar(card, seenPercent(keys, srsState)))
+            .then(keys => {
+                setDueCount(card, dueAmong(keys, srsState));
+                addProgressBar(card, seenPercent(keys, srsState));
+            })
             .catch(console.error);
     });
     await Promise.all(pending);

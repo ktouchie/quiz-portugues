@@ -454,7 +454,11 @@ export class QuizBase {
     _updateDueCount() {
         const el = document.getElementById('srs-due-count');
         if (!el) return;
-        const due = getDueItems(this.srsState).length;
+        // Only count items that still exist: a word whose spelling or translation changed leaves its
+        // old record behind, and nothing can ever review it.
+        const all = this.getAllItems();
+        const known = all ? new Set(all.map(item => item.key)) : null;
+        const due = getDueItems(this.srsState).filter(key => !known || known.has(key)).length;
         el.textContent = due > 0 ? `${due} ${due === 1 ? 'item' : 'itens'} para rever hoje` : '';
         el.classList.toggle('hidden', due === 0);
     }
