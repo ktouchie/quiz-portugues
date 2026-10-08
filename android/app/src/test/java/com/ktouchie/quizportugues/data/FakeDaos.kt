@@ -18,6 +18,10 @@ class FakeSrsRecordDao : SrsRecordDao {
     override suspend fun upsert(record: SrsRecordEntity) {
         records[record.itemId] = record
     }
+
+    override suspend fun deleteAll(itemIds: List<String>) {
+        itemIds.forEach { records.remove(it) }
+    }
 }
 
 class FakeBestScoreDao : BestScoreDao {

@@ -1,46 +1,50 @@
 package com.ktouchie.quizportugues.ui.verbs
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ktouchie.quizportugues.content.QuestionModality
 import com.ktouchie.quizportugues.content.tenseLabel
+import com.ktouchie.quizportugues.ui.common.GradientProgressBar
+import com.ktouchie.quizportugues.ui.common.MilestoneBanner
+import com.ktouchie.quizportugues.ui.common.MultipleChoiceOptions
+import com.ktouchie.quizportugues.ui.common.PromptCard
+import com.ktouchie.quizportugues.ui.common.StatChip
+import com.ktouchie.quizportugues.ui.common.TypedAnswerInput
 import com.ktouchie.quizportugues.ui.common.hapticCorrect
 import com.ktouchie.quizportugues.ui.common.hapticWrong
+import com.ktouchie.quizportugues.ui.common.AccuracyRing
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 
-private val ACCENT_CHARS = listOf("á", "ã", "â", "à", "é", "ê", "í", "ó", "ô", "õ", "ú", "ç")
-
 /**
- * Verb Conjugation Quick Practice session (docs/MOBILE_APP_SPEC.md §8/§9): typed free-text
- * input with a custom accent bar (no EP accented characters on a default mobile keyboard),
- * results shown in place rather than as a separate route — same pattern as the Vocabulary
- * session, matching how quiz_base.js actually behaves.
+ * Verb Conjugation Quick Practice session (docs/MOBILE_APP_SPEC.md §8/§9/§11): each question
+ * renders multiple-choice or typed input depending on the item's own typing readiness — free-text
+ * input relies on the device keyboard's own accent long-press, no in-app accent picker. Results
+ * shown in place rather than as a separate route — same pattern as the Vocabulary session, matching
+ * how quiz_base.js actually behaves. Styled for "Direction A — Warm Encourager".
  */
 @Composable
 fun VerbSessionScreen(
@@ -53,10 +57,14 @@ fun VerbSessionScreen(
         is VerbSessionUiState.Loading -> LoadingContent()
         is VerbSessionUiState.InProgress -> InProgressContent(
             state = s,
-            onAnswerSubmitted = viewModel::onAnswerSubmitted,
+            onAnswerGiven = viewModel::onAnswerGiven,
             onContinue = viewModel::onContinue,
         )
-        is VerbSessionUiState.Finished -> ResultsContent(state = s, onDone = onDone)
+        is VerbSessionUiState.Finished -> ResultsContent(
+            state = s,
+            onDone = onDone,
+            onRetryMistakes = viewModel::onRetryMistakes,
+        )
     }
 }
 
@@ -70,7 +78,7 @@ private fun LoadingContent() {
 @Composable
 private fun InProgressContent(
     state: VerbSessionUiState.InProgress,
-    onAnswerSubmitted: (String) -> Unit,
+    onAnswerGiven: (String) -> Unit,
     onContinue: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -83,37 +91,75 @@ private fun InProgressContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
-        LinearProgressIndicator(
-            progress = { state.questionNumber.toFloat() / state.totalQuestions },
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Text("${state.correctCount} certas · ${state.errorCount} erradas")
+        // Reflects items permanently cleared (correctCount), not which question is on screen —
+        // a wrong answer requeues the item rather than advancing the pool, so counting "current
+        // question number" would both overstate progress before it's earned and never move on a
+        // miss. Only reaches totalQuestions/totalQuestions once the last item is answered
+        // correctly, right before the session actually finishes.
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            GradientProgressBar(
+                progress = state.correctCount.toFloat() / state.totalQuestions,
+                modifier = Modifier.weight(1f).height(10.dp),
+            )
+            Text(
+                text = "${state.correctCount}/${state.totalQuestions}",
+                style = MaterialTheme.typography.labelLarge,
+                color = ExtendedTheme.colors.textWarm,
+            )
+        }
         Text(
-            text = "Conjugue o verbo ${state.item.verb} (${state.item.english}) no tempo " +
-                "${tenseLabel(state.item.tense)} para ${state.item.person}:",
+            text = "${state.correctCount} certas · ${state.errorCount} erradas",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        PromptCard(
+            chipLabel = "${state.item.verb} (${state.item.english}) · ${tenseLabel(state.item.tense)}",
+            prompt = "${state.item.person} ___",
         )
 
         // Keyed per question, not per item: a missed last item comes straight back with the same
-        // id, and the field must not still hold the wrong answer.
+        // id, and the answer field must not still hold the wrong answer.
         key(state.questionSerial) {
-            AnswerInput(
-                enabled = state.feedback == null,
-                onSubmit = onAnswerSubmitted,
-            )
+            when (state.modality) {
+                QuestionModality.TYPED -> TypedAnswerInput(
+                    enabled = state.feedback == null,
+                    onSubmit = onAnswerGiven,
+                )
+                QuestionModality.MULTIPLE_CHOICE -> MultipleChoiceOptions(
+                    options = state.options,
+                    correctAnswer = state.item.answer,
+                    revealAnswer = state.feedback != null,
+                    enabled = state.feedback == null,
+                    onSelect = onAnswerGiven,
+                )
+            }
         }
 
         state.feedback?.let { feedback ->
-            val color = if (feedback.wasCorrect) ExtendedTheme.colors.correct else ExtendedTheme.colors.incorrect
-            Text(
-                text = if (feedback.wasCorrect) "Correto!" else "Resposta certa: ${feedback.correctAnswer}",
-                color = color,
-            )
-            feedback.hint?.let { Text(it) }
-            feedback.exampleSentence?.let { Text("Exemplo: $it") }
-            Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) {
+            val tint = if (feedback.wasCorrect) ExtendedTheme.colors.correct else ExtendedTheme.colors.incorrect
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(tint.copy(alpha = 0.12f), MaterialTheme.shapes.large)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = if (feedback.wasCorrect) "Correto!" else "Resposta certa: ${feedback.correctAnswer}",
+                    color = tint,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                feedback.hint?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+                feedback.exampleSentence?.let {
+                    Text("Exemplo: $it", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            Button(onClick = onContinue, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large) {
                 Text("Continuar")
             }
         }
@@ -121,41 +167,11 @@ private fun InProgressContent(
 }
 
 @Composable
-private fun AnswerInput(enabled: Boolean, onSubmit: (String) -> Unit) {
-    var answerText by remember { mutableStateOf("") }
-
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            items(ACCENT_CHARS) { char ->
-                OutlinedButton(onClick = { answerText += char }, enabled = enabled) {
-                    Text(char)
-                }
-            }
-        }
-        OutlinedTextField(
-            value = answerText,
-            onValueChange = { answerText = it },
-            enabled = enabled,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.None,
-                imeAction = ImeAction.Done,
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { onSubmit(answerText) },
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-            Button(onClick = { onSubmit(answerText) }, enabled = enabled) {
-                Text("Responder")
-            }
-        }
-    }
-}
-
-@Composable
-private fun ResultsContent(state: VerbSessionUiState.Finished, onDone: () -> Unit) {
+private fun ResultsContent(
+    state: VerbSessionUiState.Finished,
+    onDone: () -> Unit,
+    onRetryMistakes: () -> Unit,
+) {
     val total = state.correctCount + state.errorCount
     val accuracyPct = if (total > 0) (state.correctCount * 100) / total else 0
     val elapsedSeconds = state.elapsedMillis / 1000
@@ -163,30 +179,54 @@ private fun ResultsContent(state: VerbSessionUiState.Finished, onDone: () -> Uni
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Resultados")
-        Text("Tempo: ${elapsedSeconds}s")
-        Text("Precisão: $accuracyPct%")
-        Text("${state.correctCount} certas · ${state.errorCount} erradas")
+        Text("Sessão concluída! 🎉", style = MaterialTheme.typography.headlineSmall)
 
-        if (state.newMilestone != null) {
-            Text(
-                text = "Parabéns! ${state.newMilestone} itens dominados! 🎉",
-                color = ExtendedTheme.colors.correct,
-            )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            AccuracyRing(percent = accuracyPct)
         }
 
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            StatChip("${elapsedSeconds}s", "Tempo", modifier = Modifier.weight(1f))
+            StatChip("${state.correctCount}", "Corretas", modifier = Modifier.weight(1f))
+            StatChip("${state.errorCount}", "Erros", modifier = Modifier.weight(1f))
+        }
+
+        state.newMilestone?.let { MilestoneBanner(count = it) }
+
         if (state.topMistakes.isNotEmpty()) {
-            Text("Principais erros:")
-            state.topMistakes.forEach { (label, count) ->
-                Text("• $label ($count erro${if (count > 1) "s" else ""})")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
+                    .border(2.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.large)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text("PARA REVER", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                state.topMistakes.forEach { (label, count) ->
+                    Text("• $label ($count erro${if (count > 1) "s" else ""})", style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
 
-        Button(onClick = onDone, modifier = Modifier.fillMaxWidth()) {
-            Text("Concluído")
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+            if (state.topMistakes.isNotEmpty()) {
+                OutlinedButton(
+                    onClick = onRetryMistakes,
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = ExtendedTheme.colors.textWarm),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text("Praticar erros")
+                }
+            }
+            Button(onClick = onDone, modifier = Modifier.weight(1f), shape = MaterialTheme.shapes.large) {
+                Text("Concluído")
+            }
         }
     }
 }

@@ -33,22 +33,23 @@ npm run lint
 - `contractions_quiz.html` + `contractions_quiz.js` — Preposition contractions; loads `contractions.json`
 - `subjunctive_quiz.html` + `subjunctive_quiz.js` — Conjuntivo conjugation; loads `subjunctive_quiz.json`
 - `indirect_speech_quiz.html` + `indirect_speech_quiz.js` — Discurso indireto verb forms; loads `indirect_speech.json`
-- `index.html` — Home page with streak, mastered count, links to all modules and SRS manager
+- `index.html` + `home.js` — Home page: streak pill, mastered/streak stat chips, a card per module (due count; progress bar for verbs and vocabulary), SRS manager link
 - `srs_manager.html` — SRS management page: view/reset records per item or per module
 
 **Shared:**
-- `common.js` — `initTheme`, `loadVersion`, `startTimer`, `stopTimer`, `resumeTimer`, `updateTimerDisplay`, `updateBestScore`, `addSelectAll`
+- `common.js` — `initTheme`, `loadVersion`, `startTimer`, `stopTimer`, `resumeTimer`, `updateTimerDisplay`, `updateBestScore`, `addSelectAll`, `getCheckedValues` (ticked boxes, leaving out "Selecionar tudo")
 - `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, startQuickPractice, nextQuestion, submitAnswer, endQuiz), SRS integration, progress bar, retry-mistakes; abstract methods: `fetchData`, `getSelectedItems`, `renderQuestion`, `getCorrectAnswer`, `formatMistake`, `getLabel`; optional hooks `getAllItems` (enables Quick Practice) and `getOptions` (multiple-choice instead of typed)
-- `practice.js` — pure helpers shared with the Android app's behaviour: `buildQuickPracticePool` (12 items, due first), `buildOptions` (correct answer + 3 distinct distractors), `shuffle`
+- `practice.js` — pure helpers shared with the Android app's behaviour: `buildQuickPracticePool` (12 items, due first), `buildGatedQuickPracticePool` (only unlocked CEFR tiers, newest tier first), `buildOptions(correct, pools)` (3 distinct distractors, best pool first), `stringSimilarity`, `shuffle`
+- `cefr.js` — CEFR levels per verb, tense and vocabulary category (`verbItemLevel`, `vocabularyCategoryLevel`) and `unlockedTiers` (80% rule) — same maps as Android's `CefrTiers.kt`
 - `config.js` — `PERSONS`, `TENSE_LABELS`, `STORAGE_KEYS` (verbs, vocab, gender, serEstarFicar, contractions, subjunctive, indirectSpeech, theme)
-- `srs.js` — SM-2 spaced repetition: `loadSRSState`, `saveSRSState`, `getItemSRS`, `sm2`, `getDueItems`
+- `srs.js` — SM-2 spaced repetition: `loadSRSState`, `saveSRSState`, `getItemSRS`, `sm2`, `getDueItems`, `isReadyForTyping` (3 correct in a row + 6-day interval → typed instead of multiple choice)
 - `gamification.js` — `loadStreak`, `updateStreak`, `getTotalMastered`, `checkMilestone`, `showMilestoneBanner`, `loadGoal`, `saveGoal`, `getGoalProgress`
 - `grammar_hints.js` — `getVerbHint(tense, verb, third)`, `getGenderHint(category)`
-- `styles.css` — Applies to all pages; uses CSS custom properties for dark/light theming
+- `styles.css` — Applies to all pages; "Warm Encourager" tokens on `:root` / `[data-theme="dark"]`, same palette as the Android app
 
 **Data files:**
 - `verbs.json` — `{ verbName: { regular, difficulty, tense: [...5 forms...], exemplos: { presente: [...], pretérito: [...] } } }` — 26 conjugation verbs; `difficulty`: `"beginner" | "intermediate" | "advanced"`; `exemplos` on 16 high-frequency verbs
-- `vocabulary.json` — `{ category: { portuguese: "english" } }`; 31 categories, ~548 words
+- `vocabulary.json` — `{ category: { portuguese: "english" } }`; 31 categories, ~548 words. Two different Portuguese words never share an English translation (a content test enforces it) — tell them apart with a trailing bracketed note, e.g. baixo `"short (height)"` / curto `"short (length)"`; the note is optional in typed English answers (`answerMatches` / Android `answersMatch`). The only agreed exception is sete e meia / dezanove e trinta ("seven thirty"): asked English → Portuguese, either is accepted and neither is offered as a wrong option for the other. A vocabulary key includes its English, so renaming a word restarts it: its old record is deleted when the home page or the vocabulary quiz loads (`pruneRecords` in `srs.js`; Android `SrsRepository.deleteRecordsNotIn` from the home screen)
 - `gender_quiz.json` — `{ category: [{ masculine, feminine, plural, english }] }`; 4 categories, 53 words, 102 quiz items
 - `ser_estar_ficar.json` — `{ category: [{ sentence, answer, hint, english }] }`; 4 categories, 38 items
 - `contractions.json` — `{ category: [{ parts: [prep, article], answer, example, english, hint }] }`; 8 categories, 39 items
@@ -70,7 +71,9 @@ All quizzes share `QuizBase`:
 6. Result screen: time, accuracy %, top mistakes, "Praticar erros" retry button
 7. Streak updated on quiz completion; milestones checked
 
-**Quick Practice** (verbs, vocabulary): a "Prática Rápida" button on the setup screen starts a 12-item session over the whole module, due items first — same rule as the Android app. Vocabulary's Quick Practice asks Portuguese → English as multiple choice (wrong options from the same category); verbs stay typed.
+**Quick Practice** (verbs, vocabulary): a "Prática Rápida" button on the setup screen starts a 12-item session from the CEFR tiers the learner has unlocked, due items first, then the newest tier — same rule as the Android app. The detailed setup (tenses/categories, difficulty, direction) is folded under "Avançado" and isn't CEFR-gated. Vocabulary's Quick Practice asks Portuguese → English.
+
+**Multiple choice until typing-ready** (verbs, vocabulary, every session): each question shows four lettered options until that item passes `isReadyForTyping`, then a text box; a wrong answer sends it back to options. After an answer the options stay on screen with the right one (and a wrong tap) marked. A missed item never comes straight back while others remain.
 
 **Verb quiz extras:** adaptive difficulty filter (beginner/intermediate/advanced), interleaved mode (Fisher-Yates shuffle), example sentences for 16 high-frequency verbs.
 
@@ -99,6 +102,20 @@ web equivalent, with tests for both (rollout tracked in epic #59). Full design i
   spec — both apps must derive identical IDs independently.
 - Persistence: Room (SQLite) replacing the web app's `localStorage` keys — see spec §6.2 for the
   schema.
+- **Gameplay is mastery-gated, per item, not fixed per module** (spec §9), the same on the web:
+  every verb, tense and vocabulary category has a CEFR level (`content/CefrTiers.kt`, web
+  `cefr.js`) that gates Quick Practice (`unlockedTiers()`: each tier opens once 80% of the previous
+  one has been answered correctly at least once). Independently, each item is multiple choice until
+  its own SRS record passes `isReadyForTyping()` (`srs/Production.kt`, web `srs.js`: 3 correct in a
+  row and a 6-day interval), then typed. Distractors are ranked by confusability (verbs: same verb
+  and person in other tenses first; vocabulary: `stringSimilarity`), de-duplicated by
+  `pickDistractors` (web `buildOptions`). Typed input relies on the device keyboard's accents.
+- **Visual theme: "Direction A — Warm Encourager"** (spec §11), on both apps: cream palette, warm
+  amber gradient for the main calls to action alongside the blue accent, big soft-rounded cards.
+  Android tokens are in `ui/theme/Color.kt`, building blocks in `ui/common/` (`ModuleCard`,
+  `StatChip`, `PromptCard`, `AccuracyRing`, `MilestoneBanner`, `WarmGradientButton`,
+  `GradientProgressBar`); the web mirrors them in `styles.css` (`:root` tokens, `.module-card`,
+  `.stat-chip`, `#question` prompt card, `#accuracy` ring, lettered `button.option`s).
 - Build: `./gradlew lint test` for CI-equivalent checks; `./gradlew assembleDebug` for an
   installable APK. Requires the Android SDK — not available in this sandbox, so changes here
   can't be build-verified locally; rely on careful review plus the Android CI workflow.

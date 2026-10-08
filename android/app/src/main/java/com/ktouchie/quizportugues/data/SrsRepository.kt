@@ -29,7 +29,25 @@ class SrsRepository(private val dao: SrsRecordDao) {
     suspend fun getDueItemIds(module: String, now: Long = System.currentTimeMillis()): List<String> =
         dao.getDueForModule(module, now).map { it.itemId }
 
+    /** All of a module's SRS records, keyed by item id — the input to tier-unlock and
+     *  typing-readiness checks (docs/MOBILE_APP_SPEC.md §9), which need more than just due ids. */
+    suspend fun getAllRecords(module: String): Map<String, SrsRecord> =
+        dao.getAllForModule(module).associate { it.itemId to it.toDomain() }
+
     suspend fun countMastered(): Int = dao.countMastered()
+
+    /**
+     * Deletes a module's records for items that no longer exist. A vocabulary item's id includes
+     * its English, so correcting a word's spelling or translation gives it a new id and leaves the
+     * old record behind: nothing can review it, but it would still count as mastered. The renamed
+     * word restarts, as agreed for content fixes. Same rule as the web's pruneRecords.
+     * @return how many records were deleted
+     */
+    suspend fun deleteRecordsNotIn(module: String, currentItemIds: Set<String>): Int {
+        val stale = dao.getAllForModule(module).map { it.itemId }.filterNot { it in currentItemIds }
+        if (stale.isNotEmpty()) dao.deleteAll(stale)
+        return stale.size
+    }
 }
 
 private fun SrsRecordEntity.toDomain() = SrsRecord(
