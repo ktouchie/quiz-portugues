@@ -1,6 +1,7 @@
 import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
+import { appendTemplate, localized, t } from './i18n.js';
 
 class ContractionsQuiz extends QuizBase {
     constructor() {
@@ -31,7 +32,7 @@ class ContractionsQuiz extends QuizBase {
         const selected = getCheckedValues('categories');
 
         if (selected.length === 0) {
-            alert('Por favor, selecione pelo menos uma categoria.');
+            alert(t('quiz.selectCategory'));
             return null;
         }
 
@@ -46,6 +47,7 @@ class ContractionsQuiz extends QuizBase {
                     example: entry.example || null,
                     english: entry.english || null,
                     hint: entry.hint || null,
+                    hint_en: entry.hint_en || null,
                 });
             });
         }
@@ -57,17 +59,13 @@ class ContractionsQuiz extends QuizBase {
         const el = document.getElementById('question');
         el.textContent = '';
 
-        el.append('Qual é a contração de ');
         const s1 = document.createElement('strong');
         s1.className = 'irregular-verb';
         s1.textContent = item.parts[0];
-        el.appendChild(s1);
-        el.append(' + ');
         const s2 = document.createElement('strong');
         s2.className = 'person-color-3';
         s2.textContent = item.parts[1];
-        el.appendChild(s2);
-        el.append('?');
+        appendTemplate(el, 'contractions.question', { first: s1, second: s2 });
 
         if (item.example) {
             const ex = document.createElement('p');
@@ -83,7 +81,7 @@ class ContractionsQuiz extends QuizBase {
     }
 
     getHint(key) {
-        return this.itemData[key].hint || null;
+        return localized(this.itemData[key], 'hint') || null;
     }
 
     getLabel(key) {
@@ -104,7 +102,7 @@ class ContractionsQuiz extends QuizBase {
         const s = document.createElement('strong');
         s.textContent = `${item.parts[0]} + ${item.parts[1]} = ${item.answer}`;
         li.appendChild(s);
-        li.append(` (${count} erro${count > 1 ? 's' : ''})`);
+        li.append(` (${t('result.mistakeCount', { n: count })})`);
         return li;
     }
 }

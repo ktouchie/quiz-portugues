@@ -1,5 +1,6 @@
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
+import { appendTemplate, localized, t } from './i18n.js';
 
 class IndirectSpeechQuiz extends QuizBase {
     constructor() {
@@ -20,9 +21,11 @@ class IndirectSpeechQuiz extends QuizBase {
             verb_direct: entry.verb_direct,
             answer: entry.answer,
             rule: entry.rule,
+            rule_en: entry.rule_en,
             indirect_full: entry.indirect_full,
             english: entry.english,
             hint: entry.hint || null,
+            hint_en: entry.hint_en || null,
         }));
     }
 
@@ -43,12 +46,10 @@ class IndirectSpeechQuiz extends QuizBase {
         el.appendChild(directEl);
 
         const promptEl = document.createElement('p');
-        promptEl.append('Em discurso indireto, como fica ');
         const s = document.createElement('strong');
         s.className = 'irregular-verb';
         s.textContent = `"${item.verb_direct}"`;
-        promptEl.appendChild(s);
-        promptEl.append('?');
+        appendTemplate(promptEl, 'indirect.question', { verb: s });
         el.appendChild(promptEl);
 
         if (item.english) {
@@ -66,8 +67,8 @@ class IndirectSpeechQuiz extends QuizBase {
 
     getHint(key) {
         const item = this.itemData[key];
-        const parts = [item.rule];
-        if (item.indirect_full) parts.push(`Ex: ${item.indirect_full}`);
+        const parts = [localized(item, 'rule')];
+        if (item.indirect_full) parts.push(t('quiz.example', { text: item.indirect_full }));
         return parts.join(' — ');
     }
 
@@ -88,8 +89,8 @@ class IndirectSpeechQuiz extends QuizBase {
         const s2 = document.createElement('strong');
         s2.textContent = item.answer;
         li.appendChild(s2);
-        li.append(` (${item.rule})`);
-        li.append(` — ${count} erro${count > 1 ? 's' : ''}`);
+        li.append(` (${localized(item, 'rule')})`);
+        li.append(` — ${t('result.mistakeCount', { n: count })}`);
         return li;
     }
 }

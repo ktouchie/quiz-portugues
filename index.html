@@ -20,40 +20,43 @@
 <main id="home">
     <header class="home-header">
         <div>
-            <h1>Olá! 👋</h1>
-            <p class="home-subtitle">Continua a praticar hoje!</p>
+            <h1 data-i18n="home.greeting">Olá! 👋</h1>
+            <p class="home-subtitle" data-i18n="home.subtitle">Continua a praticar hoje!</p>
         </div>
         <span id="streak-pill" class="streak-pill" title="Dias seguidos">🔥 0</span>
     </header>
 
     <div class="stat-chips">
-        <div class="stat-chip"><span id="mastered-count" class="stat-value">0</span><span class="stat-label">Dominadas</span></div>
-        <div class="stat-chip"><span id="streak-count" class="stat-value">0</span><span class="stat-label">Dias seguidos</span></div>
+        <div class="stat-chip"><span id="mastered-count" class="stat-value">0</span><span class="stat-label" data-i18n="home.statMastered">Dominadas</span></div>
+        <div class="stat-chip"><span id="streak-count" class="stat-value">0</span><span class="stat-label" data-i18n="home.statStreak">Dias seguidos</span></div>
     </div>
 
-    <nav id="module-list" aria-label="Módulos"></nav>
+    <nav id="module-list" aria-label="Módulos" data-i18n-attr="aria-label:home.modules"></nav>
 
     <div id="tools-container">
-        <a href="srs_manager.html" id="btn-srs-manager">Gerir repetição espaçada →</a>
+        <a href="srs_manager.html" id="btn-srs-manager" data-i18n="home.srsLink">Gerir repetição espaçada →</a>
     </div>
 </main>
 
 <div id="footer">
-    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer">
+    <a id="support-link" href="https://buymeacoffee.com/ktouchie" target="_blank" rel="noopener noreferrer" data-i18n="footer.support">
         Compre-me um pastel de nata
     </a>
     <div id="version-container">
-        Versão: <span id="version"></span>
+        <span data-i18n="footer.version">Versão:</span> <span id="version"></span>
     </div>
 </div>
 
 <script type="module">
     import { loadVersion, initTheme } from './common.js';
+    import { initLanguage } from './i18n.js';
     import { renderHome } from './home.js';
 
     initTheme();
+    initLanguage();
     loadVersion();
     renderHome();
+    document.addEventListener('languagechange', () => renderHome());
 </script>
 </body>
 </html>

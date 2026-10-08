@@ -381,6 +381,28 @@ button.option--wrong .option-badge {
     transform: translateY(-1px);
 }
 
+/* ── Language switch (next to the theme toggle) ──────────── */
+#lang-toggle {
+    position: fixed;
+    top: 16px;
+    left: 70px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border-radius: 99px;
+    background-color: var(--surface-2);
+    color: var(--text-warm);
+    border: 2px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    z-index: 1000;
+}
+
+#lang-toggle:hover {
+    background-color: var(--border);
+    transform: translateY(-1px);
+}
+
 /* ── Tense / category checkboxes ─────────────────────────── */
 .select-all-label {
     flex: 1 1 100% !important;
@@ -436,7 +458,7 @@ button.option--wrong .option-badge {
 }
 
 #accuracy::after {
-    content: "PRECISÃO";
+    content: attr(data-label); /* "ACCURACY" / "PRECISÃO", set with the score */
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.06em;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gerir Repetição Espaçada</title>
+    <title data-i18n="srs.title">Gerir Repetição Espaçada</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <script>
@@ -36,44 +36,46 @@
 <button id="theme-toggle" aria-label="Mudar para modo claro">☀</button>
 
 <div id="srs-manager">
-    <a href="index.html" id="back-link">← Início</a>
-    <h1>Repetição Espaçada</h1>
-    <p style="color:var(--text-muted);font-size:0.9rem;">Veja e redefina os registos de prática de cada item. Repor um item remove o histórico SRS e recomeça do zero.</p>
+    <a href="index.html" id="back-link" data-i18n="nav.home">← Início</a>
+    <h1 data-i18n="srs.heading">Repetição Espaçada</h1>
+    <p style="color:var(--text-muted);font-size:0.9rem;" data-i18n="srs.intro">Veja e redefina os registos de prática de cada item. Repor um item remove o histórico SRS e recomeça do zero.</p>
 
-    <input type="search" class="search-bar" id="srs-search" placeholder="Filtrar itens…">
+    <input type="search" class="search-bar" id="srs-search" placeholder="Filtrar itens…" data-i18n-attr="placeholder:srs.filter">
 
     <div id="srs-modules"></div>
 
-    <button id="reset-all-btn">Repor TODOS os registos SRS</button>
+    <button id="reset-all-btn" data-i18n="srs.resetAll">Repor TODOS os registos SRS</button>
 </div>
 
 <div id="footer">
     <div id="version-container">
-        Versão: <span id="version"></span>
+        <span data-i18n="footer.version">Versão:</span> <span id="version"></span>
     </div>
 </div>
 
 <script type="module">
 import { initTheme, loadVersion } from './common.js';
 import { loadSRSState, saveSRSState } from './srs.js';
+import { getLanguage, initLanguage, t } from './i18n.js';
 
 initTheme();
+initLanguage();
 loadVersion();
 
 const MODULES = [
-    { key: 'srs_verbs',          label: 'Conjugação de verbos' },
-    { key: 'srs_vocab',          label: 'Vocabulário' },
-    { key: 'srs_gender',         label: 'Género e plural' },
-    { key: 'srs_ser_estar_ficar',label: 'Ser / Estar / Ficar' },
-    { key: 'srs_contractions',   label: 'Contrações' },
-    { key: 'srs_subjunctive',    label: 'Conjuntivo' },
-    { key: 'srs_indirect_speech',label: 'Discurso indireto' },
+    { key: 'srs_verbs',          titleKey: 'module.verbs' },
+    { key: 'srs_vocab',          titleKey: 'module.vocab' },
+    { key: 'srs_gender',         titleKey: 'module.gender' },
+    { key: 'srs_ser_estar_ficar',titleKey: 'module.serEstarFicar' },
+    { key: 'srs_contractions',   titleKey: 'module.contractions' },
+    { key: 'srs_subjunctive',    titleKey: 'module.subjunctive' },
+    { key: 'srs_indirect_speech',titleKey: 'module.indirectSpeech' },
 ];
 
 function formatDate(ts) {
-    if (!ts || ts === 0) return 'nunca';
+    if (!ts || ts === 0) return t('srs.never');
     const d = new Date(ts);
-    return d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return d.toLocaleDateString(getLanguage() === 'pt' ? 'pt-PT' : 'en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 function isDue(item) {
@@ -99,25 +101,25 @@ function renderModules(filter = '') {
         section.className = 'srs-module';
 
         const heading = document.createElement('h2');
-        heading.textContent = mod.label;
+        heading.textContent = t(mod.titleKey);
         section.appendChild(heading);
 
         const dueCount = allKeys.filter(k => isDue(state[k])).length;
         const stats = document.createElement('p');
         stats.className = 'srs-stats';
-        stats.textContent = `${allKeys.length} item${allKeys.length !== 1 ? 'ns' : ''} registado${allKeys.length !== 1 ? 's' : ''}`;
-        if (dueCount > 0) stats.textContent += ` · ${dueCount} para rever hoje`;
+        stats.textContent = t('srs.recorded', { n: allKeys.length });
+        if (dueCount > 0) stats.textContent += t('srs.dueToday', { n: dueCount });
         section.appendChild(stats);
 
         if (filteredKeys.length === 0 && allKeys.length === 0) {
             const note = document.createElement('p');
             note.className = 'empty-note';
-            note.textContent = 'Sem registos ainda.';
+            note.textContent = t('srs.empty');
             section.appendChild(note);
         } else if (filteredKeys.length === 0) {
             const note = document.createElement('p');
             note.className = 'empty-note';
-            note.textContent = 'Nenhum item corresponde ao filtro.';
+            note.textContent = t('srs.noMatch');
             section.appendChild(note);
         } else {
             const ul = document.createElement('ul');
@@ -142,13 +144,13 @@ function renderModules(filter = '') {
                 const metaEl = document.createElement('span');
                 metaEl.className = 'srs-item-meta' + (isDue(item) ? ' srs-item-due' : '');
                 metaEl.textContent = isDue(item)
-                    ? 'para rever'
-                    : `próxima: ${formatDate(item.nextReview)}`;
+                    ? t('srs.due')
+                    : t('srs.next', { date: formatDate(item.nextReview) });
                 li.appendChild(metaEl);
 
                 const resetBtn = document.createElement('button');
                 resetBtn.className = 'btn-reset-item';
-                resetBtn.textContent = 'Repor';
+                resetBtn.textContent = t('srs.reset');
                 resetBtn.addEventListener('click', () => {
                     delete state[k];
                     saveSRSState(mod.key, state);
@@ -166,9 +168,9 @@ function renderModules(filter = '') {
         if (allKeys.length > 0) {
             const resetModBtn = document.createElement('button');
             resetModBtn.className = 'btn-reset-module';
-            resetModBtn.textContent = `Repor todos (${mod.label})`;
+            resetModBtn.textContent = t('srs.resetModule', { module: t(mod.titleKey) });
             resetModBtn.addEventListener('click', () => {
-                if (!confirm(`Repor todos os ${allKeys.length} registos de "${mod.label}"?`)) return;
+                if (!confirm(t('srs.resetModuleConfirm', { n: allKeys.length, module: t(mod.titleKey) }))) return;
                 saveSRSState(mod.key, {});
                 renderModules(document.getElementById('srs-search').value);
             });
@@ -181,13 +183,14 @@ function renderModules(filter = '') {
 }
 
 renderModules();
+document.addEventListener('languagechange', () => renderModules(document.getElementById('srs-search').value));
 
 document.getElementById('srs-search').addEventListener('input', e => {
     renderModules(e.target.value);
 });
 
 document.getElementById('reset-all-btn').addEventListener('click', () => {
-    if (!confirm('Repor TODOS os registos SRS de todos os módulos? Esta ação não pode ser desfeita.')) return;
+    if (!confirm(t('srs.resetAllConfirm'))) return;
     for (const mod of MODULES) saveSRSState(mod.key, {});
     renderModules(document.getElementById('srs-search').value);
 });

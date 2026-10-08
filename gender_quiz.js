@@ -1,6 +1,7 @@
 import { QuizBase } from './quiz_base.js';
 import { STORAGE_KEYS } from './config.js';
 import { getGenderHint } from './grammar_hints.js';
+import { appendTemplate, t } from './i18n.js';
 
 export class GenderQuiz extends QuizBase {
     constructor() {
@@ -42,11 +43,9 @@ export class GenderQuiz extends QuizBase {
         const item = this.itemData[key];
         const el = document.getElementById('question');
         el.textContent = '';
-        el.append('Qual é o ');
         const s1 = document.createElement('strong');
         s1.className = 'person-color-1';
-        s1.textContent = item.label;
-        el.append(s1, ' de ');
+        s1.textContent = t(`gender.form.${item.label}`);
         const s2 = document.createElement('strong');
         s2.className = 'person-color-3';
         if (item.english) {
@@ -58,7 +57,7 @@ export class GenderQuiz extends QuizBase {
         } else {
             s2.textContent = item.masculine;
         }
-        el.append(s2, '?');
+        appendTemplate(el, 'gender.question', { form: s1, word: s2 });
     }
 
     getCorrectAnswer(key) {
@@ -79,13 +78,13 @@ export class GenderQuiz extends QuizBase {
     formatMistake(key, count, _index) {
         const item = this.itemData[key];
         const li = document.createElement('li');
-        li.append(`${item.masculine} → ${item.label}: `);
+        li.append(`${item.masculine} → ${t(`gender.form.${item.label}`)}: `);
         const s = document.createElement('strong');
         s.textContent = item.answer;
         li.append(s, ' ');
         const span = document.createElement('span');
         span.style.color = 'var(--text-muted)';
-        span.textContent = `(${count} erro${count > 1 ? 's' : ''})`;
+        span.textContent = `(${t('result.mistakeCount', { n: count })})`;
         li.append(span);
         return li;
     }

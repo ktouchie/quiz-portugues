@@ -2,6 +2,7 @@ import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimer
 import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems, isReadyForTyping } from './srs.js';
 import { updateStreak, checkMilestone, showMilestoneBanner } from './gamification.js';
 import { buildQuickPracticePool, answerMatches } from './practice.js';
+import { initLanguage, t } from './i18n.js';
 
 /**
  * @typedef {{ timerInterval: number|null, elapsedTime: number, timerDisplay: HTMLElement|null }} TimerState
@@ -145,13 +146,14 @@ export class QuizBase {
 
     async init() {
         initTheme();
+        initLanguage();
         loadVersion();
 
         try {
             this.data = await this.fetchData();
         } catch (e) {
             console.error(e);
-            alert('Erro ao carregar os dados.');
+            alert(t('error.load'));
             return;
         }
 
@@ -172,6 +174,8 @@ export class QuizBase {
         document.getElementById('submit-answer').addEventListener('click', () => this.submitAnswer());
         document.getElementById('next-question').addEventListener('click', () => this.nextQuestion());
         document.getElementById('restart').addEventListener('click', () => location.reload());
+
+        document.addEventListener('languagechange', () => this._onLanguageChange());
 
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Enter') return;
@@ -278,7 +282,7 @@ export class QuizBase {
         feedbackEl.className = '';
 
         if (isCorrect) {
-            feedbackEl.textContent = 'Correto! ';
+            feedbackEl.textContent = t('quiz.correct');
             feedbackEl.className = 'correct';
             this.correctCount++;
             this.itemCounters[this.currentKey]++;
@@ -298,7 +302,7 @@ export class QuizBase {
             feedbackEl.textContent = '';
             feedbackEl.className = 'incorrect';
             const wrongMsg = document.createElement('span');
-            wrongMsg.textContent = `Errado. A resposta correta é "${correctAnswer}". `;
+            wrongMsg.textContent = t('quiz.wrong', { answer: correctAnswer });
             feedbackEl.appendChild(wrongMsg);
             const hint = this.getHint(this.currentKey);
             if (hint) {
@@ -345,12 +349,13 @@ export class QuizBase {
         const secs = this.timerState.elapsedTime % 60;
 
         document.getElementById('total-score').textContent =
-            `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
+            t('result.score', { correct: this.correctCount, wrong: this.errorCount });
         document.getElementById('quiz-time').textContent =
-            `Tempo: ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            t('quiz.time', { time: `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}` });
         const accuracyEl = document.getElementById('accuracy');
         accuracyEl.textContent = `${accuracyPct}%`;
-        accuracyEl.setAttribute('aria-label', `Precisão: ${accuracyPct}%`);
+        accuracyEl.setAttribute('aria-label', t('result.accuracy', { pct: accuracyPct }));
+        accuracyEl.dataset.label = t('result.accuracyLabel');
         accuracyEl.style.setProperty('--pct', String(accuracyPct)); // fills the ring
 
         updateBestScore(this.storageKey, this.correctCount);
@@ -369,7 +374,7 @@ export class QuizBase {
             });
         } else {
             const li = document.createElement('li');
-            li.textContent = 'Parabéns! Não cometeu nenhum erro.';
+            li.textContent = t('result.noMistakes');
             list.appendChild(li);
         }
 
@@ -381,7 +386,7 @@ export class QuizBase {
         if (retryBtn) {
             const mistakeKeys = Object.keys(this.mistakeCounters).filter(k => this.mistakeCounters[k] > 0);
             if (mistakeKeys.length > 0) {
-                retryBtn.textContent = `Praticar erros (${mistakeKeys.length})`;
+                retryBtn.textContent = t('result.retryCount', { n: mistakeKeys.length });
                 retryBtn.classList.remove('hidden');
                 retryBtn.onclick = () => {
                     this.retryMistakeKeys = mistakeKeys;
@@ -439,9 +444,20 @@ export class QuizBase {
         }
     }
 
+    /** Re-renders the text this class builds, after the interface language changes. */
+    _onLanguageChange() {
+        this._updateScoreDisplay();
+        if (this.timerState.timerDisplay) updateTimerDisplay(this.timerState.timerDisplay, this.timerState.elapsedTime);
+        this._updateDueCount();
+        if (this.totalNeeded > 0) this._updateProgressBar();
+        if (this.currentKey && !document.getElementById('quiz').classList.contains('hidden')) {
+            this.renderQuestion(this.currentKey);
+        }
+    }
+
     _updateScoreDisplay() {
         const el = document.getElementById('score-display');
-        if (el) el.textContent = `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
+        if (el) el.textContent = t('quiz.score', { correct: this.correctCount, wrong: this.errorCount });
     }
 
     _recordSRS(key, quality) {
@@ -459,7 +475,7 @@ export class QuizBase {
         const all = this.getAllItems();
         const known = all ? new Set(all.map(item => item.key)) : null;
         const due = getDueItems(this.srsState).filter(key => !known || known.has(key)).length;
-        el.textContent = due > 0 ? `${due} ${due === 1 ? 'item' : 'itens'} para rever hoje` : '';
+        el.textContent = due > 0 ? t('quiz.dueToday', { n: due }) : '';
         el.classList.toggle('hidden', due === 0);
     }
 
@@ -468,10 +484,10 @@ export class QuizBase {
             ? Math.max(0, Math.min(100, (this.completedCount / this.totalNeeded) * 100))
             : 0;
         document.getElementById('progress-bar').style.width = pct + '%';
-        document.getElementById('progress-percentage').textContent = `Progresso: ${pct.toFixed(2)}%`;
+        document.getElementById('progress-percentage').textContent = t('quiz.progress', { pct: pct.toFixed(2) });
         const masteryEl = document.getElementById('mastery-counter');
         if (masteryEl) {
-            masteryEl.textContent = `Dominadas: ${this.completedCount}/${this.totalNeeded}`;
+            masteryEl.textContent = t('quiz.mastered', { done: this.completedCount, total: this.totalNeeded });
         }
     }
 }

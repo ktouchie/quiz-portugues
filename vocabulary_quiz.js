@@ -4,6 +4,7 @@ import { STORAGE_KEYS } from './config.js';
 import { buildGatedQuickPracticePool, buildOptions, normalise, stringSimilarity } from './practice.js';
 import { getDueItems, pruneRecords, saveSRSState } from './srs.js';
 import { vocabularyCategoryLevel } from './cefr.js';
+import { appendTemplate, t } from './i18n.js';
 
 /** How many of the most confusable words the three wrong options are drawn from, so the same
  *  word doesn't always get the same options (same as the Android app). */
@@ -44,7 +45,7 @@ export class VocabQuiz extends QuizBase {
         const selectedCategories = getCheckedValues('categories');
 
         if (selectedCategories.length === 0) {
-            alert('Por favor, selecione pelo menos uma categoria.');
+            alert(t('quiz.selectCategory'));
             return null;
         }
 
@@ -108,11 +109,10 @@ export class VocabQuiz extends QuizBase {
         const [, ptWord, enWord] = key.split('|||');
         const el = document.getElementById('question');
         el.textContent = '';
-        el.append('Traduza ');
         const s = document.createElement('strong');
         s.className = 'person-color-3';
         s.textContent = this.ENtoPT ? enWord : ptWord;
-        el.append(s, this.ENtoPT ? ' em Português' : ' em Inglês');
+        appendTemplate(el, this.ENtoPT ? 'vocab.toPortuguese' : 'vocab.toEnglish', { word: s });
     }
 
     getCorrectAnswer(key) {
@@ -149,7 +149,7 @@ export class VocabQuiz extends QuizBase {
         _strong(li, ptWord);
         li.append(' ← ');
         _strong(li, enWord);
-        li.append(` (${count} erro${count > 1 ? 's' : ''})`);
+        li.append(` (${t('result.mistakeCount', { n: count })})`);
         return li;
     }
 }

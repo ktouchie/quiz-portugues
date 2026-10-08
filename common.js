@@ -1,4 +1,5 @@
 // Shared utilities for all quiz pages
+import { t } from './i18n.js';
 
 export function loadVersion() {
     fetch('version.txt')
@@ -19,6 +20,7 @@ export function initTheme() {
     if (!btn) return;
 
     updateToggleIcon(btn, html.getAttribute('data-theme'));
+    document.addEventListener('languagechange', () => updateToggleIcon(btn, html.getAttribute('data-theme')));
 
     btn.addEventListener('click', () => {
         const current = html.getAttribute('data-theme');
@@ -31,7 +33,7 @@ export function initTheme() {
 
 function updateToggleIcon(btn, theme) {
     btn.textContent = theme === 'dark' ? '☀' : '☾';
-    btn.setAttribute('aria-label', theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro');
+    btn.setAttribute('aria-label', t(theme === 'dark' ? 'theme.toLight' : 'theme.toDark'));
 }
 
 export function padZero(num) {
@@ -41,7 +43,7 @@ export function padZero(num) {
 export function updateTimerDisplay(timerDisplay, elapsedTime) {
     const minutes = Math.floor(elapsedTime / 60);
     const seconds = elapsedTime % 60;
-    timerDisplay.innerText = `Tempo: ${padZero(minutes)}:${padZero(seconds)}`;
+    timerDisplay.innerText = t('quiz.time', { time: `${padZero(minutes)}:${padZero(seconds)}` });
 }
 
 export function startTimer(state) {
@@ -59,8 +61,10 @@ export function addSelectAll(containerId) {
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.id = `${containerId}-select-all`;
-    label.appendChild(cb);
-    label.appendChild(document.createTextNode(" Selecionar tudo"));
+    const text = document.createElement("span");
+    text.dataset.i18n = "selectAll";
+    text.textContent = t("selectAll");
+    label.append(cb, " ", text);
     container.prepend(label);
 
     cb.addEventListener("change", () => {
@@ -88,9 +92,7 @@ export function updateBestScore(storageKey, score) {
     const best = isRecord ? score : prev;
     const el = document.getElementById('best-score');
     if (!el) return;
-    el.textContent = isRecord
-        ? `Novo recorde! Melhor resultado: ${best} corretas`
-        : `Melhor resultado: ${best} corretas`;
+    el.textContent = t(isRecord ? 'result.newBest' : 'result.best', { n: best });
     el.className = isRecord ? 'correct' : '';
 }
 

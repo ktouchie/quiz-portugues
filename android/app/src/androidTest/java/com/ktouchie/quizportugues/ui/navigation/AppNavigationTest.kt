@@ -24,13 +24,13 @@ class AppNavigationTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Vocabulário").performClick()
+        composeTestRule.onNodeWithText("Vocabulary").performClick()
 
-        // ModuleHomeScreen shows the display name ("Vocabulário"), not the raw module id
+        // ModuleHomeScreen shows the display name ("Vocabulary"), not the raw module id
         // ("vocabulary") — asserting the button used to get here still exists, now as this
-        // screen's title, plus its own "Prática Rápida" CTA, confirms real navigation happened
+        // screen's title, plus its own "Quick Practice" CTA, confirms real navigation happened
         // rather than the same Home screen just still being on top.
-        composeTestRule.onNodeWithText("Prática Rápida").assertExists()
+        composeTestRule.onNodeWithText("Quick Practice").assertExists()
     }
 
     @Test
@@ -41,12 +41,12 @@ class AppNavigationTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Conjugação de Verbos").performClick()
-        composeTestRule.onNodeWithText("Avançado").performClick()
+        composeTestRule.onNodeWithText("Verb Conjugation").performClick()
+        composeTestRule.onNodeWithText("Advanced").performClick()
 
         // The real VerbSetupScreen (docs/MOBILE_APP_SPEC.md §8, GitHub #28) replaced the
-        // placeholder here — its own "Iniciar Quiz" CTA confirms real navigation happened.
-        composeTestRule.onNodeWithText("Iniciar Quiz").assertExists()
+        // placeholder here — its own "Start quiz" CTA confirms real navigation happened.
+        composeTestRule.onNodeWithText("Start quiz").assertExists()
     }
 
     @Test
@@ -57,16 +57,16 @@ class AppNavigationTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Conjugação de Verbos").performClick()
-        composeTestRule.onNodeWithText("Avançado").performClick()
-        // All tenses are selected by default (VerbSetupViewModel), so "Iniciar Quiz" is already
+        composeTestRule.onNodeWithText("Verb Conjugation").performClick()
+        composeTestRule.onNodeWithText("Advanced").performClick()
+        // All tenses are selected by default (VerbSetupViewModel), so "Start quiz" is already
         // enabled — starts an Advanced session scoped to that (default: every tense) selection.
-        composeTestRule.onNodeWithText("Iniciar Quiz").performClick()
+        composeTestRule.onNodeWithText("Start quiz").performClick()
 
         // Confirms real navigation off Setup (not just the same screen re-rendering) — Setup's
         // own CTA is gone once the Session route takes over.
         composeTestRule.waitUntil(timeoutMillis = 5_000) {
-            composeTestRule.onAllNodesWithText("Iniciar Quiz").fetchSemanticsNodes().isEmpty()
+            composeTestRule.onAllNodesWithText("Start quiz").fetchSemanticsNodes().isEmpty()
         }
     }
 
@@ -78,11 +78,11 @@ class AppNavigationTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Conjugação de Verbos").performClick()
-        composeTestRule.onNodeWithText("Início").performClick()
+        composeTestRule.onNodeWithText("Verb Conjugation").performClick()
+        composeTestRule.onNodeWithText("Home").performClick()
 
         // Home-only content (the greeting) confirms we're actually back, not just that the
         // ModuleHomeScreen's "Início" row itself still renders.
-        composeTestRule.onNodeWithText("Olá! 👋").assertExists()
+        composeTestRule.onNodeWithText("Hello! 👋").assertExists()
     }
 }

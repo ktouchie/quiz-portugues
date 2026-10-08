@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ktouchie.quizportugues.ui.i18n.LocalStrings
 import com.ktouchie.quizportugues.ui.navigation.moduleDisplayName
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 
@@ -46,15 +47,15 @@ fun ModuleHomeScreen(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text("←", style = MaterialTheme.typography.titleMedium, color = ExtendedTheme.colors.textWarm)
-            Text("Início", style = MaterialTheme.typography.titleMedium, color = ExtendedTheme.colors.textWarm)
+            Text(LocalStrings.current.home, style = MaterialTheme.typography.titleMedium, color = ExtendedTheme.colors.textWarm)
         }
-        Text(text = moduleDisplayName(moduleId), style = MaterialTheme.typography.headlineSmall)
+        Text(text = moduleDisplayName(moduleId, LocalStrings.current), style = MaterialTheme.typography.headlineSmall)
         Button(
             onClick = onStartQuickPractice,
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Prática Rápida")
+            Text(LocalStrings.current.quickPractice)
         }
         OutlinedButton(
             onClick = onOpenAdvancedSetup,
@@ -62,7 +63,7 @@ fun ModuleHomeScreen(
             colors = ButtonDefaults.outlinedButtonColors(contentColor = ExtendedTheme.colors.textWarm),
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Avançado")
+            Text(LocalStrings.current.advanced)
         }
     }
 }

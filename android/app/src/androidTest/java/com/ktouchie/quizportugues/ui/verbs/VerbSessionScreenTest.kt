@@ -37,6 +37,6 @@ class VerbSessionScreenTest {
 
         composeTestRule.onAllNodes(hasClickAction())[0].performClick()
 
-        composeTestRule.onNodeWithText("Continuar").assertExists()
+        composeTestRule.onNodeWithText("Continue").assertExists()
     }
 }

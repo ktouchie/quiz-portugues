@@ -1,6 +1,7 @@
 import { loadStreak, getTotalMastered } from './gamification.js';
 import { loadSRSState, saveSRSState, getDueItems, pruneRecords } from './srs.js';
 import { PERSONS, STORAGE_KEYS, TENSE_LABELS } from './config.js';
+import { t } from './i18n.js';
 
 /**
  * Every item key Quick Practice can ask in the verb module: each conjugated form of each verb
@@ -54,21 +55,21 @@ const srsKeyFor = (bestScoreKey) => bestScoreKey.replace('bestScore_', 'srs_');
  */
 export const MODULES = [
     {
-        title: 'Conjugação de Verbos', icon: '🗣️', href: 'verb_quiz.html', storageKey: STORAGE_KEYS.verbs,
+        titleKey: 'module.verbs', icon: '🗣️', href: 'verb_quiz.html', storageKey: STORAGE_KEYS.verbs,
         progress: async () => verbItemKeys(await fetchJson('verbs.json')),
     },
     {
-        title: 'Vocabulário', icon: '📚', href: 'vocabulary_quiz.html', storageKey: STORAGE_KEYS.vocab,
+        titleKey: 'module.vocab', icon: '📚', href: 'vocabulary_quiz.html', storageKey: STORAGE_KEYS.vocab,
         progress: async () => vocabularyItemKeys(await fetchJson('vocabulary.json')),
         // Every vocabulary record should match a current word (see pruneRecords). Not verbs: the
         // Avançado setup also records participles, which progress() leaves out.
         pruneStale: true,
     },
-    { title: 'Género e Plural', icon: '🔤', href: 'gender_quiz.html', storageKey: STORAGE_KEYS.gender },
-    { title: 'Ser / Estar / Ficar', icon: '⚖️', href: 'ser_estar_ficar_quiz.html', storageKey: STORAGE_KEYS.serEstarFicar },
-    { title: 'Contrações', icon: '🔗', href: 'contractions_quiz.html', storageKey: STORAGE_KEYS.contractions },
-    { title: 'Conjuntivo', icon: '💭', href: 'subjunctive_quiz.html', storageKey: STORAGE_KEYS.subjunctive },
-    { title: 'Discurso Indireto', icon: '💬', href: 'indirect_speech_quiz.html', storageKey: STORAGE_KEYS.indirectSpeech },
+    { titleKey: 'module.gender', icon: '🔤', href: 'gender_quiz.html', storageKey: STORAGE_KEYS.gender },
+    { titleKey: 'module.serEstarFicar', icon: '⚖️', href: 'ser_estar_ficar_quiz.html', storageKey: STORAGE_KEYS.serEstarFicar },
+    { titleKey: 'module.contractions', icon: '🔗', href: 'contractions_quiz.html', storageKey: STORAGE_KEYS.contractions },
+    { titleKey: 'module.subjunctive', icon: '💭', href: 'subjunctive_quiz.html', storageKey: STORAGE_KEYS.subjunctive },
+    { titleKey: 'module.indirectSpeech', icon: '💬', href: 'indirect_speech_quiz.html', storageKey: STORAGE_KEYS.indirectSpeech },
 ];
 
 async function fetchJson(file) {
@@ -96,14 +97,14 @@ export function renderModuleCard(module, srsState) {
     body.className = 'module-body';
     const title = document.createElement('span');
     title.className = 'module-title';
-    title.textContent = module.title;
+    title.textContent = t(module.titleKey);
     const due = document.createElement('span');
     due.className = 'module-due';
     body.append(title, due);
 
     const cta = document.createElement('span');
     cta.className = 'module-cta';
-    cta.textContent = 'Praticar';
+    cta.textContent = t('home.practise');
 
     card.append(icon, body, cta);
     setDueCount(card, getDueItems(srsState).length);
@@ -116,7 +117,7 @@ export function renderModuleCard(module, srsState) {
  * @param {number} count
  */
 export function setDueCount(card, count) {
-    card.querySelector('.module-due').textContent = count > 0 ? `${count} por rever` : 'Nada por rever';
+    card.querySelector('.module-due').textContent = count > 0 ? t('home.due', { n: count }) : t('home.nothingDue');
 }
 
 /**
@@ -143,7 +144,7 @@ export function addProgressBar(card, percent) {
     track.setAttribute('aria-valuenow', String(percent));
     track.setAttribute('aria-valuemin', '0');
     track.setAttribute('aria-valuemax', '100');
-    track.setAttribute('aria-label', `${percent}% visto`);
+    track.setAttribute('aria-label', t('home.seen', { pct: percent }));
     const fill = document.createElement('span');
     fill.className = 'progress-fill';
     fill.style.display = 'block';

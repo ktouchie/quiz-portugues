@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ktouchie.quizportugues.ui.i18n.LocalStrings
 import com.ktouchie.quizportugues.ui.theme.OnAccent
 
 /**
@@ -60,7 +61,7 @@ fun ModuleCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             Text(
-                text = if (dueCount > 0) "$dueCount por rever" else "Nada por rever",
+                text = if (dueCount > 0) LocalStrings.current.dueCount(dueCount) else LocalStrings.current.nothingDue,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -76,7 +77,7 @@ fun ModuleCard(
                 .background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.extraLarge)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
-            Text("Praticar", style = MaterialTheme.typography.labelLarge, color = OnAccent)
+            Text(LocalStrings.current.practise, style = MaterialTheme.typography.labelLarge, color = OnAccent)
         }
     }
 }

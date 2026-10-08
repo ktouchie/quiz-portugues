@@ -1,5 +1,8 @@
 package com.ktouchie.quizportugues.ui.navigation
 
+import com.ktouchie.quizportugues.ui.i18n.EnglishStrings
+import com.ktouchie.quizportugues.ui.i18n.Strings
+
 /**
  * Top-level navigation graph (docs/MOBILE_APP_SPEC.md §4):
  * Home -> Module Home (Verbs/Vocabulary) -> Setup (Advanced) -> Session -> Results.
@@ -37,9 +40,9 @@ const val MODULE_VERBS = "verbs"
 const val MODULE_VOCABULARY = "vocabulary"
 
 /** Display name shown on Home's module cards and each Module Home screen's title. */
-fun moduleDisplayName(moduleId: String): String = when (moduleId) {
-    MODULE_VERBS -> "Conjugação de Verbos"
-    MODULE_VOCABULARY -> "Vocabulário"
+fun moduleDisplayName(moduleId: String, strings: Strings = EnglishStrings): String = when (moduleId) {
+    MODULE_VERBS -> strings.moduleVerbs
+    MODULE_VOCABULARY -> strings.moduleVocabulary
     else -> moduleId
 }
 
