@@ -13,8 +13,8 @@ const VERB_HINTS = {
     'presente': (_verb, personIdx) => {
         if (personIdx === 3) {
             return {
-                en: 'Watch out: the "nós" form of the present can have an accent (e.g. falamos, comemos, pedimos).',
-                pt: 'Atenção: a forma "nós" no presente pode ter acento (ex: falamos, comemos, pedimos).',
+                en: 'Watch out: the present "nós" form has no accent (falamos, comemos, pedimos); the preterite of -ar verbs does (falámos).',
+                pt: 'Atenção: no presente, a forma "nós" não tem acento (falamos, comemos, pedimos); no pretérito dos verbos em -ar tem (falámos).',
             };
         }
         return {
@@ -68,8 +68,8 @@ const VERB_HINTS = {
     }),
     'participios_passados': (_verb, aux) => ({
         ter: {
-            en: 'With "ter", use the invariable participle (the short regular participle): -ado/-ido.',
-            pt: 'Com "ter", usa-se o particípio invariável (participio curto regular): -ado/-ido.',
+            en: 'With "ter", use the regular participle (-ado/-ido), which never changes.',
+            pt: 'Com "ter", usa-se o particípio regular (-ado/-ido), que é invariável.',
         },
         ser: {
             en: 'With "ser" (passive voice), the participle agrees in gender and number.',

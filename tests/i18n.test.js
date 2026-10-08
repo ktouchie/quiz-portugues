@@ -150,7 +150,7 @@ describe('grammar explanations', () => {
 
     it('show the "nós" and "tu" hints for the person in the item key', () => {
         // Item keys carry the person as text; these hints never showed before.
-        expect(getVerbHint('presente', 'falar', '3')).toMatch(/"nós"/);
+        expect(getVerbHint('presente', 'falar', '3')).toMatch(/"nós" form has no accent.*falámos/);
         expect(getVerbHint('imperativo', 'falar', '1')).toMatch(/"tu" imperative/);
         expect(getVerbHint('participios_passados', 'falar', 'ser')).toMatch(/^With "ser"/);
     });

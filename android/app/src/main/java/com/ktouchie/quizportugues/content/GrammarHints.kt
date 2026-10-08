@@ -11,8 +11,10 @@ import com.ktouchie.quizportugues.i18n.LocalizedText
 fun getVerbHint(tense: String, personIndex: Int): LocalizedText? = when (tense) {
     "presente" -> if (personIndex == 3) {
         LocalizedText(
-            en = "Watch out: the \"nós\" form of the present can have an accent (e.g. falamos, comemos, pedimos).",
-            pt = "Atenção: a forma \"nós\" no presente pode ter acento (ex: falamos, comemos, pedimos).",
+            en = "Watch out: the present \"nós\" form has no accent (falamos, comemos, pedimos); " +
+                "the preterite of -ar verbs does (falámos).",
+            pt = "Atenção: no presente, a forma \"nós\" não tem acento (falamos, comemos, pedimos); " +
+                "no pretérito dos verbos em -ar tem (falámos).",
         )
     } else {
         LocalizedText(
