@@ -17,11 +17,13 @@ const FICAR_PRETERITO = { 0: 'fiquei', 2: 'ficou', 3: 'ficámos', 4: 'ficaram' }
  * @returns {string[]}
  */
 export function serEstarFicarVerbDistractors(answer) {
-    const forms = { ser: SER_PRESENTE, estar: ESTAR_PRESENTE, ficar: { ...FICAR_PRESENTE, ...FICAR_PRETERITO } };
-    for (const [verb, table] of Object.entries(forms)) {
+    // ficar's two tables stay separate: both have a third person ("fica", "ficou").
+    const tables = [['ser', SER_PRESENTE], ['estar', ESTAR_PRESENTE], ['ficar', FICAR_PRESENTE], ['ficar', FICAR_PRETERITO]];
+    const forms = { ser: SER_PRESENTE, estar: ESTAR_PRESENTE };
+    for (const [verb, table] of tables) {
         const person = Object.keys(table).find(p => table[p] === answer);
         if (person === undefined) continue;
-        return Object.keys(forms).filter(other => other !== verb)
+        return ['ser', 'estar', 'ficar'].filter(other => other !== verb)
             .map(other => (other === 'ficar' ? (FICAR_PRETERITO[person] ?? FICAR_PRESENTE[person]) : forms[other][person]))
             .filter(Boolean);
     }
