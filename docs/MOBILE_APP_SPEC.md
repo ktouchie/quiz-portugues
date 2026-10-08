@@ -138,11 +138,18 @@ total — trivial). No network fetch is required to use the app.
 
 Port `srs.js`'s `sm2()` function to Kotlin (`android/app/.../srs/`) — it's already pure and
 side-effect-free, per the engineering review, so this is a direct line-for-line translation of the
-algorithm, not a redesign. Behavior for v1 stays as today (quality 4 / correct-after-mistake 2 /
-wrong 0) — **not** adopting the pedagogy review's suggested finer-grained quality scale (0/2/3/4
-with latency/attempt-count input) or redefined "mastered" threshold (`repetitions ≥ 2 && interval
-≥ 7 days` instead of `repetitions > 0`) for v1, to keep behavior identical to the web app users
-already know. Both are flagged as strong v1.1 candidates — see §13.
+algorithm, not a redesign. Scoring stays as today (quality 4 / correct-after-mistake 2 / wrong 0),
+and gamification's "mastered" count (home screen, milestones) is unchanged — `repetitions > 0`,
+ported as-is from `getTotalMastered()` in `gamification.js`.
+
+`srs/Production.kt` adds a **second, stricter, and separately-named** check —
+`isReadyForTyping(record)` = `repetitions ≥ 3 && interval ≥ 6 days` — used only to gate an item's
+input modality (§9), never gamification's mastered count or milestones. This was originally
+considered and deferred in an earlier draft of this spec as a redefinition of "mastered"; it isn't
+one — it's a new, independent concept with its own name, precisely to avoid colliding with the
+existing (deliberately loose) mastered-count semantics that milestones already depend on. A wrong
+answer on a typed item runs `sm2()`'s `quality < 3` branch, which resets `repetitions`/`interval` —
+so demotion back to multiple-choice falls out of this check automatically, no separate logic.
 
 Due-item prioritization (due items sorted before new items) carries over unchanged. Unit tests
 should assert the same behavior as `tests/srs.test.js`, so the two implementations stay provably
@@ -151,35 +158,101 @@ in sync even though they don't share code.
 ## 8. Session design
 
 - **Quick Practice** (default, primary CTA on each module's home screen): a capped session of
-  10–15 questions. SRS-due items are pulled first; if fewer than the cap are due, the rest are
-  filled with new/lower-priority items, interleaved rather than blocked by category/tense (per the
-  pedagogy review, interleaving beats blocking for retention, and this is also what makes a capped
-  session still cover the full 26-verb/548-word set over time — mastery isn't reached in one
-  session, it's reached across many Quick Practice sessions as the SRS due-queue cycles through
-  everything).
+  10–15 questions, restricted to unlocked CEFR tiers (§9). SRS-due items are pulled first; if fewer
+  than the cap are due, the rest are filled with new/lower-priority items — favoring the newest
+  unlocked ("frontier") tier so it accumulates the review history needed to cross its own unlock
+  threshold, falling back to any unlocked tier once the frontier is exhausted — interleaved rather
+  than blocked by category/tense within that (per the pedagogy review, interleaving beats blocking
+  for retention). This is also what makes a capped session still cover the full unlocked set over
+  time — nothing is mastered in one session, it's reached across many Quick Practice sessions as
+  the SRS due-queue cycles through everything reachable.
 - **Advanced** (secondary entry point, e.g. a "Customize" button): recreates today's web setup
-  screen — pick specific tenses/categories/difficulty, no session cap. This is where a learner who
-  wants to deliberately drill "all preterite forms" or "all Comida vocabulary" goes.
+  screen — pick specific tenses/categories/difficulty, no session cap, **not** restricted to
+  unlocked CEFR tiers (a learner who wants to deliberately drill a specific advanced tense or
+  category can, even before it would organically unlock in Quick Practice). This is where a learner
+  who wants to deliberately drill "all preterite forms" or "all Comida vocabulary" goes.
 - Session length is configurable in Advanced mode only; Quick Practice's cap is a fixed constant
   for v1 (tunable later, not user-facing).
+- **Implemented** (GitHub #28/#34): `VerbSetupScreen`/`VocabularySetupScreen` (tense+difficulty and
+  category pickers, defaulting to everything selected), passed to the session route as nav-arg
+  query params (`tenses`/`difficulty`/`categories`) read via `SavedStateHandle`. Each session
+  ViewModel's `startSession()` branches on whether a selection is present: absent → the existing
+  Quick Practice pool logic, unchanged; present → `buildAdvancedPool()` — due items first, no cap,
+  no CEFR-tier filter, restricted only to the chosen tenses/difficulty or categories.
 
 ## 9. Input model & UI
 
-- **Verb Conjugation**: typed free-text input (preserves the production/recall skill this module
-  is actually testing), with a **custom accent bar** above the keyboard (a Compose row of tap
-  targets) offering one-tap insertion of `á é í ó ú â ê ô ã õ ç` — addresses the mobile-specific
-  friction the game-dev review flagged (no EP accented characters on a default mobile keyboard
-  layout). Answer comparison reuses the existing `.trim().toLowerCase().normalize('NFC')` logic
-  from `quiz_base.js` as its behavioral reference, reimplemented in Kotlin.
-- **Vocabulary**: tap/multiple-choice (4 options: 1 correct + 3 distractors drawn from the same
-  category where possible, falling back to random same-module distractors). Recognition is a
-  reasonable proxy for this module and removes typing friction entirely for the higher-volume,
-  faster-paced module.
+Both content breadth and input difficulty ramp up automatically, per item, rather than being fixed
+per module — replacing an earlier draft of this spec that gave Verb Conjugation typed-only input
+(with a custom accent bar) and Vocabulary multiple-choice-only input as a permanent per-module
+split. Product feedback after using the shipped v1 modules: start everything on multiple choice,
+broaden which content is in play as the learner shows they've got the current set down, and only
+ask for typed recall once an individual item is genuinely well-known — not as a blanket property of
+"being a verb question."
+
+**Content breadth — CEFR tiers.** Every verb, every conjugation *tense*, and every vocabulary
+category carries a hand-assigned CEFR level (A1–C2), defined Android-side in `content/CefrTiers.kt`
+— an enrichment layer over the existing content JSON, not a change to it, so
+`verbs.json`/`vocabulary.json` and the web app's `difficulty` field/adaptive-difficulty filter are
+untouched. A verb conjugation item's effective level is the *harder* of its verb's level and its
+tense's level (`TENSE_CEFR_LEVEL`, e.g. presente = A1, futuro/condicional/conjuntivo = B1,
+infinitivo pessoal = C1) — verb frequency and tense complexity are independent axes, so an A1 verb
+like "falar" still has its conjuntivo/mais-que-perfeito forms gated behind B1/B2 rather than opening
+up on day one just because the verb itself is elementary. (An earlier version of this only tagged
+the verb, not the tense — a real bug caught after the first Quick Practice session surfaced
+subjunctive/pluperfect forms of basic verbs to a brand-new learner.) `content/ContentProgression.kt`'s
+`unlockedTiers()` opens tiers sequentially: A1 is always unlocked, and each next tier unlocks once
+≥80% of the current tier's items have been reviewed correctly at least once (the same "seen" bar
+gamification's mastered-count uses). An empty tier (no content assigned yet, e.g. vocabulary's
+C1/C2 today) unlocks automatically rather than permanently blocking everything after it — the six
+levels are a growth path for content the app doesn't fully populate yet, not a requirement that it
+does.
+
+**Input modality — typing readiness.** Independently of content breadth, each item that's actually
+in play renders multiple-choice or typed based on `isReadyForTyping()` (§7) on that item's own SRS
+record — a brand-new item, or one that hasn't yet racked up 3 correct reviews with a 6+ day
+interval, is multiple-choice; once it crosses that bar, it starts appearing as typed; a wrong typed
+answer demotes it back to multiple-choice automatically via the SM-2 reset. This applies uniformly
+to both modules — Vocabulary items graduate to typed recall the same way Verb Conjugation items do.
+
+- **Multiple-choice** (both modules): 4 options — 1 correct + 3 distractors, picked for genuine
+  confusability rather than being obviously wrong (product feedback: the first version's distractors
+  were too easy to eliminate by elimination alone).
+  - **Verb Conjugation**: ranked hardest-first — the same verb's own form in a *different tense,
+    same person* (shares the stem, differs only in the ending actually being tested; e.g. for
+    "eu ___" (fazer, presente) = "faço", offering "fiz"/"fazia"/"farei" rather than "fazes"/"faz"),
+    falling back to other persons of the same verb+tense, then finally other verbs' forms of the
+    same tense/person (only reached when a verb+tense genuinely lacks enough distinct forms, e.g.
+    imperativo has no "eu" form).
+  - **Vocabulary**: ranked by `content/StringSimilarity.kt`'s Levenshtein-based similarity score
+    against the correct item's Portuguese word, checked two ways — same-language look-alikes (e.g.
+    "irmã" as a distractor for "irmão") and false-friend-style cross-language look-alikes (e.g.
+    "constipation" as a distractor for "constipação", which actually means "a cold" in EP) — then
+    sampled from the top-8 shortlist so the same word doesn't repeat identical distractors every
+    attempt.
+- **Typed** (both modules, once an item is typing-ready): free-text input relying on the device
+  keyboard's own long-press accent picker (every stock Android/Gboard keyboard already offers
+  `á é í ó ú â ê ô ã õ ç` this way) — no in-app accent bar. Answer comparison reuses the existing
+  `.trim().toLowerCase().normalize('NFC')` logic from `quiz_base.js` as its behavioral reference,
+  reimplemented in Kotlin (`content/AnswerMatching.kt`).
+- Progress bar and counter (e.g. "4/12") reflect items *permanently cleared* (`correctCount`), not
+  which question is currently on screen — a wrong answer requeues the item rather than shrinking the
+  pool, so a "current question number" metric both overstates progress before it's earned and never
+  advances on a miss. Only reaches `totalQuestions`/`totalQuestions` once the last item is answered
+  correctly, immediately before the session ends (fixes an earlier off-by-one where the bar looked
+  "done" a question early).
 - Wrong-answer feedback keeps the current pattern: show the grammar hint / correct answer in place,
   item stays in the session pool (per `quiz_base.js`'s existing retry-in-pool behavior), user taps
   to continue.
-- Results screen: time, accuracy %, top mistakes list, "Practice mistakes" retry button — same
-  shape as today's, laid out for a phone screen.
+- Results screen: time, accuracy %, top mistakes list, and (when the round had any mistakes) a
+  "Praticar erros" button — laid out for a phone screen. `onRetryMistakes()` re-launches a session
+  scoped to just that round's mistaken items, bypassing the normal due/tier filtering entirely
+  (these items were just shown a moment ago, so they're already known-eligible). This is
+  deliberately a separate path from the SRS due-date system: SM-2 always schedules an item's next
+  review at least a day out, even a "correct after a mistake" (quality 2 — see §7), so checking
+  Home right after a session with mistakes will show nothing due today no matter what happened in
+  that round; "Praticar erros" is the actual same-day answer to "let me redo what I got wrong",
+  without perturbing the SRS long-term schedule that "Nada por rever" is honestly reporting.
 
 ## 10. Gamification
 
@@ -194,9 +267,33 @@ on the feedback state. No sound design, no XP/combo meter, no confetti — those
 
 ## 11. Theming
 
-Port the dark/light theme from `styles.css`'s CSS custom properties into a Compose Material 3
-theme (`ColorScheme`) with equivalent token values, respecting the OS-level light/dark setting by
-default (mirroring the current `initTheme` behavior from `common.js`).
+**Superseded.** The theme originally ported the web app's `styles.css` tokens 1:1 into a Compose
+Material 3 `ColorScheme`. After using that shipped v1 build, the product owner asked for a real
+visual redesign: three mockup directions were drafted (a Claude Design canvas — Home, a
+multiple-choice question, a typed question, and Results, in each direction), and **"Direction A —
+Warm Encourager"** was chosen: a cream/toast palette, big soft-rounded cards, and a warm amber
+gradient accent alongside the existing blue, aimed at a more encouraging, celebratory, low-pressure
+feel than the original bare Material defaults.
+
+- `ui/theme/Color.kt` — new light/dark token sets (`LightBg`/`DarkBg` etc.) plus a warm-gradient
+  accent pair (`*WarmAccentStart`/`*WarmAccentEnd`) with no equivalent in the web app's palette.
+  This is a **deliberate, permanent divergence** from `styles.css` — the Android app's visual
+  identity is now its own, not required to track the web app's tokens going forward. `correct`/
+  `incorrect` semantics and the blue accent's role as the primary-action color carry over
+  unchanged; background, surface, border, text, and the warm accent do not.
+- `ui/theme/Theme.kt` — large corner-radius `Shapes` (22-28dp, well above Material 3 defaults) and
+  bolder headline/title/label typography, matching the mockup's shape language.
+- `ui/common/`: shared warm-styled building blocks used across Home, both module homes, both
+  session screens, and both results screens — `ModuleCard` (icon, due count, mastery progress bar,
+  one tap target for the whole card), `StatChip`, `PromptCard`, `MultipleChoiceOptions` (lettered
+  badge options, the correct one highlighted once answered), `TypedAnswerInput`, `WarmGradientButton`,
+  `GradientProgressBar`, `AccuracyRing` (a custom-drawn donut on the results screens), and
+  `MilestoneBanner`.
+- Dark mode gets its own warm-dark palette (not just an inverted light palette) — a warm near-black
+  background/surface rather than the previous cool `#0F1117`/`#1A1D27`, keeping the same amber
+  accent since it already reads well on a dark ground.
+- Dynamic color (Android 12+) is still deliberately not offered — the palette is a chosen brand
+  identity now, not meant to shift with wallpaper.
 
 ## 12. Testing & CI
 
@@ -207,8 +304,10 @@ step in between.**
 ### 12.1 Tests
 
 - `android/app/src/test/`: JUnit unit tests for the ported SM-2 algorithm and gamification logic
-  (mirroring `tests/srs.test.js`'s cases for behavioral parity with the web app), plus tests for
-  the content loaders/normalizers (stable ID generation from §6.1).
+  (mirroring `tests/srs.test.js`'s cases for behavioral parity with the web app), tests for the
+  content loaders/normalizers (stable ID generation from §6.1), and tests for the mastery-gating
+  system in §9 — typing readiness, tier-unlock thresholds, and a coverage guard asserting every
+  verb/vocabulary category in the real content JSON has a CEFR tag.
 - `android/app/src/androidTest/`: Compose UI tests for the Quick Practice happy path, the
   wrong-answer-stays-in-pool behavior, and the results screen.
 
@@ -241,6 +340,16 @@ on the product owner's phone within a few minutes, every time.
 
 Recorded here so they aren't lost, not because they're unimportant:
 
+- Vocabulary translation-direction toggle (EN→PT / PT→EN, present in `vocabulary_quiz.js`'s web
+  setup screen) — not carried over to `VocabularySetupScreen`. The mobile session pipeline
+  hardcodes PT→EN throughout (prompt is always the Portuguese word, answer is always the English
+  one, for both multiple-choice and typed); supporting the other direction needs changes through
+  `VocabularySessionViewModel`, not just the setup screen, so it's deferred rather than half-built.
+- Verb "modo intercalado" (interleaved) toggle and the "particípios passados" tense checkbox from
+  `script.js`'s web setup screen — not carried over to `VerbSetupScreen`. Interleaving is
+  unconditional in the mobile app already (every session pool is shuffled, there's no sequential
+  mode to toggle against), so the toggle would control nothing; participios_passados-only verbs
+  are out of the mobile Verb Conjugation module's scope entirely (§14).
 - iOS, if ever revisited — would need a decision on native Swift vs. a cross-platform rewrite,
   since the Android app is not built on a cross-platform framework.
 - Remaining 5 quiz modules (gender & plural, ser/estar/ficar, contractions, subjunctive, indirect
@@ -251,8 +360,11 @@ Recorded here so they aren't lost, not because they're unimportant:
 - Cloud backup / accounts / cross-device sync, using the Room schema-versioning from §6.2 as the
   migration starting point.
 - Monetization (revisit once there's usage data).
-- Finer-grained SM-2 quality scoring and a stricter "mastered" definition (§7).
-- Listening/speaking practice, guided CEFR curriculum path, diagnostic placement test.
+- Finer-grained SM-2 quality scoring (latency/attempt-count input to `sm2()`, beyond today's
+  4/2/0) — the mastery-gated modality/tier system in §9 replaces the other half of this line item
+  from an earlier draft (a stricter "mastered" definition), so only the quality-scale part remains
+  open.
+- Listening/speaking practice, diagnostic placement test.
 - Home-screen widget (streak + due count).
 - Signed release build + Google Play Store submission (separate from the CI pre-release APK in
   §12.2 — tracked under the "Release prep" epic).
@@ -291,7 +403,9 @@ Committed ahead of this spec, since they affect data both apps will share:
 | Target OS | Android only — no iOS | Product owner |
 | v1 module scope | Verb Conjugation + Vocabulary | Product owner |
 | Backend/sync | None — local only (Room) | Product owner |
-| Input model | Hybrid: typed+accent bar for verbs, multiple-choice for vocabulary | Product owner, synthesizing pedagogy + game-dev reviews |
+| Input model | Mastery-gated per item: multiple-choice until an item is typing-ready (§9), then typed; no custom accent bar, relies on the device keyboard's own accent long-press | Product owner, after using the shipped v1 modules |
+| Content progression | CEFR tiers (A1–C2), sequential unlock at 80% "seen" per tier, Android-only enrichment layer over the shared content JSON | Product owner |
+| Visual direction | "Direction A — Warm Encourager" (cream palette, warm amber gradient accent, big soft-rounded cards), chosen from 3 mockup directions | Product owner, from a Claude Design canvas |
 | Monetization | None | Product owner |
 | Notifications | None in v1 | Product owner |
 | Repo structure | Monorepo, `android/` directory, no shared code package (content JSON + conventions only) | Product owner + engineering review, revised for the Kotlin pivot |

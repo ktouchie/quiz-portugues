@@ -179,6 +179,19 @@ describe('QuizBase.endQuiz', () => {
         expect(document.getElementById('result').classList.contains('hidden')).toBe(false);
     });
 
+    it('fills the accuracy ring with the accuracy percentage', () => {
+        const quiz = new TestQuiz();
+        quiz.timerState.timerDisplay = document.getElementById('timer-display');
+        quiz.startQuiz();
+        quiz.correctCount = 3;
+        quiz.errorCount = 1;
+        quiz.endQuiz();
+        const ring = document.getElementById('accuracy');
+        expect(ring.textContent).toBe('75%');
+        expect(ring.getAttribute('aria-label')).toBe('Precisão: 75%');
+        expect(ring.style.getPropertyValue('--pct')).toBe('75');
+    });
+
     it('renders top mistakes', () => {
         const quiz = new TestQuiz();
         quiz.timerState.timerDisplay = document.getElementById('timer-display');

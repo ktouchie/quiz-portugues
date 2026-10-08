@@ -22,28 +22,31 @@
     <div id="timer-display">Tempo: 00:00</div>
 </div>
 
-<a href="index.html" id="back-link">← Menu</a>
+<a href="index.html" id="back-link">← Início</a>
 <h1>Quiz de Vocabulário Português</h1>
 
 <div id="setup">
-    <button id="quick-practice">Prática Rápida</button>
-    <p class="setup-hint">12 itens de todo o módulo, primeiro os que estão para rever.</p>
-    <h2>Escolha a direção da tradução</h2>
-    <div>
-        <label>
-            <input type="radio" name="translation-direction" value="true" checked>
-            Inglês → Português
-        </label>
-        <label>
-            <input type="radio" name="translation-direction" value="false">
-            Português → Inglês
-        </label>
-    </div>
-    <h2>Selecione as categorias para praticar</h2>
-    <p class="setup-hint">Selecione pelo menos uma categoria. Pode começar com 1–2 para uma sessão rápida.</p>
-    <div id="categories"></div>
     <p id="srs-due-count" class="srs-due hidden"></p>
-    <button id="start-quiz">Iniciar Quiz</button>
+    <button id="quick-practice">Prática Rápida</button>
+    <p class="setup-hint">12 itens ao seu nível, primeiro os que estão para rever. O nível seguinte abre quando dominar a maior parte deste.</p>
+    <details id="advanced">
+        <summary>Avançado</summary>
+        <h2>Escolha a direção da tradução</h2>
+        <div>
+            <label>
+                <input type="radio" name="translation-direction" value="true" checked>
+                Inglês → Português
+            </label>
+            <label>
+                <input type="radio" name="translation-direction" value="false">
+                Português → Inglês
+            </label>
+        </div>
+        <h2>Selecione as categorias para praticar</h2>
+        <p class="setup-hint">Selecione pelo menos uma categoria. Pode começar com 1–2 para uma sessão rápida.</p>
+        <div id="categories"></div>
+        <button id="start-quiz">Iniciar Quiz</button>
+    </details>
 </div>
 
 <div id="quiz" class="hidden">
@@ -77,7 +80,7 @@
     <div id="result-buttons">
         <button id="retry-mistakes" class="hidden">Praticar erros</button>
         <button id="restart">Reiniciar Quiz</button>
-        <a href="index.html"><button>← Menu principal</button></a>
+        <a href="index.html"><button class="button-secondary">← Início</button></a>
     </div>
 </div>
 
@@ -86,7 +89,7 @@
         Compre-me um pastel de nata
     </a>
     <div id="version-container">
-        Version: <span id="version"></span>
+        Versão: <span id="version"></span>
     </div>
 </div>
 

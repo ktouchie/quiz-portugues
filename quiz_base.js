@@ -1,7 +1,7 @@
 import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore } from './common.js';
-import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems } from './srs.js';
+import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems, isReadyForTyping } from './srs.js';
 import { updateStreak, checkMilestone, showMilestoneBanner } from './gamification.js';
-import { buildQuickPracticePool } from './practice.js';
+import { buildQuickPracticePool, answerMatches } from './practice.js';
 
 /**
  * @typedef {{ timerInterval: number|null, elapsedTime: number, timerDisplay: HTMLElement|null }} TimerState
@@ -92,6 +92,14 @@ export class QuizBase {
     formatMistake(_key, _count, _index) { throw new Error('formatMistake() not implemented'); }
 
     /**
+     * Optional: every answer that counts as right for the given key. Defaults to the one correct
+     * answer; vocabulary adds other words with the same meaning.
+     * @param {string} key
+     * @returns {string[]}
+     */
+    getAcceptedAnswers(key) { return [this.getCorrectAnswer(key)]; }
+
+    /**
      * Optional: return a grammar hint string for the given key, or null.
      * @param {string} _key
      * @returns {string|null}
@@ -120,7 +128,9 @@ export class QuizBase {
     getAllItems() { return null; }
 
     /**
-     * Optional: answer options for a multiple-choice question, or null for a typed answer.
+     * Optional: multiple-choice options for the given key (correct answer included), or null to
+     * always ask for a typed answer. Only asked while the item isn't ready for typing yet (see
+     * isReadyForTyping in srs.js), the same per-item rule as the Android app.
      * @param {string} _key
      * @returns {string[]|null}
      */
@@ -243,7 +253,7 @@ export class QuizBase {
         this.currentKey = candidates[Math.floor(Math.random() * candidates.length)];
 
         this.renderQuestion(this.currentKey);
-        this._renderOptions(this.getOptions(this.currentKey));
+        this._renderOptions(isReadyForTyping(this.srsState[this.currentKey]) ? null : this.getOptions(this.currentKey));
 
         document.getElementById('answer').value = '';
         const feedbackEl = document.getElementById('feedback');
@@ -260,9 +270,8 @@ export class QuizBase {
     /** @param {string} [chosen] - the tapped option; defaults to the typed answer */
     submitAnswer(chosen) {
         const raw = typeof chosen === 'string' ? chosen : document.getElementById('answer').value;
-        const userAnswer = raw.trim().toLowerCase().normalize('NFC');
         const correctAnswer = this.getCorrectAnswer(this.currentKey);
-        const isCorrect = userAnswer === correctAnswer.toLowerCase().normalize('NFC');
+        const isCorrect = this.getAcceptedAnswers(this.currentKey).some(answer => answerMatches(raw, answer));
 
         const feedbackEl = document.getElementById('feedback');
         feedbackEl.textContent = '';
@@ -314,7 +323,11 @@ export class QuizBase {
         this._updateScoreDisplay();
         this._updateProgressBar();
 
-        document.getElementById('answer-container').classList.add('hidden');
+        if (this.currentOptions) {
+            this._revealOptions(correctAnswer, raw);
+        } else {
+            document.getElementById('answer-container').classList.add('hidden');
+        }
         feedbackEl.classList.remove('hidden');
         this.isFeedbackDisplayed = true;
 
@@ -335,7 +348,10 @@ export class QuizBase {
             `Corretas: ${this.correctCount} | Erros: ${this.errorCount}`;
         document.getElementById('quiz-time').textContent =
             `Tempo: ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        document.getElementById('accuracy').textContent = `Precisão: ${accuracyPct}%`;
+        const accuracyEl = document.getElementById('accuracy');
+        accuracyEl.textContent = `${accuracyPct}%`;
+        accuracyEl.setAttribute('aria-label', `Precisão: ${accuracyPct}%`);
+        accuracyEl.style.setProperty('--pct', String(accuracyPct)); // fills the ring
 
         updateBestScore(this.storageKey, this.correctCount);
 
@@ -397,13 +413,29 @@ export class QuizBase {
         list.classList.toggle('hidden', !this.currentOptions);
         document.getElementById('answer').classList.toggle('hidden', !!this.currentOptions);
         document.getElementById('submit-answer').classList.toggle('hidden', !!this.currentOptions);
-        for (const option of this.currentOptions ?? []) {
+        (this.currentOptions ?? []).forEach((option, index) => {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'option';
-            btn.textContent = option;
+            const badge = document.createElement('span');
+            badge.className = 'option-badge';
+            badge.textContent = String.fromCharCode(65 + index);
+            const text = document.createElement('span');
+            text.className = 'option-text';
+            text.textContent = option;
+            btn.append(badge, text);
             btn.addEventListener('click', () => this.submitAnswer(option));
             list.appendChild(btn);
+        });
+    }
+
+    /** Locks the options and marks the right one, and the tapped one if it was wrong. */
+    _revealOptions(correctAnswer, chosen) {
+        for (const btn of document.querySelectorAll('#options button.option')) {
+            const text = btn.querySelector('.option-text')?.textContent ?? btn.textContent;
+            btn.disabled = true;
+            btn.classList.toggle('option--correct', text === correctAnswer);
+            btn.classList.toggle('option--wrong', text === chosen && text !== correctAnswer);
         }
     }
 
@@ -422,7 +454,11 @@ export class QuizBase {
     _updateDueCount() {
         const el = document.getElementById('srs-due-count');
         if (!el) return;
-        const due = getDueItems(this.srsState).length;
+        // Only count items that still exist: a word whose spelling or translation changed leaves its
+        // old record behind, and nothing can ever review it.
+        const all = this.getAllItems();
+        const known = all ? new Set(all.map(item => item.key)) : null;
+        const due = getDueItems(this.srsState).filter(key => !known || known.has(key)).length;
         el.textContent = due > 0 ? `${due} ${due === 1 ? 'item' : 'itens'} para rever hoje` : '';
         el.classList.toggle('hidden', due === 0);
     }

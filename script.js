@@ -2,6 +2,9 @@ import { addSelectAll, getCheckedValues } from './common.js';
 import { QuizBase } from './quiz_base.js';
 import { PERSONS, TENSE_LABELS, STORAGE_KEYS } from './config.js';
 import { getVerbHint } from './grammar_hints.js';
+import { buildGatedQuickPracticePool, buildOptions } from './practice.js';
+import { getDueItems } from './srs.js';
+import { verbItemLevel } from './cefr.js';
 
 const TENSE_KEYS = Object.keys(TENSE_LABELS);
 
@@ -41,12 +44,13 @@ export class VerbQuiz extends QuizBase {
         tensesDiv.appendChild(ppLabel);
 
         // Difficulty selector
-        const setup = document.getElementById('setup');
-        const dueSibling = document.getElementById('srs-due-count');
+        // Difficulty and interleaving go with the other Advanced options, above the start button.
+        const startButton = document.getElementById('start-quiz');
+        const advanced = startButton.parentNode;
 
         const diffH = document.createElement('h2');
         diffH.textContent = 'Nível de dificuldade';
-        setup.insertBefore(diffH, dueSibling);
+        advanced.insertBefore(diffH, startButton);
 
         const diffDiv = document.createElement('div');
         diffDiv.id = 'difficulty-selector';
@@ -63,7 +67,7 @@ export class VerbQuiz extends QuizBase {
             lbl.appendChild(document.createTextNode(' ' + label));
             diffDiv.appendChild(lbl);
         });
-        setup.insertBefore(diffDiv, dueSibling);
+        advanced.insertBefore(diffDiv, startButton);
 
         // Interleaved mode toggle
         const intLabel = document.createElement('label');
@@ -73,7 +77,7 @@ export class VerbQuiz extends QuizBase {
         intCb.id = 'interleaved-mode';
         intLabel.appendChild(intCb);
         intLabel.appendChild(document.createTextNode(' Modo intercalado (melhor para retenção)'));
-        setup.insertBefore(intLabel, dueSibling);
+        advanced.insertBefore(intLabel, startButton);
     }
 
     getSelectedItems() {
@@ -92,6 +96,41 @@ export class VerbQuiz extends QuizBase {
     /** Quick Practice draws from every conjugated form of every verb, as on Android. */
     getAllItems() {
         return this._itemsFor(TENSE_KEYS, 'all');
+    }
+
+    /** Quick Practice only draws from CEFR tiers the learner has unlocked, as on Android. */
+    startQuickPractice() {
+        this.quickPractice = true;
+        const dueKeys = new Set(getDueItems(this.srsState));
+        this.startQuiz(buildGatedQuickPracticePool(
+            this.getAllItems(), dueKeys, this.srsState, item => verbItemLevel(item.verb, item.tense),
+        ));
+    }
+
+    /**
+     * Wrong options, most confusable first (same order as the Android app): the same verb and
+     * person in other tenses (e.g. "fiz", "fazia" for "eu faço"), then other persons of the same
+     * verb and tense, then other verbs in the same tense. Participles: the same verb with another
+     * auxiliary, then other verbs' participles.
+     */
+    getOptions(key) {
+        const [verb, tense, third] = key.split('|||');
+        const correct = this.getCorrectAnswer(key);
+        if (tense === 'participios_passados') {
+            const participles = Object.entries(this.data).filter(([, v]) => v.participios_passados);
+            return buildOptions(correct, [
+                Object.values(this.data[verb].participios_passados),
+                participles.filter(([name]) => name !== verb).map(([, v]) => v.participios_passados[third]),
+            ]);
+        }
+        const personIdx = parseInt(third, 10);
+        this._forms ??= this.getAllItems().map(i => ({ ...i, form: this.getCorrectAnswer(i.key) }));
+        const forms = this._forms;
+        return buildOptions(correct, [
+            forms.filter(i => i.verb === verb && i.personIdx === personIdx).map(i => i.form),
+            forms.filter(i => i.verb === verb && i.tense === tense).map(i => i.form),
+            forms.filter(i => i.tense === tense).map(i => i.form),
+        ]);
     }
 
     _itemsFor(tenses, difficultyFilter) {

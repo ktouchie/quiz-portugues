@@ -54,6 +54,20 @@ class SrsRepositoryTest {
     }
 
     @Test
+    fun `getAllRecords returns only the given module's records, keyed by item id`() = runBlocking {
+        val dao = FakeSrsRecordDao()
+        val repo = SrsRepository(dao)
+        dao.records["v"] = SrsRecordEntity("v", "verbs", 2, 2.5, 6, 0, 4, 0)
+        dao.records["w"] = SrsRecordEntity("w", "vocabulary", 1, 2.5, 1, 0, 4, 0)
+
+        val records = repo.getAllRecords("verbs")
+
+        assertEquals(setOf("v"), records.keys)
+        assertEquals(2, records.getValue("v").repetitions)
+        assertEquals(6, records.getValue("v").interval)
+    }
+
+    @Test
     fun `countMastered delegates to the dao`() = runBlocking {
         val dao = FakeSrsRecordDao()
         dao.records["a"] = SrsRecordEntity("a", "verbs", 1, 2.5, 1, 0, 4, 0)
@@ -61,5 +75,20 @@ class SrsRepositoryTest {
         val repo = SrsRepository(dao)
 
         assertEquals(1, repo.countMastered())
+    }
+
+    @Test
+    fun `deleteRecordsNotIn removes only the module's records for items that no longer exist`() = runBlocking {
+        val dao = FakeSrsRecordDao()
+        val repo = SrsRepository(dao)
+        repo.recordAnswer("Adjetivos|||baixo|||short", "vocabulary", quality = 4, now = 1L)
+        repo.recordAnswer("Adjetivos|||baixo|||short (height)", "vocabulary", quality = 4, now = 1L)
+        repo.recordAnswer("ser|||presente|||0", "verbs", quality = 4, now = 1L)
+
+        val deleted = repo.deleteRecordsNotIn("vocabulary", setOf("Adjetivos|||baixo|||short (height)"))
+
+        assertEquals(1, deleted)
+        assertEquals(setOf("Adjetivos|||baixo|||short (height)", "ser|||presente|||0"), dao.records.keys)
+        assertEquals(0, repo.deleteRecordsNotIn("vocabulary", setOf("Adjetivos|||baixo|||short (height)")))
     }
 }
