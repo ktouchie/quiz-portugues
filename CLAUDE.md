@@ -37,6 +37,7 @@ npm run lint
 - `srs_manager.html` — SRS management page: view/reset records per item or per module
 
 **Shared:**
+- `i18n.js` — interface language (English by default, Portuguese optional): `STRINGS` (every UI text in both languages), `t(key, params)`, `appendTemplate` (slots elements into a translated sentence), `localized(item, field)` (picks `hint_en`/`rule_en` in English), `applyTranslations` (static `data-i18n` / `data-i18n-html` / `data-i18n-attr` markup), `initLanguage` (adds the EN/PT pill next to the theme toggle). Switching fires a `languagechange` event that `QuizBase`, the home page and the SRS manager re-render on. Category names have English versions (`CATEGORY_NAMES_EN`, `categoryName`, `categorySpan`; vocabulary ones mirrored in Android's `ui/i18n/CategoryNames.kt`), as do the bracketed notes in subjunctive triggers (`triggerText`); the Portuguese names stay the content keys. Only instructions and explanations are translated, never the Portuguese being learnt
 - `common.js` — `initTheme`, `loadVersion`, `startTimer`, `stopTimer`, `resumeTimer`, `updateTimerDisplay`, `updateBestScore`, `addSelectAll`, `getCheckedValues` (ticked boxes, leaving out "Selecionar tudo")
 - `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, startQuickPractice, nextQuestion, submitAnswer, endQuiz), SRS integration, progress bar, retry-mistakes; abstract methods: `fetchData`, `getSelectedItems`, `renderQuestion`, `getCorrectAnswer`, `formatMistake`, `getLabel`; optional hooks `getAllItems` (enables Quick Practice) and `getOptions` (multiple-choice instead of typed)
 - `practice.js` — pure helpers shared with the Android app's behaviour: `buildQuickPracticePool` (12 items, due first), `buildGatedQuickPracticePool` (only unlocked CEFR tiers, newest tier first), `buildOptions(correct, pools)` (3 distinct distractors, best pool first), `stringSimilarity`, `shuffle`
@@ -44,21 +45,22 @@ npm run lint
 - `config.js` — `PERSONS`, `TENSE_LABELS`, `STORAGE_KEYS` (verbs, vocab, gender, serEstarFicar, contractions, subjunctive, indirectSpeech, theme)
 - `srs.js` — SM-2 spaced repetition: `loadSRSState`, `saveSRSState`, `getItemSRS`, `sm2`, `getDueItems`, `isReadyForTyping` (3 correct in a row + 6-day interval → typed instead of multiple choice)
 - `gamification.js` — `loadStreak`, `updateStreak`, `getTotalMastered`, `checkMilestone`, `showMilestoneBanner`, `loadGoal`, `saveGoal`, `getGoalProgress`
-- `grammar_hints.js` — `getVerbHint(tense, verb, third)`, `getGenderHint(category)`
+- `grammar_hints.js` — `getVerbHint(tense, verb, third)`, `getGenderHint(category)`, each in the interface language
 - `styles.css` — Applies to all pages; "Warm Encourager" tokens on `:root` / `[data-theme="dark"]`, same palette as the Android app
 
 **Data files:**
 - `verbs.json` — `{ verbName: { regular, difficulty, tense: [...5 forms...], exemplos: { presente: [...], pretérito: [...] } } }` — 26 conjugation verbs; `difficulty`: `"beginner" | "intermediate" | "advanced"`; `exemplos` on 16 high-frequency verbs
 - `vocabulary.json` — `{ category: { portuguese: "english" } }`; 31 categories, ~548 words. Two different Portuguese words never share an English translation (a content test enforces it) — tell them apart with a trailing bracketed note, e.g. baixo `"short (height)"` / curto `"short (length)"`; the note is optional in typed English answers (`answerMatches` / Android `answersMatch`). The only agreed exception is sete e meia / dezanove e trinta ("seven thirty"): asked English → Portuguese, either is accepted and neither is offered as a wrong option for the other. A vocabulary key includes its English, so renaming a word restarts it: its old record is deleted when the home page or the vocabulary quiz loads (`pruneRecords` in `srs.js`; Android `SrsRepository.deleteRecordsNotIn` from the home screen)
 - `gender_quiz.json` — `{ category: [{ masculine, feminine, plural, english }] }`; 4 categories, 53 words, 102 quiz items
-- `ser_estar_ficar.json` — `{ category: [{ sentence, answer, hint, english }] }`; 4 categories, 38 items
-- `contractions.json` — `{ category: [{ parts: [prep, article], answer, example, english, hint }] }`; 8 categories, 39 items
-- `subjunctive_quiz.json` — `{ category: [{ prompt, answer, trigger, hint, english }] }`; 6 categories, 38 items
-- `indirect_speech.json` — `[{ direct, context, verb_direct, answer, rule, indirect_full, english, hint }]`; 20 items
+- `ser_estar_ficar.json` — `{ category: [{ sentence, answer, hint, hint_en, english }] }`; 4 categories, 38 items
+- `contractions.json` — `{ category: [{ parts: [prep, article], answer, example, english, hint, hint_en }] }`; 8 categories, 39 items
+- `subjunctive_quiz.json` — `{ category: [{ prompt, answer, trigger, hint, hint_en, english }] }`; 6 categories, 38 items
+- `indirect_speech.json` — `[{ direct, context, verb_direct, answer, rule, rule_en, indirect_full, english, hint, hint_en }]`; 20 items
+- Every `hint` / `rule` (Portuguese) has an English `hint_en` / `rule_en` (a test enforces it)
 
 **SRS state** is persisted per quiz in `localStorage` under keys `srs_verbs`, `srs_vocab`, `srs_gender`, `srs_ser_estar_ficar`, `srs_contractions`, `srs_subjunctive`, `srs_indirect_speech`.
 **Best scores** are persisted under `bestScore_*` keys matching the module names.
-**Gamification** keys: `streak_data`, `seen_milestones`.
+**Gamification** keys: `streak_data`, `seen_milestones`. **Interface language**: `language` (`en` default, or `pt`).
 
 ## Quiz mechanics (shared pattern)
 
@@ -116,6 +118,7 @@ web equivalent, with tests for both (rollout tracked in epic #59). Full design i
   `StatChip`, `PromptCard`, `AccuracyRing`, `MilestoneBanner`, `WarmGradientButton`,
   `GradientProgressBar`); the web mirrors them in `styles.css` (`:root` tokens, `.module-card`,
   `.stat-chip`, `#question` prompt card, `#accuracy` ring, lettered `button.option`s).
+- **Interface language** (issue #71): `i18n/AppLanguage.kt` + `LanguageSettings` (SharedPreferences, English by default); `ui/i18n/Strings.kt` holds every UI text in both languages (`EnglishStrings` / `PortugueseStrings`, same wording as `i18n.js`), provided through `LocalStrings` / `LocalAppLanguage` from `MainActivity`, with an English / Português switch as the Scaffold's bottom bar. Grammar hints are `LocalizedText(en, pt)`.
 - Build: `./gradlew lint test` for CI-equivalent checks; `./gradlew assembleDebug` for an
   installable APK. Requires the Android SDK — not available in this sandbox, so changes here
   can't be build-verified locally; rely on careful review plus the Android CI workflow.

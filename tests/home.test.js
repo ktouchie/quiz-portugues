@@ -42,8 +42,8 @@ describe('module cards', () => {
 
     it('shows how many items are due', () => {
         const due = { a: { nextReview: Date.now() - 1000 }, b: { nextReview: Date.now() - 1000 }, c: { nextReview: Date.now() + 1e9 } };
-        expect(renderModuleCard(MODULES[0], due).querySelector('.module-due').textContent).toBe('2 por rever');
-        expect(renderModuleCard(MODULES[0], {}).querySelector('.module-due').textContent).toBe('Nada por rever');
+        expect(renderModuleCard(MODULES[0], due).querySelector('.module-due').textContent).toBe('2 due for review');
+        expect(renderModuleCard(MODULES[0], {}).querySelector('.module-due').textContent).toBe('Nothing to review');
     });
 
     it('is a single link with a progress bar once progress is known', () => {
@@ -64,7 +64,7 @@ describe('records left behind by renamed words', () => {
         expect(dueAmong(['Cores|||azul|||blue', 'Adjetivos|||baixo|||short (height)'], state)).toBe(1);
         const card = renderModuleCard(MODULES[1], state);
         setDueCount(card, dueAmong(['Cores|||azul|||blue'], state));
-        expect(card.querySelector('.module-due').textContent).toBe('1 por rever');
+        expect(card.querySelector('.module-due').textContent).toBe('1 due for review');
     });
 
     it('are not counted as due on the setup screen', () => {
@@ -73,7 +73,7 @@ describe('records left behind by renamed words', () => {
         quiz.data = { Cores: { azul: 'blue' }, Adjetivos: { baixo: 'short (height)' } };
         quiz.srsState = { 'Adjetivos|||baixo|||short': { nextReview: past }, 'Cores|||azul|||blue': { nextReview: past } };
         quiz._updateDueCount();
-        expect(document.getElementById('srs-due-count').textContent).toBe('1 item para rever hoje');
+        expect(document.getElementById('srs-due-count').textContent).toBe('1 item due for review today');
     });
 });
 

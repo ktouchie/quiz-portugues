@@ -1,5 +1,6 @@
 package com.ktouchie.quizportugues.content
 
+import com.ktouchie.quizportugues.i18n.AppLanguage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -33,5 +34,28 @@ class GrammarHintsTest {
         assertEquals("perfeito composto", tenseLabel("perfeito_composto"))
         assertEquals("presente", tenseLabel("presente"))
         assertEquals("pretérito mais-que-perfeito", tenseLabel("pretérito mais-que-perfeito"))
+    }
+
+    @Test
+    fun `every hint comes in English and Portuguese`() {
+        val tenses = listOf(
+            "presente", "pretérito", "imperfeito", "condicional", "futuro", "conjuntivo", "imperativo",
+            "infinitivo pessoal", "pretérito mais-que-perfeito", "perfeito_composto",
+        )
+        for (tense in tenses) {
+            for (person in 0..4) {
+                val hint = getVerbHint(tense, person)
+                assertNotNull("$tense/$person", hint)
+                assert(hint!!.en.isNotBlank() && hint.pt.isNotBlank())
+                assert(hint.en != hint.pt) { "$tense/$person has no English version" }
+            }
+        }
+    }
+
+    @Test
+    fun `hints follow the chosen language`() {
+        val hint = getVerbHint("futuro", personIndex = 0)!!
+        assert(hint.get(AppLanguage.EN).startsWith("The future"))
+        assert(hint.get(AppLanguage.PT).startsWith("O futuro"))
     }
 }

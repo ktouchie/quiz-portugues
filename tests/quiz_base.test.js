@@ -188,7 +188,7 @@ describe('QuizBase.endQuiz', () => {
         quiz.endQuiz();
         const ring = document.getElementById('accuracy');
         expect(ring.textContent).toBe('75%');
-        expect(ring.getAttribute('aria-label')).toBe('Precisão: 75%');
+        expect(ring.getAttribute('aria-label')).toBe('Accuracy: 75%');
         expect(ring.style.getPropertyValue('--pct')).toBe('75');
     });
 
@@ -209,6 +209,6 @@ describe('QuizBase.endQuiz', () => {
         quiz.startQuiz();
         quiz.endQuiz();
         const text = document.getElementById('top-mistakes').textContent;
-        expect(text).toContain('Parabéns');
+        expect(text).toContain('Well done');
     });
 });

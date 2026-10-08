@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ktouchie.quizportugues.BuildConfig
 import com.ktouchie.quizportugues.ui.common.ModuleCard
 import com.ktouchie.quizportugues.ui.common.StatChip
+import com.ktouchie.quizportugues.ui.i18n.LocalStrings
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 import com.ktouchie.quizportugues.ui.navigation.moduleDisplayName
@@ -53,9 +54,9 @@ fun HomeScreen(
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column {
-                Text("Olá! 👋", style = MaterialTheme.typography.headlineSmall)
+                Text(LocalStrings.current.greeting, style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    text = "Continua a praticar hoje!",
+                    text = LocalStrings.current.subtitle,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -75,21 +76,21 @@ fun HomeScreen(
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            StatChip(value = "${state.totalMastered}", label = "Dominadas", modifier = Modifier.weight(1f))
-            StatChip(value = "${state.currentStreak}", label = "Dias seguidos", modifier = Modifier.weight(1f))
+            StatChip(value = "${state.totalMastered}", label = LocalStrings.current.statMastered, modifier = Modifier.weight(1f))
+            StatChip(value = "${state.currentStreak}", label = LocalStrings.current.statStreak, modifier = Modifier.weight(1f))
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             ModuleCard(
                 icon = moduleIcon(MODULE_VERBS),
-                title = moduleDisplayName(MODULE_VERBS),
+                title = moduleDisplayName(MODULE_VERBS, LocalStrings.current),
                 dueCount = state.verbProgress.dueCount,
                 progressPct = state.verbProgress.seenPct,
                 onClick = { onOpenModule(MODULE_VERBS) },
             )
             ModuleCard(
                 icon = moduleIcon(MODULE_VOCABULARY),
-                title = moduleDisplayName(MODULE_VOCABULARY),
+                title = moduleDisplayName(MODULE_VOCABULARY, LocalStrings.current),
                 dueCount = state.vocabularyProgress.dueCount,
                 progressPct = state.vocabularyProgress.seenPct,
                 onClick = { onOpenModule(MODULE_VOCABULARY) },
@@ -97,7 +98,7 @@ fun HomeScreen(
         }
         // Same version number the website shows (both read the repo-root version.txt).
         Text(
-            text = "Versão ${BuildConfig.VERSION_NAME}",
+            text = LocalStrings.current.version(BuildConfig.VERSION_NAME),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

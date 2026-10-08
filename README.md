@@ -38,6 +38,7 @@ Transform direct speech into indirect speech by producing the correct backshifte
 ## Features
 
 - **Prática Rápida & levels (CEFR)** — a 12-item session for verbs and vocabulary, due items first, starting at A1 and opening each next level once you've got most of the current one right; the "Avançado" setup lets you pick anything
+- **English or Portuguese instructions** — an EN/PT switch at the top of every page (English by default) changes the instructions and grammar explanations; the Portuguese you're learning stays Portuguese
 - **Fair grading** — when one English word has two Portuguese translations, the prompt says which one is meant ("short (height)" → baixo); typing just "short" in English is accepted
 - **Multiple choice, then typing** — each word or verb form is multiple choice (with look-alike wrong options) until you've got it right three times in a row over about a week, then you type it
 - **Spaced repetition (SM-2)** — items are scheduled for review based on performance; due items appear first; quality is implicit (first-try correct = 4, correct after mistakes = 2, wrong = 0)

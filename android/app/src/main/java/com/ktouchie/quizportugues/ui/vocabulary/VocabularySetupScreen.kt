@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ktouchie.quizportugues.ui.common.CheckboxRow
+import com.ktouchie.quizportugues.ui.i18n.LocalStrings
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 
 /**
@@ -40,22 +41,22 @@ fun VocabularySetupScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text("Avançado · Vocabulário", style = MaterialTheme.typography.headlineSmall)
+        Text(LocalStrings.current.vocabularySetupTitle, style = MaterialTheme.typography.headlineSmall)
         Text(
-            text = "Selecione as categorias para praticar.",
+            text = LocalStrings.current.vocabularySetupHint,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             Text(
-                text = "Selecionar tudo",
+                text = LocalStrings.current.selectAll,
                 style = MaterialTheme.typography.labelLarge,
                 color = ExtendedTheme.colors.textWarm,
                 modifier = Modifier.clickable(onClick = viewModel::selectAllCategories),
             )
             Text(
-                text = "Limpar",
+                text = LocalStrings.current.clear,
                 style = MaterialTheme.typography.labelLarge,
                 color = ExtendedTheme.colors.textWarm,
                 modifier = Modifier.clickable(onClick = viewModel::clearCategories),
@@ -65,7 +66,7 @@ fun VocabularySetupScreen(
         Column {
             state.categories.forEach { category ->
                 CheckboxRow(
-                    label = category,
+                    label = LocalStrings.current.categoryName(category),
                     checked = category in state.selectedCategories,
                     onToggle = { viewModel.toggleCategory(category) },
                 )
@@ -74,7 +75,7 @@ fun VocabularySetupScreen(
 
         if (!state.loading) {
             Text(
-                text = "${state.matchingCount} itens · ${state.dueCount} por rever",
+                text = LocalStrings.current.matching(state.matchingCount, state.dueCount),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -86,7 +87,7 @@ fun VocabularySetupScreen(
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Iniciar Quiz")
+            Text(LocalStrings.current.startQuiz)
         }
     }
 }

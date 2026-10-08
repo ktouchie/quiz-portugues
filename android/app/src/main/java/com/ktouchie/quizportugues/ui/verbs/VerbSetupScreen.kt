@@ -25,6 +25,7 @@ import com.ktouchie.quizportugues.content.Difficulty
 import com.ktouchie.quizportugues.content.VERB_TENSES
 import com.ktouchie.quizportugues.content.tenseLabel
 import com.ktouchie.quizportugues.ui.common.CheckboxRow
+import com.ktouchie.quizportugues.ui.i18n.LocalStrings
 import com.ktouchie.quizportugues.ui.theme.ExtendedTheme
 
 /**
@@ -46,22 +47,22 @@ fun VerbSetupScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text("Avançado · Verbos", style = MaterialTheme.typography.headlineSmall)
+        Text(LocalStrings.current.verbsSetupTitle, style = MaterialTheme.typography.headlineSmall)
         Text(
-            text = "Selecione os tempos e o nível de dificuldade para praticar.",
+            text = LocalStrings.current.verbsSetupHint,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             Text(
-                text = "Selecionar tudo",
+                text = LocalStrings.current.selectAll,
                 style = MaterialTheme.typography.labelLarge,
                 color = ExtendedTheme.colors.textWarm,
                 modifier = Modifier.clickable(onClick = viewModel::selectAllTenses),
             )
             Text(
-                text = "Limpar",
+                text = LocalStrings.current.clear,
                 style = MaterialTheme.typography.labelLarge,
                 color = ExtendedTheme.colors.textWarm,
                 modifier = Modifier.clickable(onClick = viewModel::clearTenses),
@@ -78,17 +79,17 @@ fun VerbSetupScreen(
             }
         }
 
-        Text("Nível de dificuldade", style = MaterialTheme.typography.titleMedium)
+        Text(LocalStrings.current.difficulty, style = MaterialTheme.typography.titleMedium)
         Column {
-            DifficultyOption("Todos", state.difficulty == null) { viewModel.setDifficulty(null) }
-            DifficultyOption("Iniciante", state.difficulty == Difficulty.BEGINNER) { viewModel.setDifficulty(Difficulty.BEGINNER) }
-            DifficultyOption("Intermédio", state.difficulty == Difficulty.INTERMEDIATE) { viewModel.setDifficulty(Difficulty.INTERMEDIATE) }
-            DifficultyOption("Avançado", state.difficulty == Difficulty.ADVANCED) { viewModel.setDifficulty(Difficulty.ADVANCED) }
+            DifficultyOption(LocalStrings.current.difficultyAll, state.difficulty == null) { viewModel.setDifficulty(null) }
+            DifficultyOption(LocalStrings.current.difficultyBeginner, state.difficulty == Difficulty.BEGINNER) { viewModel.setDifficulty(Difficulty.BEGINNER) }
+            DifficultyOption(LocalStrings.current.difficultyIntermediate, state.difficulty == Difficulty.INTERMEDIATE) { viewModel.setDifficulty(Difficulty.INTERMEDIATE) }
+            DifficultyOption(LocalStrings.current.difficultyAdvanced, state.difficulty == Difficulty.ADVANCED) { viewModel.setDifficulty(Difficulty.ADVANCED) }
         }
 
         if (!state.loading) {
             Text(
-                text = "${state.matchingCount} itens · ${state.dueCount} por rever",
+                text = LocalStrings.current.matching(state.matchingCount, state.dueCount),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -100,7 +101,7 @@ fun VerbSetupScreen(
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Iniciar Quiz")
+            Text(LocalStrings.current.startQuiz)
         }
     }
 }

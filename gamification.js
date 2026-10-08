@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 /**
  * Streak tracking, milestone detection, and personal goals.
  *
@@ -107,7 +109,7 @@ export function showMilestoneBanner(count) {
     banner.setAttribute('aria-live', 'polite');
 
     const msg = document.createElement('span');
-    msg.textContent = `Parabéns! ${count} itens dominados! 🎉`;
+    msg.textContent = t('result.milestone', { n: count });
     banner.appendChild(msg);
 
     document.body.appendChild(banner);
