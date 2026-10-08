@@ -396,6 +396,7 @@ button.option--wrong .option-badge {
     border: 2px solid var(--border);
     box-shadow: var(--shadow-sm);
     z-index: 1000;
+    cursor: pointer;
 }
 
 #lang-toggle:hover {

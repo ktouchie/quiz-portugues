@@ -234,6 +234,7 @@ export class QuizBase {
         });
 
         this.totalNeeded = this.itemsToPractice.length;
+        this._updateScoreDisplay();
 
         document.getElementById('setup').classList.add('hidden');
         document.getElementById('quiz').classList.remove('hidden');

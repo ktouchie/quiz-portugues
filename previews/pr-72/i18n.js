@@ -310,6 +310,7 @@ export function initLanguage() {
         btn.textContent = getLanguage() === 'en' ? 'EN' : 'PT';
         btn.setAttribute('aria-label', t('lang.switch'));
         btn.title = t('lang.switch');
+        btn.lang = getLanguage() === 'en' ? 'pt-PT' : 'en'; // the label is in the other language
     };
     render();
     btn.addEventListener('click', () => {
