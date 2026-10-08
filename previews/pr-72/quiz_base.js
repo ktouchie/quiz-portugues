@@ -1,4 +1,4 @@
-import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore } from './common.js';
+import { initTheme, loadVersion, startTimer, stopTimer, resumeTimer, updateTimerDisplay, updateBestScore, renderBestScore } from './common.js';
 import { loadSRSState, saveSRSState, getItemSRS, sm2, getDueItems, isReadyForTyping } from './srs.js';
 import { updateStreak, checkMilestone, showMilestoneBanner } from './gamification.js';
 import { buildQuickPracticePool, answerMatches } from './practice.js';
@@ -278,12 +278,10 @@ export class QuizBase {
         const isCorrect = this.getAcceptedAnswers(this.currentKey).some(answer => answerMatches(raw, answer));
 
         const feedbackEl = document.getElementById('feedback');
-        feedbackEl.textContent = '';
-        feedbackEl.className = '';
+        this.lastFeedback = { isCorrect, correctAnswer };
+        this._renderFeedback();
 
         if (isCorrect) {
-            feedbackEl.textContent = t('quiz.correct');
-            feedbackEl.className = 'correct';
             this.correctCount++;
             this.itemCounters[this.currentKey]++;
 
@@ -299,25 +297,6 @@ export class QuizBase {
             this._recordSRS(this.currentKey, quality);
             document.getElementById('next-question').classList.remove('hidden');
         } else {
-            feedbackEl.textContent = '';
-            feedbackEl.className = 'incorrect';
-            const wrongMsg = document.createElement('span');
-            wrongMsg.textContent = t('quiz.wrong', { answer: correctAnswer });
-            feedbackEl.appendChild(wrongMsg);
-            const hint = this.getHint(this.currentKey);
-            if (hint) {
-                const hintEl = document.createElement('p');
-                hintEl.className = 'grammar-hint';
-                hintEl.textContent = hint;
-                feedbackEl.appendChild(hintEl);
-            }
-            const example = this.getExample(this.currentKey);
-            if (example) {
-                const exEl = document.createElement('p');
-                exEl.className = 'example-sentence';
-                exEl.textContent = example;
-                feedbackEl.appendChild(exEl);
-            }
             this.errorCount++;
             this.mistakeCounters[this.currentKey]++;
             this._recordSRS(this.currentKey, 0);
@@ -343,6 +322,26 @@ export class QuizBase {
         document.getElementById('quiz').classList.add('hidden');
         document.getElementById('result').classList.remove('hidden');
 
+        this.lastBest = updateBestScore(this.storageKey, this.correctCount);
+        this._renderResults();
+
+        updateStreak();
+        const milestone = checkMilestone();
+        if (milestone) showMilestoneBanner(milestone);
+
+        const retryBtn = document.getElementById('retry-mistakes');
+        if (retryBtn) {
+            const mistakeKeys = Object.keys(this.mistakeCounters).filter(k => this.mistakeCounters[k] > 0);
+            retryBtn.onclick = () => {
+                this.retryMistakeKeys = mistakeKeys;
+                document.getElementById('result').classList.add('hidden');
+                this.startQuiz();
+            };
+        }
+    }
+
+    /** Fills in the results text in the interface language (also after a language change). */
+    _renderResults() {
         const total = this.correctCount + this.errorCount;
         const accuracyPct = total > 0 ? Math.round((this.correctCount / total) * 100) : 100;
         const mins = Math.floor(this.timerState.elapsedTime / 60);
@@ -357,8 +356,7 @@ export class QuizBase {
         accuracyEl.setAttribute('aria-label', t('result.accuracy', { pct: accuracyPct }));
         accuracyEl.dataset.label = t('result.accuracyLabel');
         accuracyEl.style.setProperty('--pct', String(accuracyPct)); // fills the ring
-
-        updateBestScore(this.storageKey, this.correctCount);
+        if (this.lastBest) renderBestScore(this.lastBest.isRecord, this.lastBest.best);
 
         const sorted = Object.entries(this.mistakeCounters)
             .filter(([, count]) => count > 0)
@@ -378,24 +376,40 @@ export class QuizBase {
             list.appendChild(li);
         }
 
-        updateStreak();
-        const milestone = checkMilestone();
-        if (milestone) showMilestoneBanner(milestone);
-
         const retryBtn = document.getElementById('retry-mistakes');
         if (retryBtn) {
-            const mistakeKeys = Object.keys(this.mistakeCounters).filter(k => this.mistakeCounters[k] > 0);
-            if (mistakeKeys.length > 0) {
-                retryBtn.textContent = t('result.retryCount', { n: mistakeKeys.length });
-                retryBtn.classList.remove('hidden');
-                retryBtn.onclick = () => {
-                    this.retryMistakeKeys = mistakeKeys;
-                    document.getElementById('result').classList.add('hidden');
-                    this.startQuiz();
-                };
-            } else {
-                retryBtn.classList.add('hidden');
-            }
+            const mistakes = Object.values(this.mistakeCounters).filter(count => count > 0).length;
+            retryBtn.textContent = t('result.retryCount', { n: mistakes });
+            retryBtn.classList.toggle('hidden', mistakes === 0);
+        }
+    }
+
+    /** The "Correct!" / "Wrong…" panel for the last answer, in the interface language. */
+    _renderFeedback() {
+        const feedbackEl = document.getElementById('feedback');
+        const { isCorrect, correctAnswer } = this.lastFeedback;
+        feedbackEl.textContent = '';
+        feedbackEl.className = isCorrect ? 'correct' : 'incorrect';
+        if (isCorrect) {
+            feedbackEl.textContent = t('quiz.correct');
+            return;
+        }
+        const wrongMsg = document.createElement('span');
+        wrongMsg.textContent = t('quiz.wrong', { answer: correctAnswer });
+        feedbackEl.appendChild(wrongMsg);
+        const hint = this.getHint(this.currentKey);
+        if (hint) {
+            const hintEl = document.createElement('p');
+            hintEl.className = 'grammar-hint';
+            hintEl.textContent = hint;
+            feedbackEl.appendChild(hintEl);
+        }
+        const example = this.getExample(this.currentKey);
+        if (example) {
+            const exEl = document.createElement('p');
+            exEl.className = 'example-sentence';
+            exEl.textContent = example;
+            feedbackEl.appendChild(exEl);
         }
     }
 
@@ -452,7 +466,10 @@ export class QuizBase {
         if (this.totalNeeded > 0) this._updateProgressBar();
         if (this.currentKey && !document.getElementById('quiz').classList.contains('hidden')) {
             this.renderQuestion(this.currentKey);
+            if (this.isFeedbackDisplayed && this.lastFeedback) this._renderFeedback();
         }
+        const result = document.getElementById('result');
+        if (result && !result.classList.contains('hidden')) this._renderResults();
     }
 
     _updateScoreDisplay() {
