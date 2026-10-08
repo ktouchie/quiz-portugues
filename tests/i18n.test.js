@@ -3,7 +3,8 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { cwd } from 'node:process';
 import {
-    STRINGS, appendTemplate, applyTranslations, getLanguage, initLanguage, localized, setLanguage, t,
+    CATEGORY_NAMES_EN, STRINGS, appendTemplate, applyTranslations, categoryName, categorySpan, getLanguage,
+    initLanguage, localized, setLanguage, t, triggerText,
 } from '../i18n.js';
 import { getGenderHint, getVerbHint } from '../grammar_hints.js';
 import { QuizBase } from '../quiz_base.js';
@@ -179,8 +180,10 @@ describe('switching language mid-quiz', () => {
         const quiz = new OneQuestion();
         quiz.timerState.timerDisplay = document.getElementById('timer-display');
         quiz.startQuiz();
-        document.addEventListener('languagechange', () => quiz._onLanguageChange());
+        const onChange = () => quiz._onLanguageChange();
+        document.addEventListener('languagechange', onChange);
         setLanguage('pt');
+        document.removeEventListener('languagechange', onChange);
         expect(document.getElementById('question').textContent).toBe('Próxima');
         expect(document.getElementById('score-display').textContent).toBe('Corretas: 0 | Erros: 0');
         expect(document.getElementById('progress-percentage').textContent).toMatch(/^Progresso/);
@@ -250,5 +253,41 @@ describe('review fixes', () => {
         expect(document.getElementById('best-score').textContent).toMatch(/^Novo recorde/);
         expect(document.getElementById('accuracy').dataset.label).toBe('PRECISÃO');
         vi.useRealTimers();
+    });
+});
+
+describe('category names', () => {
+    const files = ['vocabulary.json', 'gender_quiz.json', 'ser_estar_ficar.json', 'contractions.json', 'subjunctive_quiz.json'];
+
+    it('have an English name for every category in every content file', () => {
+        for (const file of files) {
+            for (const category of Object.keys(readJson(file))) {
+                expect(CATEGORY_NAMES_EN, `${file}: ${category}`).toHaveProperty([category]);
+            }
+        }
+    });
+
+    it('show in the interface language and follow a switch', () => {
+        const span = categorySpan('Cores');
+        document.body.replaceChildren(span);
+        expect(span.textContent).toBe('Colours');
+        setLanguage('pt');
+        expect(span.textContent).toBe('Cores');
+        expect(categoryName('Tempo')).toBe('Tempo');
+    });
+
+    it('translate only the notes inside subjunctive triggers', () => {
+        expect(triggerText('quando (futuro)')).toBe('quando (future)');
+        expect(triggerText('pedir (passado) que')).toBe('pedir (past) que');
+        expect(triggerText('é preciso que')).toBe('é preciso que');
+        setLanguage('pt');
+        expect(triggerText('quando (futuro)')).toBe('quando (futuro)');
+    });
+
+    it('match the Android app for vocabulary', () => {
+        const kotlin = read('android/app/src/main/java/com/ktouchie/quizportugues/ui/i18n/CategoryNames.kt');
+        const android = Object.fromEntries([...kotlin.matchAll(/"([^"]+)" to "([^"]+)"/g)].map(m => [m[1], m[2]]));
+        const vocabulary = Object.keys(readJson('vocabulary.json'));
+        expect(android).toEqual(Object.fromEntries(vocabulary.map(c => [c, CATEGORY_NAMES_EN[c]])));
     });
 });

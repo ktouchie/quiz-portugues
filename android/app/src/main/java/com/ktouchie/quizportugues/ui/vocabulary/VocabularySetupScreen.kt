@@ -66,7 +66,7 @@ fun VocabularySetupScreen(
         Column {
             state.categories.forEach { category ->
                 CheckboxRow(
-                    label = category,
+                    label = LocalStrings.current.categoryName(category),
                     checked = category in state.selectedCategories,
                     onToggle = { viewModel.toggleCategory(category) },
                 )

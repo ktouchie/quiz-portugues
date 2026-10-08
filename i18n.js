@@ -213,6 +213,107 @@ export const STRINGS = {
     },
 };
 
+/**
+ * English names for content categories, shown in English mode only; the Portuguese names stay the
+ * keys in the content files and progress records. The vocabulary ones are also in the Android
+ * app's ui/i18n/CategoryNames.kt (a test keeps them identical).
+ * @type {Object.<string, string>}
+ */
+export const CATEGORY_NAMES_EN = {
+    // Vocabulary
+    'Adjetivos': 'Adjectives',
+    'Advérbios': 'Adverbs',
+    'Anatomia': 'Anatomy',
+    'Animais': 'Animals',
+    'Comida e Bebida': 'Food and Drink',
+    'Cores': 'Colours',
+    'Dias da Semana': 'Days of the Week',
+    'Direções': 'Directions',
+    'Diversos': 'Miscellaneous',
+    'Emoções': 'Emotions',
+    'Escola': 'School',
+    'Estações': 'Seasons',
+    'Ferramentas': 'Tools',
+    'Frases Comuns': 'Common Phrases',
+    'Hora': 'Time and Dates',
+    'Horas do Dia': 'Times of Day',
+    'Lugares': 'Places',
+    'Meses': 'Months',
+    'Natureza': 'Nature',
+    'Números': 'Numbers',
+    'O Corpo Humano': 'The Human Body',
+    'O Rosto': 'The Face',
+    'Objetos Comuns': 'Everyday Objects',
+    'Ocupações': 'Occupations',
+    'Parentesco': 'Family',
+    'Perguntas': 'Questions',
+    'Roupa': 'Clothes',
+    'Tecnologia': 'Technology',
+    'Tempo': 'Weather',
+    'Transporte': 'Transport',
+    'Verbos': 'Verbs',
+    // Gender & plural
+    'Nomes em -or': 'Nouns in -or',
+    'Palavras em -ão': 'Words in -ão',
+    'Adjetivos em -l': 'Adjectives in -l',
+    'Outros adjetivos e nomes': 'Other adjectives and nouns',
+    // Ser / estar / ficar
+    'Profissões e identidade (ser)': 'Professions and identity (ser)',
+    'Estado temporário (estar)': 'Temporary states (estar)',
+    'Localização de pessoas/coisas (estar vs ser vs ficar)': 'Location of people/things (estar vs ser vs ficar)',
+    'Resultado e mudança de estado (ficar)': 'Results and changes of state (ficar)',
+    // Contractions
+    'de + artigo definido': 'de + definite article',
+    'em + artigo definido': 'em + definite article',
+    'a + artigo definido': 'a + definite article',
+    'por + artigo definido': 'por + definite article',
+    'em + artigo indefinido': 'em + indefinite article',
+    'de + demonstrativo': 'de + demonstrative',
+    'em + demonstrativo': 'em + demonstrative',
+    'a + demonstrativo': 'a + demonstrative',
+    // Subjunctive
+    'Expressões de vontade e desejo': 'Expressions of will and desire',
+    'Expressões de emoção e sentimento': 'Expressions of emotion and feeling',
+    'Expressões de dúvida e incerteza': 'Expressions of doubt and uncertainty',
+    'Expressões impessoais de necessidade e obrigação': 'Impersonal expressions of need and obligation',
+    'Conjunções temporais e condicionais': 'Time and condition conjunctions',
+    'Conjuntivo imperfeito (após expressões de passado)': 'Imperfect subjunctive (after past expressions)',
+};
+
+/** Notes inside subjunctive triggers, e.g. "quando (futuro)": the trigger itself stays Portuguese. */
+const TRIGGER_NOTES_EN = { 'passado': 'past', 'futuro': 'future', 'condição': 'condition' };
+
+/**
+ * A content category's name in the interface language.
+ * @param {string} name - the Portuguese category name (the content key)
+ * @returns {string}
+ */
+export function categoryName(name) {
+    return getLanguage() === 'en' ? (CATEGORY_NAMES_EN[name] ?? name) : name;
+}
+
+/**
+ * A subjunctive trigger with its bracketed note in the interface language.
+ * @param {string} trigger
+ * @returns {string}
+ */
+export function triggerText(trigger) {
+    if (getLanguage() !== 'en') return trigger;
+    return trigger.replace(/\(([^)]+)\)/g, (match, note) => (TRIGGER_NOTES_EN[note] ? `(${TRIGGER_NOTES_EN[note]})` : match));
+}
+
+/**
+ * A span showing a category name that follows the interface language.
+ * @param {string} name - the Portuguese category name
+ * @returns {HTMLSpanElement}
+ */
+export function categorySpan(name) {
+    const span = document.createElement('span');
+    span.dataset.i18nCategory = name;
+    span.textContent = categoryName(name);
+    return span;
+}
+
 /** @returns {'en'|'pt'} */
 export function getLanguage() {
     if (unsavedLanguage) return unsavedLanguage;
@@ -282,12 +383,14 @@ export function localized(item, field) {
 
 /**
  * Translates static markup: `data-i18n="key"` sets the text, `data-i18n-html="key"` sets trusted
- * markup from STRINGS, and `data-i18n-attr="attr:key;attr:key"` sets attributes.
+ * markup from STRINGS, `data-i18n-attr="attr:key;attr:key"` sets attributes, and
+ * `data-i18n-category="name"` shows a content category's name (see categorySpan).
  * @param {ParentNode} [root]
  */
 export function applyTranslations(root = document) {
     for (const el of root.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
     for (const el of root.querySelectorAll('[data-i18n-html]')) el.innerHTML = t(el.dataset.i18nHtml);
+    for (const el of root.querySelectorAll('[data-i18n-category]')) el.textContent = categoryName(el.dataset.i18nCategory);
     for (const el of root.querySelectorAll('[data-i18n-attr]')) {
         for (const pair of el.dataset.i18nAttr.split(';')) {
             const [attr, key] = pair.split(':');
