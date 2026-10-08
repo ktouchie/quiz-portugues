@@ -42,6 +42,11 @@ class Strings(
     val advanced: String,
     val moduleVerbs: String,
     val moduleVocabulary: String,
+    val moduleGender: String,
+    val moduleSerEstarFicar: String,
+    val moduleContractions: String,
+    val moduleSubjunctive: String,
+    val moduleIndirectSpeech: String,
     // Advanced setup
     val verbsSetupTitle: String,
     val verbsSetupHint: String,
@@ -56,6 +61,15 @@ class Strings(
     val difficultyAdvanced: String,
     val matching: (items: Int, due: Int) -> String,
     val startQuiz: String,
+    // The other five modules
+    val advancedTitle: (module: String) -> String,
+    val categoriesSetupHint: String,
+    val allItemsSetupHint: String,
+    val genderQuestion: (form: String, word: String) -> String,
+    val genderForm: (String) -> String,
+    val contractionQuestion: (first: String, second: String) -> String,
+    val indirectQuestion: (verb: String) -> String,
+    val trigger: (String) -> String,
     // Language switch
     val languageLabel: String,
     /** A content category's name: English in English mode, the Portuguese key otherwise. */
@@ -94,6 +108,11 @@ val EnglishStrings = Strings(
     advanced = "Advanced",
     moduleVerbs = "Verb Conjugation",
     moduleVocabulary = "Vocabulary",
+    moduleGender = "Gender & Plural",
+    moduleSerEstarFicar = "Ser / Estar / Ficar",
+    moduleContractions = "Contractions",
+    moduleSubjunctive = "Subjunctive",
+    moduleIndirectSpeech = "Indirect Speech",
     verbsSetupTitle = "Advanced · Verbs",
     verbsSetupHint = "Choose the tenses and the difficulty level to practise.",
     vocabularySetupTitle = "Advanced · Vocabulary",
@@ -107,8 +126,16 @@ val EnglishStrings = Strings(
     difficultyAdvanced = "Advanced",
     matching = { items, due -> "$items items · $due due for review" },
     startQuiz = "Start quiz",
+    advancedTitle = { "Advanced · $it" },
+    categoriesSetupHint = "Choose the categories to practise.",
+    allItemsSetupHint = "Practise every item, with no session limit.",
+    genderQuestion = { form, word -> "What is the $form of $word?" },
+    genderForm = { if (it == "feminino") "feminine" else it },
+    contractionQuestion = { first, second -> "What is the contraction of $first + $second?" },
+    indirectQuestion = { verb -> "In indirect speech, what does \"$verb\" become?" },
+    trigger = { "Trigger: " + englishTriggerNotes(it) },
     languageLabel = "Language",
-    categoryName = { VOCABULARY_CATEGORY_NAMES_EN[it] ?: it },
+    categoryName = { CATEGORY_NAMES_EN[it] ?: it },
 )
 
 val PortugueseStrings = Strings(
@@ -143,6 +170,11 @@ val PortugueseStrings = Strings(
     advanced = "Avançado",
     moduleVerbs = "Conjugação de Verbos",
     moduleVocabulary = "Vocabulário",
+    moduleGender = "Género e Plural",
+    moduleSerEstarFicar = "Ser / Estar / Ficar",
+    moduleContractions = "Contrações",
+    moduleSubjunctive = "Conjuntivo",
+    moduleIndirectSpeech = "Discurso Indireto",
     verbsSetupTitle = "Avançado · Verbos",
     verbsSetupHint = "Selecione os tempos e o nível de dificuldade para praticar.",
     vocabularySetupTitle = "Avançado · Vocabulário",
@@ -156,9 +188,25 @@ val PortugueseStrings = Strings(
     difficultyAdvanced = "Avançado",
     matching = { items, due -> "$items itens · $due por rever" },
     startQuiz = "Iniciar Quiz",
+    advancedTitle = { "Avançado · $it" },
+    categoriesSetupHint = "Selecione as categorias para praticar.",
+    allItemsSetupHint = "Pratica todos os itens, sem limite de sessão.",
+    genderQuestion = { form, word -> "Qual é o $form de $word?" },
+    genderForm = { it },
+    contractionQuestion = { first, second -> "Qual é a contração de $first + $second?" },
+    indirectQuestion = { verb -> "Em discurso indireto, como fica \"$verb\"?" },
+    trigger = { "Gatilho: $it" },
     languageLabel = "Idioma",
     categoryName = { it },
 )
+
+/** The bracketed notes in subjunctive triggers ("quando (futuro)"); the trigger stays Portuguese. */
+private val TRIGGER_NOTES_EN = mapOf("passado" to "past", "futuro" to "future", "condição" to "condition")
+
+private fun englishTriggerNotes(trigger: String): String =
+    Regex("""\(([^)]+)\)""").replace(trigger) { match ->
+        TRIGGER_NOTES_EN[match.groupValues[1]]?.let { "($it)" } ?: match.value
+    }
 
 fun stringsFor(language: AppLanguage): Strings = if (language == AppLanguage.PT) PortugueseStrings else EnglishStrings
 

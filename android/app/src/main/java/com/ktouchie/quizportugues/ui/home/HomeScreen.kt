@@ -24,6 +24,11 @@ import com.ktouchie.quizportugues.BuildConfig
 import com.ktouchie.quizportugues.ui.common.ModuleCard
 import com.ktouchie.quizportugues.ui.common.StatChip
 import com.ktouchie.quizportugues.ui.i18n.LocalStrings
+import com.ktouchie.quizportugues.ui.navigation.MODULE_CONTRACTIONS
+import com.ktouchie.quizportugues.ui.navigation.MODULE_GENDER
+import com.ktouchie.quizportugues.ui.navigation.MODULE_INDIRECT_SPEECH
+import com.ktouchie.quizportugues.ui.navigation.MODULE_SER_ESTAR_FICAR
+import com.ktouchie.quizportugues.ui.navigation.MODULE_SUBJUNCTIVE
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VERBS
 import com.ktouchie.quizportugues.ui.navigation.MODULE_VOCABULARY
 import com.ktouchie.quizportugues.ui.navigation.moduleDisplayName
@@ -94,6 +99,41 @@ fun HomeScreen(
                 dueCount = state.vocabularyProgress.dueCount,
                 progressPct = state.vocabularyProgress.seenPct,
                 onClick = { onOpenModule(MODULE_VOCABULARY) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_GENDER),
+                title = moduleDisplayName(MODULE_GENDER, LocalStrings.current),
+                dueCount = state.genderProgress.dueCount,
+                progressPct = state.genderProgress.seenPct,
+                onClick = { onOpenModule(MODULE_GENDER) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_SER_ESTAR_FICAR),
+                title = moduleDisplayName(MODULE_SER_ESTAR_FICAR, LocalStrings.current),
+                dueCount = state.serEstarFicarProgress.dueCount,
+                progressPct = state.serEstarFicarProgress.seenPct,
+                onClick = { onOpenModule(MODULE_SER_ESTAR_FICAR) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_CONTRACTIONS),
+                title = moduleDisplayName(MODULE_CONTRACTIONS, LocalStrings.current),
+                dueCount = state.contractionsProgress.dueCount,
+                progressPct = state.contractionsProgress.seenPct,
+                onClick = { onOpenModule(MODULE_CONTRACTIONS) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_SUBJUNCTIVE),
+                title = moduleDisplayName(MODULE_SUBJUNCTIVE, LocalStrings.current),
+                dueCount = state.subjunctiveProgress.dueCount,
+                progressPct = state.subjunctiveProgress.seenPct,
+                onClick = { onOpenModule(MODULE_SUBJUNCTIVE) },
+            )
+            ModuleCard(
+                icon = moduleIcon(MODULE_INDIRECT_SPEECH),
+                title = moduleDisplayName(MODULE_INDIRECT_SPEECH, LocalStrings.current),
+                dueCount = state.indirectSpeechProgress.dueCount,
+                progressPct = state.indirectSpeechProgress.seenPct,
+                onClick = { onOpenModule(MODULE_INDIRECT_SPEECH) },
             )
         }
         // Same version number the website shows (both read the repo-root version.txt).

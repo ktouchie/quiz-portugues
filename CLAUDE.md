@@ -33,15 +33,15 @@ npm run lint
 - `contractions_quiz.html` + `contractions_quiz.js` — Preposition contractions; loads `contractions.json`
 - `subjunctive_quiz.html` + `subjunctive_quiz.js` — Conjuntivo conjugation; loads `subjunctive_quiz.json`
 - `indirect_speech_quiz.html` + `indirect_speech_quiz.js` — Discurso indireto verb forms; loads `indirect_speech.json`
-- `index.html` + `home.js` — Home page: streak pill, mastered/streak stat chips, a card per module (due count; progress bar for verbs and vocabulary), SRS manager link
+- `index.html` + `home.js` — Home page: streak pill, mastered/streak stat chips, a card per module (due count and progress bar), SRS manager link
 - `srs_manager.html` — SRS management page: view/reset records per item or per module
 
 **Shared:**
 - `i18n.js` — interface language (English by default, Portuguese optional): `STRINGS` (every UI text in both languages), `t(key, params)`, `appendTemplate` (slots elements into a translated sentence), `localized(item, field)` (picks `hint_en`/`rule_en` in English), `applyTranslations` (static `data-i18n` / `data-i18n-html` / `data-i18n-attr` markup), `initLanguage` (adds the EN/PT pill next to the theme toggle). Switching fires a `languagechange` event that `QuizBase`, the home page and the SRS manager re-render on. Category names have English versions (`CATEGORY_NAMES_EN`, `categoryName`, `categorySpan`; vocabulary ones mirrored in Android's `ui/i18n/CategoryNames.kt`), as do the bracketed notes in subjunctive triggers (`triggerText`); the Portuguese names stay the content keys. Only instructions and explanations are translated, never the Portuguese being learnt
 - `common.js` — `initTheme`, `loadVersion`, `startTimer`, `stopTimer`, `resumeTimer`, `updateTimerDisplay`, `updateBestScore`, `addSelectAll`, `getCheckedValues` (ticked boxes, leaving out "Selecionar tudo")
-- `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, startQuickPractice, nextQuestion, submitAnswer, endQuiz), SRS integration, progress bar, retry-mistakes; abstract methods: `fetchData`, `getSelectedItems`, `renderQuestion`, `getCorrectAnswer`, `formatMistake`, `getLabel`; optional hooks `getAllItems` (enables Quick Practice) and `getOptions` (multiple-choice instead of typed)
-- `practice.js` — pure helpers shared with the Android app's behaviour: `buildQuickPracticePool` (12 items, due first), `buildGatedQuickPracticePool` (only unlocked CEFR tiers, newest tier first), `buildOptions(correct, pools)` (3 distinct distractors, best pool first), `stringSimilarity`, `shuffle`
-- `cefr.js` — CEFR levels per verb, tense and vocabulary category (`verbItemLevel`, `vocabularyCategoryLevel`) and `unlockedTiers` (80% rule) — same maps as Android's `CefrTiers.kt`
+- `quiz_base.js` — `QuizBase` class: shared lifecycle (init, startQuiz, startQuickPractice, nextQuestion, submitAnswer, endQuiz), SRS integration, progress bar, retry-mistakes; abstract methods: `fetchData`, `getSelectedItems`, `renderQuestion`, `getCorrectAnswer`, `formatMistake`, `getLabel`; optional hooks `getAllItems` (enables Quick Practice), `getItemLevel` (CEFR level, gates Quick Practice by unlocked tier) and `getOptions` (multiple choice until the item is typing-ready)
+- `practice.js` — pure helpers shared with the Android app's behaviour: `maskAnswer` (blanks the answer in an example shown with a question), `buildQuickPracticePool` (12 items, due first), `buildGatedQuickPracticePool` (only unlocked CEFR tiers, newest tier first), `buildOptions(correct, pools)` (3 distinct distractors, best pool first), `stringSimilarity`, `shuffle`
+- `cefr.js` — CEFR levels per verb, tense and category of every module (`verbItemLevel`, `vocabularyCategoryLevel`, `genderCategoryLevel`, `serEstarFicarCategoryLevel`, `contractionsCategoryLevel`, `subjunctiveCategoryLevel`; indirect speech is all `B1`) and `unlockedTiers` (80% rule) — same maps as Android's `CefrTiers.kt` (tests compare them)
 - `config.js` — `PERSONS`, `TENSE_LABELS`, `STORAGE_KEYS` (verbs, vocab, gender, serEstarFicar, contractions, subjunctive, indirectSpeech, theme)
 - `srs.js` — SM-2 spaced repetition: `loadSRSState`, `saveSRSState`, `getItemSRS`, `sm2`, `getDueItems`, `isReadyForTyping` (3 correct in a row + 6-day interval → typed instead of multiple choice)
 - `gamification.js` — `loadStreak`, `updateStreak`, `getTotalMastered`, `checkMilestone`, `showMilestoneBanner`, `loadGoal`, `saveGoal`, `getGoalProgress`
@@ -73,9 +73,11 @@ All quizzes share `QuizBase`:
 6. Result screen: time, accuracy %, top mistakes, "Praticar erros" retry button
 7. Streak updated on quiz completion; milestones checked
 
-**Quick Practice** (verbs, vocabulary): a "Prática Rápida" button on the setup screen starts a 12-item session from the CEFR tiers the learner has unlocked, due items first, then the newest tier — same rule as the Android app. The detailed setup (tenses/categories, difficulty, direction) is folded under "Avançado" and isn't CEFR-gated. Vocabulary's Quick Practice asks Portuguese → English.
+**Quick Practice** (every module): a "Prática Rápida" button on the setup screen starts a 12-item session from the CEFR tiers the learner has unlocked, due items first, then the newest tier — same rule as the Android app. The detailed setup (tenses/categories, difficulty, direction) is folded under "Avançado" and isn't CEFR-gated. Vocabulary's Quick Practice asks Portuguese → English.
 
-**Multiple choice until typing-ready** (verbs, vocabulary, every session): each question shows four lettered options until that item passes `isReadyForTyping`, then a text box; a wrong answer sends it back to options. After an answer the options stay on screen with the right one (and a wrong tap) marked. A missed item never comes straight back while others remain.
+**Multiple choice until typing-ready** (every module, every session): each question shows four lettered options until that item passes `isReadyForTyping`, then a text box; a wrong answer sends it back to options. After an answer the options stay on screen with the right one (and a wrong tap) marked. A missed item never comes straight back while others remain.
+
+**Wrong options per module** (same rules as the Android app): verbs — same verb and person in other tenses, then other persons, then other verbs; vocabulary and gender — the most similar spellings; ser/estar/ficar — the same person of the other two verbs (`serEstarFicarVerbDistractors`); contractions — same preposition, then same article/demonstrative; subjunctive — the present indicative of the same verb and person (`indicativeForm`, needs `verbs.json`), then the verb's other answers; indirect speech — the unchanged verb of the original sentence.
 
 **Verb quiz extras:** adaptive difficulty filter (beginner/intermediate/advanced), interleaved mode (Fisher-Yates shuffle), example sentences for 16 high-frequency verbs.
 
@@ -92,8 +94,10 @@ All quizzes share `QuizBase`:
 
 A native Android app (Kotlin + Jetpack Compose, no cross-platform framework). The website is the
 web version of the app — same look and features — so every PR ships the Android change *and* its
-web equivalent, with tests for both (rollout tracked in epic #59). Full design in
-`docs/MOBILE_APP_SPEC.md`; implementation tracked via the `mobile-app` label on GitHub issues.
+web equivalent, with tests for both (rollout tracked in epic #59). All seven modules exist on both
+apps. Release to the Google Play Store is deferred until the full app is built and tested through
+several rounds from the phone (epic #12). Full design in `docs/MOBILE_APP_SPEC.md`; implementation
+tracked via the `mobile-app` label on GitHub issues.
 
 - Standard Gradle project: `android/app/src/main/java/com/ktouchie/quizportugues/`, with `srs/`,
   `gamification/`, `data/` (Room), `content/`, and `ui/` sub-packages as they're added.
@@ -126,6 +130,49 @@ web equivalent, with tests for both (rollout tracked in epic #59). Full design i
 ## Working Conventions
 
 - After any major update (new module, feature, data change, architecture change), update both `CLAUDE.md` and `README.md` to reflect the current state before committing.
+
+## Context and task management
+
+GitHub Issues are the canonical source of truth for feature requirements,
+UX decisions, implementation requirements, bugs, and acceptance criteria.
+
+Do NOT rely on previous conversation history for project requirements.
+
+Before implementing or modifying a feature:
+1. Identify the relevant GitHub Issue(s).
+2. Read the issue and its comments.
+3. Read only the relevant source files needed for the current task.
+4. Treat the issue as authoritative over previous conversation discussion.
+
+When a requirement, UX decision, bug diagnosis, or implementation decision
+is established during conversation and is likely to matter later:
+- update the relevant GitHub Issue, or
+- create a new issue if appropriate.
+
+Do not repeatedly restate the entire project history in conversation.
+
+When a task is complete:
+- update the GitHub Issue with the final implementation state,
+- record important decisions and remaining work,
+- keep the issue concise and actionable.
+
+If previous conversation context conflicts with the GitHub Issue,
+stop and ask which should be authoritative.
+
+## Session discipline
+
+Keep the active context focused on the current task.
+
+Do not reread unrelated issues, files, logs, or previous conversation
+unless they are required for the current task.
+
+Prefer retrieving information from GitHub Issues and the codebase rather
+than relying on conversation history.
+
+When the current task is complete, be prepared for the next task to begin
+in a fresh context.
+
+Do not put detailed project history into CLAUDE.md. CLAUDE.md contains rules and stable facts, not the evolving state of individual features. Put evolving state in GitHub Issues.
 
 ## Deployment
 

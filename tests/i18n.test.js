@@ -284,10 +284,9 @@ describe('category names', () => {
         expect(triggerText('quando (futuro)')).toBe('quando (futuro)');
     });
 
-    it('match the Android app for vocabulary', () => {
+    it('match the Android app', () => {
         const kotlin = read('android/app/src/main/java/com/ktouchie/quizportugues/ui/i18n/CategoryNames.kt');
         const android = Object.fromEntries([...kotlin.matchAll(/"([^"]+)" to "([^"]+)"/g)].map(m => [m[1], m[2]]));
-        const vocabulary = Object.keys(readJson('vocabulary.json'));
-        expect(android).toEqual(Object.fromEntries(vocabulary.map(c => [c, CATEGORY_NAMES_EN[c]])));
+        expect(android).toEqual(CATEGORY_NAMES_EN);
     });
 });

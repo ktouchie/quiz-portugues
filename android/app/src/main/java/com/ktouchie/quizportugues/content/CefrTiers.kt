@@ -122,6 +122,68 @@ val VOCABULARY_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
     // this doesn't block anything.
 )
 
+/**
+ * The four gender_quiz.json categories are grammatical noun/adjective patterns (irregular gender
+ * and plural formation rules), not a frequency-graded vocabulary set — so unlike
+ * [VOCABULARY_CATEGORY_CEFR_LEVEL], these levels reflect how early Portuguese courses typically
+ * introduce each pattern rather than word frequency: -or/-ão gender-plural patterns are commonly
+ * covered by A2, the -l adjective plural rule and the fully irregular pairs a bit later.
+ */
+val GENDER_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "Nomes em -or" to A2,
+    "Palavras em -ão" to A2,
+    "Adjetivos em -l" to B1,
+    "Outros adjetivos e nomes" to B1,
+)
+
+/**
+ * ser_estar_ficar.json's 4 categories, ordered by how early Portuguese courses tackle each
+ * ser/estar distinction: identity/profession (ser) and temporary state (estar) are core A2
+ * material; picking correctly between all three verbs for location, and ficar's "become"/result
+ * sense, are the genuinely harder discrimination the module is really testing, so B1.
+ */
+val SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "Profissões e identidade (ser)" to A2,
+    "Estado temporário (estar)" to A2,
+    "Localização de pessoas/coisas (estar vs ser vs ficar)" to B1,
+    "Resultado e mudança de estado (ficar)" to B1,
+)
+
+/**
+ * contractions.json's 8 categories, ordered by how early Portuguese courses introduce each
+ * preposition+article/demonstrative combination: definite-article contractions with the most
+ * common prepositions (de/em/a) are core A1 material; indefinite-article and the less frequent
+ * "por" combination follow at A2; demonstrative contractions require knowing demonstrative
+ * pronouns first, so B1/B2.
+ */
+val CONTRACTIONS_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "de + artigo definido" to A1,
+    "em + artigo definido" to A1,
+    "a + artigo definido" to A1,
+    "por + artigo definido" to A2,
+    "em + artigo indefinido" to A2,
+    "de + demonstrativo" to B1,
+    "em + demonstrativo" to B1,
+    "a + demonstrativo" to B2,
+)
+
+/**
+ * subjunctive_quiz.json's 6 categories, per GitHub #54: subjunctive content as a whole skews
+ * higher than the other modules (the mood itself isn't introduced until at least B1 in most EP
+ * courses), so nothing here is tagged A1/A2. Simple will/desire and emotion triggers (the most
+ * commonly taught conjuntivo presente uses) are B1; doubt/impersonal-necessity triggers and the
+ * temporal/conditional conjunctions (conjuntivo pessoal, an EP-specific construction) are B2; the
+ * conjuntivo imperfeito category — a distinct, more advanced verb form entirely — is C1.
+ */
+val SUBJUNCTIVE_CATEGORY_CEFR_LEVEL: Map<String, CefrLevel> = mapOf(
+    "Expressões de vontade e desejo" to B1,
+    "Expressões de emoção e sentimento" to B1,
+    "Expressões de dúvida e incerteza" to B2,
+    "Expressões impessoais de necessidade e obrigação" to B2,
+    "Conjunções temporais e condicionais" to B2,
+    "Conjuntivo imperfeito (após expressões de passado)" to C1,
+)
+
 fun verbCefrLevel(verb: String): CefrLevel =
     VERB_CEFR_LEVEL[verb] ?: error("No CEFR level assigned for verb \"$verb\" — add it to VERB_CEFR_LEVEL")
 
@@ -132,6 +194,22 @@ fun vocabularyCategoryCefrLevel(category: String): CefrLevel =
     VOCABULARY_CATEGORY_CEFR_LEVEL[category]
         ?: error("No CEFR level assigned for vocabulary category \"$category\" — add it to VOCABULARY_CATEGORY_CEFR_LEVEL")
 
+fun genderCategoryCefrLevel(category: String): CefrLevel =
+    GENDER_CATEGORY_CEFR_LEVEL[category]
+        ?: error("No CEFR level assigned for gender category \"$category\" — add it to GENDER_CATEGORY_CEFR_LEVEL")
+
+fun serEstarFicarCategoryCefrLevel(category: String): CefrLevel =
+    SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL[category]
+        ?: error("No CEFR level assigned for ser/estar/ficar category \"$category\" — add it to SER_ESTAR_FICAR_CATEGORY_CEFR_LEVEL")
+
+fun subjunctiveCategoryCefrLevel(category: String): CefrLevel =
+    SUBJUNCTIVE_CATEGORY_CEFR_LEVEL[category]
+        ?: error("No CEFR level assigned for subjunctive category \"$category\" — add it to SUBJUNCTIVE_CATEGORY_CEFR_LEVEL")
+
+fun contractionsCategoryCefrLevel(category: String): CefrLevel =
+    CONTRACTIONS_CATEGORY_CEFR_LEVEL[category]
+        ?: error("No CEFR level assigned for contractions category \"$category\" — add it to CONTRACTIONS_CATEGORY_CEFR_LEVEL")
+
 /** The harder of the verb's own level and the tense's level — see [TENSE_CEFR_LEVEL]. */
 fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
     val verbLevel = verbCefrLevel(item.verb)
@@ -140,3 +218,19 @@ fun cefrLevelOf(item: VerbQuizItem): CefrLevel {
 }
 
 fun cefrLevelOf(item: VocabularyQuizItem): CefrLevel = vocabularyCategoryCefrLevel(item.category)
+
+fun cefrLevelOf(item: GenderQuizItem): CefrLevel = genderCategoryCefrLevel(item.category)
+
+fun cefrLevelOf(item: SerEstarFicarQuizItem): CefrLevel = serEstarFicarCategoryCefrLevel(item.category)
+
+fun cefrLevelOf(item: SubjunctiveQuizItem): CefrLevel = subjunctiveCategoryCefrLevel(item.category)
+
+/**
+ * indirect_speech.json has no categories to tag (a flat 20-item list) — per GitHub #55's own
+ * guidance not to over-engineer tiering for a module this small, every item gets the same fixed
+ * level rather than a per-category map like the other modules. B1: tense-backshift rules are
+ * intermediate grammar, on par with the simpler subjunctive triggers.
+ */
+fun cefrLevelOf(item: IndirectSpeechQuizItem): CefrLevel = B1
+
+fun cefrLevelOf(item: ContractionQuizItem): CefrLevel = contractionsCategoryCefrLevel(item.category)

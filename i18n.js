@@ -37,6 +37,7 @@ export const STRINGS = {
         pt: '12 itens ao seu nível, primeiro os que estão para rever. O nível seguinte abre quando dominar a maior parte deste.',
     },
     'quiz.advanced': { en: 'Advanced', pt: 'Avançado' },
+    'quiz.allItemsHint': { en: 'Practise every item, with no session limit.', pt: 'Pratique todos os itens, sem limite de sessão.' },
     'quiz.start': { en: 'Start quiz', pt: 'Iniciar Quiz' },
     'quiz.submit': { en: 'Submit', pt: 'Enviar' },
     'quiz.enterHint': { en: 'Press Enter to submit', pt: 'Pressione Enter para enviar' },

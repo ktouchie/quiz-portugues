@@ -177,7 +177,7 @@ describe('GenderQuiz', () => {
     it('labels plural questions "plural", not "plural masculino" (some nouns are feminine)', () => {
         const quiz = new GenderQuiz();
         quiz.data = { Teste: [{ masculine: 'mão', feminine: null, plural: 'mãos', english: 'hand' }] };
-        const items = quiz.getSelectedItems();
+        const items = quiz.getAllItems();
         expect(items).toHaveLength(1);
         expect(items[0].label).toBe('plural');
     });

@@ -92,3 +92,34 @@ fun getVerbHint(tense: String, personIndex: Int): LocalizedText? = when (tense) 
 
 /** Mirrors config.js' TENSE_LABELS — display label for a tense key ("perfeito_composto" -> "perfeito composto"). */
 fun tenseLabel(tense: String): String = if (tense == "perfeito_composto") "perfeito composto" else tense
+
+/** Ported from grammar_hints.js's GENDER_HINTS — one hint per gender_quiz.json category, in both
+ *  interface languages. */
+private val GENDER_HINTS: Map<String, LocalizedText> = mapOf(
+    "Nomes em -or" to LocalizedText(
+        en = "Nouns in -or make the feminine with -ora (e.g. trabalhador → trabalhadora), or -triz " +
+            "(e.g. ator → atriz) for Latin-derived professions.",
+        pt = "Nomes em -or formam o feminino em -ora (ex: trabalhador → trabalhadora) ou " +
+            "-triz (ex: ator → atriz) para profissões latinas.",
+    ),
+    "Palavras em -ão" to LocalizedText(
+        en = "Words in -ão have three plural patterns: -ões (campeão → campeões), -ães (cão → cães), " +
+            "-ãos (irmão → irmãos).",
+        pt = "Palavras em -ão têm três padrões de plural: -ões (campeão → campeões), " +
+            "-ães (cão → cães), -ãos (irmão → irmãos).",
+    ),
+    "Adjetivos em -l" to LocalizedText(
+        en = "Adjectives in -l: the plural replaces -l with -is (e.g. azul → azuis, difícil → difíceis, " +
+            "espanhol → espanhóis).",
+        pt = "Adjetivos em -l: o plural substitui -l por -is (ex: azul → azuis, " +
+            "difícil → difíceis, espanhol → espanhóis).",
+    ),
+    "Outros adjetivos e nomes" to LocalizedText(
+        en = "For these irregular adjectives, learn the pairs: mau/má, bom/boa, feliz/feliz " +
+            "(the same in both genders).",
+        pt = "Para estes adjetivos irregulares, memorize os pares: mau/má, " +
+            "bom/boa, feliz/feliz (invariável em género).",
+    ),
+)
+
+fun getGenderHint(category: String): LocalizedText? = GENDER_HINTS[category]

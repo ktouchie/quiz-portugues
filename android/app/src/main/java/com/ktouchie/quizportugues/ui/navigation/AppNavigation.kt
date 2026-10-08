@@ -13,8 +13,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ktouchie.quizportugues.ui.contractions.ContractionsSessionScreen
+import com.ktouchie.quizportugues.ui.contractions.ContractionsSetupScreen
+import com.ktouchie.quizportugues.ui.gender.GenderSessionScreen
+import com.ktouchie.quizportugues.ui.gender.GenderSetupScreen
 import com.ktouchie.quizportugues.ui.home.HomeScreen
+import com.ktouchie.quizportugues.ui.indirectspeech.IndirectSpeechSessionScreen
+import com.ktouchie.quizportugues.ui.indirectspeech.IndirectSpeechSetupScreen
 import com.ktouchie.quizportugues.ui.module.ModuleHomeScreen
+import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSessionScreen
+import com.ktouchie.quizportugues.ui.serestarficar.SerEstarFicarSetupScreen
+import com.ktouchie.quizportugues.ui.subjunctive.SubjunctiveSessionScreen
+import com.ktouchie.quizportugues.ui.subjunctive.SubjunctiveSetupScreen
 import com.ktouchie.quizportugues.ui.verbs.VerbSessionScreen
 import com.ktouchie.quizportugues.ui.verbs.VerbSetupScreen
 import com.ktouchie.quizportugues.ui.vocabulary.VocabularySessionScreen
@@ -75,6 +85,36 @@ fun AppNavigation() {
                         navController.navigate("module/$moduleId/session?$query")
                     },
                 )
+                MODULE_GENDER -> GenderSetupScreen(
+                    onStart = { categories ->
+                        val query = "categories=${Uri.encode(categories.joinToString(","))}"
+                        navController.navigate("module/$moduleId/session?$query")
+                    },
+                )
+                MODULE_SER_ESTAR_FICAR -> SerEstarFicarSetupScreen(
+                    onStart = { categories ->
+                        val query = "categories=${Uri.encode(categories.joinToString(","))}"
+                        navController.navigate("module/$moduleId/session?$query")
+                    },
+                )
+                MODULE_CONTRACTIONS -> ContractionsSetupScreen(
+                    onStart = { categories ->
+                        val query = "categories=${Uri.encode(categories.joinToString(","))}"
+                        navController.navigate("module/$moduleId/session?$query")
+                    },
+                )
+                MODULE_SUBJUNCTIVE -> SubjunctiveSetupScreen(
+                    onStart = { categories ->
+                        val query = "categories=${Uri.encode(categories.joinToString(","))}"
+                        navController.navigate("module/$moduleId/session?$query")
+                    },
+                )
+                // No category picker — indirect_speech.json has no categories. "categories=all"
+                // is a sentinel IndirectSpeechSessionViewModel reads only as an "advanced mode"
+                // flag, reusing the existing nav arg rather than adding a new one.
+                MODULE_INDIRECT_SPEECH -> IndirectSpeechSetupScreen(
+                    onStart = { navController.navigate("module/$moduleId/session?categories=all") },
+                )
                 else -> PlaceholderScreen(label = "Setup ($moduleId)")
             }
         }
@@ -88,6 +128,11 @@ fun AppNavigation() {
             when (moduleId) {
                 MODULE_VOCABULARY -> VocabularySessionScreen(onDone = onDone)
                 MODULE_VERBS -> VerbSessionScreen(onDone = onDone)
+                MODULE_GENDER -> GenderSessionScreen(onDone = onDone)
+                MODULE_SER_ESTAR_FICAR -> SerEstarFicarSessionScreen(onDone = onDone)
+                MODULE_CONTRACTIONS -> ContractionsSessionScreen(onDone = onDone)
+                MODULE_SUBJUNCTIVE -> SubjunctiveSessionScreen(onDone = onDone)
+                MODULE_INDIRECT_SPEECH -> IndirectSpeechSessionScreen(onDone = onDone)
                 else -> PlaceholderScreen(label = "Session ($moduleId)")
             }
         }

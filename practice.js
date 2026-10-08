@@ -139,3 +139,16 @@ function levenshtein(a, b) {
     }
     return prev[b.length];
 }
+
+/**
+ * A sentence with the answer blanked out ("O livro é ___ professor."), so an example shown with
+ * the question doesn't give the answer away. Whole words only, ignoring case; same as the Android
+ * app's maskAnswer.
+ * @param {string} sentence
+ * @param {string} answer
+ * @returns {string}
+ */
+export function maskAnswer(sentence, answer) {
+    const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return sentence.replace(new RegExp(`(^|[^\\p{L}])${escaped}(?![\\p{L}])`, 'giu'), '$1___');
+}
